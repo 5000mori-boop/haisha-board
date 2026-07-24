@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>配車ボード（試作） — ナイスキャリード</title>
+<style>
+  :root{
+    --ink:#16202e;--ink2:#3c4b5b;--muted:#78828f;--paper:#eaeef3;--card:#ffffff;
+    --line:#d7dde5;--line2:#e9edf2;--navy:#22405f;--accent:#e07a3c;--accent-d:#b85a22;
+    --jisha:#2f6f4f;--jisha-bg:#e6f2ec;--kyoryoku:#7a4bd0;--kyoryoku-bg:#efe8fb;
+    --pick:#fff6c9;--pick-bd:#e9d477;--pick-tx:#7a5c00;      /* 引取=黄 */
+    --drop:#d6f0fb;--drop-bd:#8fd0ea;--drop-tx:#0f5f7d;      /* 届け=青 */
+    --spec:#2f8a5f;--spec-bg:#e0f3e8;                        /* 特殊/階段=緑 */
+    --setti:#e23b2e;                                          /* 設置=赤 */
+    --ours:#d0342b;                                           /* 配送時間=赤字 */
+    --kakutei:#22405f;--kanryo:#2f8a5f;
+    --shadow:0 1px 2px rgba(20,25,35,.06),0 6px 18px rgba(20,25,35,.06);--radius:12px;
+  }
+  *{box-sizing:border-box} html,body{margin:0}
+  body{font-family:"BIZ UDPGothic","Meiryo","Hiragino Sans","Yu Gothic UI","Noto Sans JP","Segoe UI",system-ui,sans-serif;
+    background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+  button{font-family:inherit}
+  .app{max-width:1400px;margin:0 auto;padding:0 12px 60px}
+  header.bar{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;margin:0 -12px;padding:10px 16px;
+    display:flex;align-items:center;gap:12px;flex-wrap:wrap;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+  .brand{display:flex;align-items:center;gap:9px;font-weight:800}
+  .brand .logo{width:26px;height:26px;border-radius:7px;background:var(--accent);display:grid;place-items:center;font-size:15px}
+  .brand small{font-weight:600;opacity:.8;font-size:.72rem;display:block}
+  .bar .spacer{flex:1}
+  .datenav{display:flex;align-items:center;gap:6px}
+  .datenav input[type=date]{border:none;border-radius:8px;padding:7px 10px;font-size:.95rem;font-weight:700;color:var(--ink)}
+  .btn{border:none;border-radius:9px;padding:8px 13px;font-size:.86rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+  .btn.ghost{background:rgba(255,255,255,.14);color:#fff}.btn.ghost:hover{background:rgba(255,255,255,.24)}
+  .btn.amber{background:var(--accent);color:#fff}.btn.amber:hover{background:var(--accent-d)}
+  .btn.mini{padding:5px 9px;font-size:.78rem;border-radius:7px}
+  .icon{width:34px;height:34px;border-radius:8px;display:grid;place-items:center;font-size:1.05rem;font-weight:800;border:none;cursor:pointer;background:rgba(255,255,255,.14);color:#fff}
+  .icon:hover{background:rgba(255,255,255,.26)}
+  .view-toggle{display:flex;background:rgba(255,255,255,.14);border-radius:8px;overflow:hidden}
+  .view-toggle button{border:none;background:none;color:#fff;padding:7px 11px;font-size:.8rem;font-weight:700;cursor:pointer;opacity:.7}
+  .view-toggle button.on{background:var(--accent);opacity:1}
+
+  .strip{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 2px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 13px;box-shadow:var(--shadow);min-width:84px}
+  .kpi .n{font-size:1.3rem;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+  .kpi .l{font-size:.68rem;color:var(--muted);margin-top:3px}
+  .kpi.jisha .n{color:var(--jisha)}.kpi.kyo .n{color:var(--kyoryoku)}.kpi.set .n{color:var(--setti)}
+  .daylabel{margin:15px 2px 4px;font-size:1.15rem;font-weight:800;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .daylabel .dow{font-size:.92rem;font-weight:700;color:var(--accent-d)}
+  .hint{color:var(--muted);font-size:.8rem;font-weight:600}
+
+  .board{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px;margin-top:8px;align-items:start}
+  .veh{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .veh > h3{margin:0;padding:9px 13px;background:var(--navy);color:#fff;display:flex;align-items:center;gap:8px;flex-wrap:wrap;cursor:pointer}
+  .veh > h3 .vname{font-size:1.02rem;font-weight:800}
+  .veh > h3 .crew{font-size:.82rem;opacity:.92}
+  .veh > h3 .dep{font-size:.78rem;background:rgba(255,255,255,.18);padding:2px 8px;border-radius:20px;margin-left:auto;font-variant-numeric:tabular-nums}
+  .veh > h3 .dep b{color:#ffd9b0}
+  .job{padding:10px 12px;border-bottom:6px solid var(--line2);cursor:pointer;position:relative}
+  .job:last-of-type{border-bottom:none}
+  .job:hover{background:#fafbfc}
+  .job.kari{background:repeating-linear-gradient(45deg,#f5f6f8,#f5f6f8 9px,#eceff3 9px,#eceff3 18px)}
+  .job.cancel{position:relative}
+  .job.cancel::after{content:"";position:absolute;left:6px;right:6px;top:0;bottom:0;pointer-events:none;background:linear-gradient(to bottom,transparent calc(50% - 9px),#111111 calc(50% - 9px),#111111 calc(50% - 4px),transparent calc(50% - 4px),transparent calc(50% + 4px),#111111 calc(50% + 4px),#111111 calc(50% + 9px),transparent calc(50% + 9px))}
+  .job.special{box-shadow:inset 4px 0 0 var(--spec)}
+  .jtop{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:5px}
+  .seikyu{font-size:.72rem;font-weight:800;background:#eef1f5;border:1px solid var(--line);color:var(--ink2);padding:2px 9px;border-radius:6px}
+  .badge{font-size:.64rem;font-weight:800;padding:2px 7px;border-radius:20px}
+  .badge.jisha{background:var(--jisha-bg);color:var(--jisha)}.badge.kyo{background:var(--kyoryoku-bg);color:var(--kyoryoku)}
+  .st{font-size:.64rem;font-weight:800;padding:2px 8px;border-radius:20px;margin-left:auto}
+  .st.kari{background:#eef1f5;color:#6b7480;border:1px solid var(--line)}
+  .st.kakutei{background:#e5edf5;color:var(--kakutei)}.st.apoOK{background:#fde8e8;color:#c0392b}.st.apoMail{background:#dff1fb;color:#12a0d6}.st.cancel{background:#e6e8ec;color:#7b828c}
+  .pill.ours.p-apo{background:#f2807a;color:#111;font-weight:800}
+  .pill.ours.p-mail{background:#a6dcf2;color:#111;font-weight:800}
+  .itemline{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:5px}
+  .item{font-weight:800;font-size:1rem;padding:2px 9px;border-radius:6px;background:#f1f3f6}
+  .item.setti{background:var(--setti);color:#fff}
+  .settibadge{font-size:.64rem;font-weight:800;color:#fff;background:var(--setti);padding:2px 7px;border-radius:6px}
+  .weight{font-size:.8rem;color:var(--muted)}
+  .cust{font-size:.92rem;font-weight:700}
+  .subtle{font-size:.86rem;color:var(--ink2)}
+  .addr{display:flex;flex-direction:column;gap:3px;margin:6px 0}
+  .achip{display:inline-flex;align-items:center;gap:6px;font-size:.86rem;border-radius:6px;padding:2px 8px;width:fit-content;max-width:100%}
+  .achip .tag{font-size:.62rem;font-weight:800;padding:0 5px;border-radius:4px}
+  .achip.pick{background:var(--pick);border:1px solid var(--pick-bd);color:#5c4600}
+  .achip.pick .tag{background:var(--pick-bd);color:#5c4600}
+  .achip.drop{background:var(--drop);border:1px solid var(--drop-bd);color:#0d4f66}
+  .achip.drop .tag{background:var(--drop-bd);color:#0d4f66}
+  .metarow{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:5px}
+  .pill{font-size:.76rem;font-weight:700;border-radius:6px;padding:2px 8px;background:#eef1f5;color:var(--ink2);border:1px solid var(--line)}
+  .pill.spec{background:var(--spec-bg);color:var(--spec);border-color:#bfe6cf}
+  .pill.time{background:#fff}
+  .pill.ours{color:var(--ours);font-weight:800;border-color:#f3c9c5;background:#fff5f4}
+  .arrow{color:var(--muted);font-weight:800}
+  .work{font-size:.76rem;font-weight:700;color:var(--accent-d);background:#fff3e9;border:1px solid #f3d9c4;border-radius:6px;padding:2px 8px}
+  .flags{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+  .fl{font-size:.66rem;font-weight:700;padding:1px 8px;border-radius:6px;background:#fff3e9;color:var(--accent-d);border:1px solid #f3d9c4}
+  .memoline{margin-top:6px;font-size:.82rem;color:var(--ink2);white-space:pre-line;border-left:3px solid var(--line);padding-left:8px}
+  .addslot{padding:9px 13px;text-align:center;color:var(--accent-d);font-weight:700;font-size:.82rem;cursor:pointer;background:#fff;border-top:1px solid var(--line2)}
+  .addslot:hover{background:#fff7f1}
+  .empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:46px 20px;border:2px dashed var(--line);border-radius:var(--radius);background:var(--card)}
+  .empty b{display:block;font-size:1.05rem;color:var(--ink2);margin-bottom:6px}
+
+  .tblwrap{overflow-x:auto;background:#fff;border:1px solid #b3b9c2;border-radius:8px;box-shadow:var(--shadow);margin-top:8px}
+  table.xls{border-collapse:collapse;width:100%;font-size:.95rem;min-width:1240px;background:#fff;table-layout:fixed}
+  .w-st{width:28px}.w-seikyu{width:106px}.w-item{width:122px}.w-cust{width:126px}.w-tel{width:112px}.w-addr{width:184px}.w-spec{width:98px}.w-time{width:108px}.w-ours{width:76px}.w-memo{width:224px}
+  table.xls th,table.xls td{border:1px solid #b9bec7;padding:7px 9px;vertical-align:middle;text-align:left;overflow:hidden;text-overflow:ellipsis;font-weight:600;color:#131b26}
+  table.xls thead th{background:#e7ebf1;color:var(--ink);font-size:.84rem;font-weight:800;position:sticky;top:0;z-index:2;text-align:center;white-space:nowrap}
+  tr.veh-band td{background:#d6dbe2;padding:0;border-color:#b3b9c2}
+  tr.veh-band.sb-out td{background:#e5dcf6}
+  tr.veh-band.sb-out .vname{color:#5b3ea8}
+  tr.veh-band.sb-wh td{background:#d9efe1}
+  tr.veh-band.sb-wh .vname{color:#1f7a4d}
+  .veh.sb-out > h3{background:#5b3ea8}
+  .veh.sb-wh > h3{background:#1f7a4d}
+  .vehhdr{display:flex;align-items:center;gap:12px;padding:6px 12px;cursor:pointer}
+  .vehhdr:hover{background:#c8cfd8}
+  .vehhdr .vname{font-size:1rem;font-weight:800;color:var(--navy)}
+  .vehhdr .crew{font-size:.86rem;font-weight:700;color:var(--ink2)}
+  .vehhdr .dep{margin-left:auto;font-size:.78rem;background:#fff;border:1px solid #b3b9c2;border-radius:14px;padding:1px 10px;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .vehhdr .dep b{color:var(--accent-d)}
+  .vehhdr .edithint{font-size:.68rem;color:#6b7480;font-weight:600}
+  .veh-del{flex:0 0 auto;border:none;background:rgba(0,0,0,.07);color:#b0342b;font-weight:800;width:24px;height:24px;border-radius:6px;cursor:pointer;line-height:1;font-size:1rem;margin-left:8px}
+  .veh-del:hover{background:#fbe6e3}
+  .veh > h3 .veh-del{background:rgba(255,255,255,.2);color:#ffd6cf;margin-left:8px}
+  .veh > h3 .veh-del:hover{background:rgba(255,255,255,.34)}
+  tr.datarow{cursor:pointer}
+  tr.datarow:hover td{background:#fbfbe8}
+  tr.datarow.kari td{background:#fff;color:#131b26}
+  tr.datarow.cancel td{background-image:linear-gradient(to bottom,transparent calc(50% - 7px),#111111 calc(50% - 7px),#111111 calc(50% - 3px),transparent calc(50% - 3px),transparent calc(50% + 3px),#111111 calc(50% + 3px),#111111 calc(50% + 7px),transparent calc(50% + 7px))}
+  /* ===== 予定表の色分けルール ===== */
+  /* ①号車と作業員名：黒地・白文字／指定＆申請済みは赤文字 */
+  tr.veh-band:not(.special-band) td{background:#111;color:#fff;border-color:#333}
+  tr.veh-band:not(.special-band) .vname,tr.veh-band:not(.special-band) .dep,tr.veh-band:not(.special-band) .dep b{color:#fff}
+  tr.veh-band:not(.special-band) .edithint{color:rgba(255,255,255,.55)}
+  tr.veh-band:not(.special-band) .crew>span[style]{color:rgba(255,255,255,.6)!important}
+  tr.veh-band:not(.special-band) .crewchip{background:transparent;border-color:rgba(255,255,255,.45);color:#fff}
+  tr.veh-band.shitei:not(.special-band) .crewchip,tr.veh-band.shitei:not(.special-band) .vname{color:#ff5f5f;border-color:rgba(255,95,95,.65)}
+  tr.veh-band:not(.special-band) .veh-del{color:rgba(255,255,255,.75)}
+  /* ②品名：赤地・黒文字（複合機/レントゲンの設置・研修） */
+  /* ③お客様名：グレー地・黒文字（仮予定） */
+  td.x-cust.hl-temp{background:#d8dce1!important;color:#111!important}
+  /* ④作業階数：白=1F/EV、緑=階段・吊り、赤=手吊り/螺旋/ゴンドラ等の要注意 */
+  td.x-spec.sp-white{background:#fff}
+  td.x-spec.sp-green{background:#cfe8cd!important;color:#111!important}
+  td.x-spec.sp-red{background:#f2ada7!important;color:#111!important}
+  /* ⑤時間：グレー地（未確定） */
+  td.x-time.tm-gray{background:#d8dce1!important;color:#111!important}
+  /* ⑤'配送時間：黒=予定 / 赤=アポ済 / 水色=メール連絡 / 色地=合流便 */
+  td.x-ours.ours-apo{background:#f2807a!important;color:#111!important;font-weight:800}
+  td.x-ours.ours-mail{background:#a6dcf2!important;color:#111!important;font-weight:800}
+  /* ⑥備考：薄黄=集金/代払/買取、薄黄+赤字=ケーブル等の特別持参 */
+  td.x-memo.memo-money{background:#fff4c2!important;color:#111!important}
+  td.x-memo.memo-parts{background:#fff4c2!important;color:#d32f2f!important}
+  td.x-memo.memo-ready{background:#f2ada7!important;color:#111!important}
+  /* 作業階数・時間を「引取／届け」で分けて表示（住所欄と同じ段組み＋区切り線） */
+  td.x-spec,td.x-time,td.x-cust{padding:0}
+  .pd{display:flex;align-items:center;gap:3px;line-height:1.4;white-space:nowrap;padding:4px 6px;overflow:hidden}
+  .pd>span:last-child{overflow:hidden;text-overflow:ellipsis}
+  td.x-spec .pd+.pd,td.x-time .pd+.pd,td.x-cust .pd+.pd{border-top:1px solid #c2c7d0}
+  .pdl{font-size:.56rem;font-weight:800;border-radius:3px;padding:0 3px;color:#fff;flex:0 0 auto}
+  .pdl.p{background:#b8860b}
+  .pdl.d{background:#3d7ea6}
+  .pd-note{font-size:.6rem;font-weight:800;color:#1f7a4d;padding:1px 6px}
+  .memo-opts{display:flex;align-items:center;gap:10px;margin-top:6px;flex-wrap:wrap}
+  .fld label.mini-chk{display:inline-flex;align-items:center;gap:5px;margin:0;font-size:.73rem;font-weight:700;color:var(--ink2);cursor:pointer;white-space:nowrap;line-height:1.2}
+  .mini-chk input{width:14px;height:14px;margin:0}
+  .mini-btn{border:1px solid var(--line);background:#fff;border-radius:7px;padding:3px 10px;font-size:.73rem;font-weight:800;color:var(--accent-d);cursor:pointer;white-space:nowrap}
+  .mini-btn:hover{background:#fff7f1}
+  .mat-bar{display:none;align-items:center;gap:7px;margin-top:6px;background:#fff4c2;border:1px solid #e6d287;border-radius:7px;padding:5px 8px}
+  .mat-bar.on{display:flex}
+  .mat-lbl{font-size:.68rem;font-weight:800;color:#d32f2f;flex:0 0 auto}
+  .mat-bar input{flex:1;min-width:0;border:1px solid var(--line);border-radius:6px;padding:4px 8px;font-size:.82rem;color:#d32f2f;font-weight:700;background:#fff}
+  tr.mat-row td{background:#fff4c2;color:#d32f2f;font-weight:700;font-size:.8rem;padding:4px 10px;cursor:pointer;border-color:#e6d287}
+  tr.mat-row:hover td{filter:brightness(.97)}
+  .mat-tag{display:inline-block;background:#d32f2f;color:#fff;font-size:.6rem;font-weight:800;border-radius:4px;padding:1px 6px;margin-right:7px;vertical-align:1px}
+  /* 設置作業手当フラグ（1号車帯・自動化準備） */
+  .veh-band td{position:relative}
+  .alw-flag{position:absolute;left:724px;top:50%;transform:translateY(-50%);display:inline-flex;align-items:center;cursor:default;z-index:1}
+  .alw-flag input{width:15px;height:15px;margin:0;accent-color:#e07a3c}
+  .alw-flag-card{width:15px;height:15px;margin:0 0 0 6px;accent-color:#e07a3c;vertical-align:middle}
+  /* 車両情報送信ボタン（KPI帯・圧縮表示）*/
+  .kpi-send{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:var(--navy);color:#fff;border:none;border-radius:10px;padding:8px 13px;min-width:84px;box-shadow:var(--shadow);cursor:pointer}
+  .kpi-send:hover{filter:brightness(1.12)}
+  .kpi-send .ic{font-size:1.3rem;line-height:1}
+  .kpi-send span{font-size:.68rem;font-weight:800;text-align:center;line-height:1.15}
+  .matline{margin-top:4px;background:#fff4c2;border:1px solid #e6d287;border-radius:6px;padding:3px 7px;font-size:.74rem;font-weight:700;color:#d32f2f}
+  /* 合同作業（コピー側）＝電話番号欄にはっきり大きく表示 */
+  .joint-mark{display:block;font-size:1.05rem;font-weight:900;letter-spacing:.06em;color:#fff;background:#2f6fbf;border-radius:6px;padding:5px 4px;text-align:center;line-height:1.2;white-space:nowrap}
+  .badge.joint-b{background:#2f6fbf;color:#fff}
+  td.x-st{text-align:center;padding:2px}
+  .stdot{display:inline-block;font-size:.62rem;font-weight:800;padding:1px 5px;border-radius:9px}
+  td.x-seikyu{font-weight:700;background:#f5f6f8;white-space:nowrap}
+  td.x-item{font-weight:800;white-space:nowrap}
+  td.x-item.setti{background:var(--setti);color:#fff}
+  td.x-item small{display:block;font-weight:700;font-size:.82rem;opacity:.9}
+  td.x-addr{padding:0}
+  td.x-addr .ap{background:var(--pick);padding:3px 7px;border-bottom:1px solid #c2c7d0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  td.x-addr .ad{background:var(--drop);padding:3px 7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  td.x-addr .blank{padding:3px 7px;color:#b6bcc5;font-size:.72rem}
+  td.x-addr .blank.ad{background:#f7fbfd} td.x-addr .blank.ap{background:#fffdf0;border-bottom:1px solid #c2c7d0}
+  td.x-addr .lb{font-size:.6rem;font-weight:800;opacity:.75;margin-right:4px}
+  td.x-spec{text-align:center;font-weight:700;white-space:nowrap}
+  td.x-spec.green{background:var(--spec-bg);color:var(--spec)}
+  td.x-time{text-align:center;white-space:nowrap;font-variant-numeric:tabular-nums}
+  td.x-ours{text-align:center;color:var(--ours);font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums}
+  td.x-memo{white-space:pre-line;font-size:.88rem;line-height:1.35;font-weight:600}
+  td.x-memo .wtag{display:inline-block;font-size:.66rem;font-weight:700;color:var(--accent-d);background:#fff3e9;border:1px solid #f3d9c4;border-radius:5px;padding:0 6px;margin-right:5px}
+  tr.addrow td{background:#fff;text-align:center;color:var(--accent-d);font-weight:700;cursor:pointer;font-size:.8rem;padding:5px;border-color:#c2c7d0}
+  tr.addrow td:hover{background:#fff}
+  .addlink{display:inline-block;color:var(--accent-d);font-weight:700;font-size:.82rem;cursor:pointer;padding:5px 12px;border-radius:6px;margin:0 3px}
+  .addlink:hover{background:#fff7f1}
+  .addlink.note{color:#5b3ea8}.addlink.note:hover{background:#f1ecfa}
+  tr.note-row:hover td{filter:brightness(.96)}
+  .job.note-card{text-align:center;font-weight:800;white-space:pre-line;border-bottom:1px solid var(--line2)}
+  .colorchip{width:30px!important;height:30px;padding:0!important;border-radius:8px!important;border:1px solid rgba(0,0,0,.15)}
+  .colorchip.on{outline:3px solid var(--accent);outline-offset:1px}
+
+  .ov{position:fixed;inset:0;background:rgba(15,22,32,.5);display:none;align-items:flex-start;justify-content:center;z-index:50;padding:22px 12px;overflow:auto}
+  .ov.on{display:flex}
+  .modal{background:var(--card);border-radius:16px;width:100%;max-width:600px;box-shadow:0 20px 60px rgba(0,0,0,.3);overflow:hidden}
+  .modal h2{margin:0;padding:15px 20px;font-size:1.05rem;border-bottom:1px solid var(--line2);display:flex;align-items:center;justify-content:space-between}
+  .modal h2 .x{cursor:pointer;color:var(--muted);font-size:1.4rem;line-height:1;background:none;border:none}
+  .form{padding:15px 20px;display:grid;grid-template-columns:1fr 1fr;gap:11px 14px}
+  .form .full{grid-column:1/-1}
+  .fld label{display:block;font-size:.74rem;font-weight:700;color:var(--muted);margin-bottom:4px}
+  .fld input,.fld select,.fld textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:.92rem;font-family:inherit;background:#fff;color:var(--ink)}
+  .fld input:focus,.fld select:focus,.fld textarea:focus{outline:2px solid var(--accent);border-color:var(--accent)}
+  .fld textarea{resize:vertical;min-height:44px}
+  .fld.pickf input{background:var(--pick)} .fld.dropf input{background:var(--drop)}
+  .toggle{display:flex;align-items:center;gap:9px;background:#fbfcfd;border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+  .toggle input{width:18px;height:18px} .toggle b{font-size:.9rem}
+  .toggle small{color:var(--muted);font-size:.72rem}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chk{font-size:.8rem;padding:5px 10px;border:1px solid var(--line);border-radius:20px;cursor:pointer;user-select:none;background:#fff}
+  .chk.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .seg{display:flex;gap:6px;flex-wrap:wrap}.seg .chk{flex:1;text-align:center;min-width:52px}
+  .seg.status-seg .chk{flex:1 1 auto;white-space:nowrap;padding-left:14px;padding-right:14px;min-width:0}
+  .crewpick{display:flex;flex-wrap:wrap;gap:5px;max-height:120px;overflow:auto;padding:8px;border:1px solid var(--line);border-radius:8px;background:#fbfcfd}
+  .modal .foot{padding:13px 20px;border-top:1px solid var(--line2);display:flex;gap:10px;justify-content:space-between;align-items:center}
+  .modal .foot .right{display:flex;gap:8px}
+  .btn.gray{background:#eef1f5;color:var(--ink2)}.btn.gray:hover{background:#e3e8ee}
+  .btn.danger{background:#fbe9e6;color:#c0392b}.btn.danger:hover{background:#f7d9d4}
+  .btn.save{background:var(--jisha);color:#fff}.btn.save:hover{filter:brightness(.94)}
+  .btn.copy{background:#e7e0f5;color:#5b3ea8}.btn.copy:hover{background:#dcd2f0}
+  tr.datarow.dragging td,tr.note-row.dragging td{opacity:.4}
+  .job.dragging{opacity:.4}
+  tr.datarow[draggable="true"],tr.note-row[draggable="true"],.job[draggable="true"]{cursor:grab;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+  /* ドロップ位置インジケータ（案件の間に線／車両全体をハイライト）*/
+  tr.drop-before td,.job.drop-before{box-shadow:inset 0 3px 0 0 var(--accent)!important}
+  tr.drop-after td,.job.drop-after{box-shadow:inset 0 -3px 0 0 var(--accent)!important}
+  tr.veh-band.drop-band td,tr.addrow.drop-band td{background:#ffe6cf}
+  .veh.drop-band{outline:2px dashed var(--accent);outline-offset:2px}
+  .job.drop-band{box-shadow:inset 0 -3px 0 0 var(--accent)}
+  .drag-ghost{position:fixed;z-index:999;pointer-events:none;transform:translate(-50%,-50%);background:var(--accent);color:#fff;font-weight:800;font-size:.8rem;padding:6px 12px;border-radius:20px;box-shadow:0 6px 18px rgba(0,0,0,.28);white-space:nowrap;opacity:.96}
+  /* 本日のスタッフ パネル（コンパクト）*/
+  .staffpanel{margin:0 0 8px}
+  .stf-head{display:flex;align-items:center;gap:8px;padding:2px 2px 5px}
+  .stf-head>b{font-size:.9rem;color:var(--ink)}
+  .stf-hint{color:var(--muted);font-size:.72rem}
+  .stf-collapse{margin-left:auto;background:#fff;border:1px solid var(--line);border-radius:7px;padding:2px 9px;font-size:.78rem;font-weight:700;cursor:pointer;color:var(--ink2)}
+  .stf-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+  .stf-card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 10px;box-shadow:0 1px 2px rgba(20,30,50,.04)}
+  .stf-title{font-weight:800;font-size:.8rem;margin-bottom:5px;color:var(--navy);display:flex;align-items:center;gap:6px}
+  .stf-asg{font-size:.68rem;font-weight:700;color:var(--muted);background:#eef1f5;border-radius:10px;padding:1px 7px}
+  .stf-col{margin-bottom:5px;border-radius:7px}
+  .stf-lbl{font-size:.72rem;font-weight:700;color:var(--muted);margin-bottom:3px}
+  .stf-lbl.att b{color:var(--jisha);font-size:.92rem}
+  .stf-lbl.offl b{color:#c0392b;font-size:.92rem}
+  .stf-chips{display:flex;flex-wrap:wrap;gap:4px;min-height:20px}
+  .stfchip{display:inline-flex;align-items:center;gap:3px;padding:2px 4px 2px 9px;border-radius:14px;font-size:.8rem;font-weight:700;cursor:grab;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;border:1px solid transparent}
+  .stfchip.ison{background:var(--jisha-bg);color:#237a4e;border-color:#bfe3cd}
+  .stfchip.isoff{background:#f1f3f6;color:#8a94a0;border-color:#e0e4ea}
+  .stfchip.dragging{opacity:.4}
+  .stfchip .stfx{border:none;background:rgba(0,0,0,.07);color:inherit;border-radius:50%;width:15px;height:15px;line-height:1;font-size:.7rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0}
+  .stfchip .stfx:hover{background:rgba(192,57,43,.85);color:#fff}
+  .stf-empty{color:var(--muted);font-size:.72rem;font-style:italic}
+  .stf-edit{display:flex;gap:5px;margin-top:5px}
+  .stf-add{flex:1;min-width:0;border:1px solid var(--line);border-radius:7px;padding:4px 8px;font-size:.8rem;color:var(--ink)}
+  .stf-addbtn{border:1px solid var(--line);background:#eef1f5;border-radius:7px;padding:4px 11px;font-weight:800;cursor:pointer;color:var(--accent-d)}
+  .stf-other{width:100%;box-sizing:border-box;min-height:64px;border:1px solid var(--line);border-radius:7px;padding:6px 9px;font-size:.82rem;resize:vertical;font-family:inherit;color:var(--ink)}
+  /* スタッフ ドロップ先ハイライト */
+  .stf-col.staff-drop{outline:2px dashed var(--jisha);outline-offset:2px;background:var(--jisha-bg)}
+  tr.veh-band.staff-drop td{background:var(--jisha-bg);box-shadow:inset 0 0 0 2px var(--jisha)}
+  .veh.staff-drop{outline:2px dashed var(--jisha);outline-offset:2px}
+  /* 号車バーの作業員チップ（ドラッグで別号車へ振替可）*/
+  .crewchip{display:inline-flex;align-items:center;background:#fff;border:1px solid var(--line);color:var(--ink2);border-radius:11px;padding:0 8px;font-size:.78rem;font-weight:700;margin-right:4px;cursor:grab;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+  .crewchip.dragging{opacity:.4}
+  .sb-wh .crewchip,.sb-out .crewchip,.special-band .crewchip{background:rgba(255,255,255,.85)}
+  @media(max-width:820px){.stf-grid{grid-template-columns:1fr}}
+  .mrow{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+  .mrow h4{margin:0 0 2px;font-size:.9rem}
+  .taglist{display:flex;flex-wrap:wrap;gap:6px}
+  .tag2{display:inline-flex;align-items:center;gap:5px;background:#eef1f5;border-radius:7px;padding:4px 8px;font-size:.83rem}
+  .tag2 button{border:none;background:none;color:#b0492f;cursor:pointer;font-weight:800;font-size:.9rem;line-height:1}
+  #m_veh{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:6px}
+  .vehman{display:flex;align-items:center;gap:8px;background:#eef1f5;border-radius:8px;padding:5px 9px;font-size:.85rem}
+  .vehman .vname2{font-weight:800;flex:1;color:var(--ink)}
+  .vehman .vswitch{display:inline-flex;align-items:center;gap:5px;font-size:.72rem;font-weight:700;color:var(--ink2);background:#fff;border:1px solid var(--line);border-radius:20px;padding:2px 8px;cursor:pointer;white-space:nowrap}
+  .vehman .vswitch input{width:15px;height:15px;margin:0}
+  .vehman .tag-del{border:none;background:none;color:#b0492f;cursor:pointer;font-weight:800;font-size:1rem;line-height:1}
+  .addtag{display:flex;gap:6px}.addtag input{flex:1;border:1px solid var(--line);border-radius:7px;padding:6px 9px;font-size:.85rem}
+  @media(max-width:560px){.form{grid-template-columns:1fr}.brand small{display:none}}
+  /* AIサジェスト欄 */
+  .ai-box{grid-column:1/-1;background:linear-gradient(180deg,#fff7ef,#fdeede);border:1px solid #f0d3b3;border-radius:10px;padding:9px 12px}
+  .ai-h{font-weight:800;font-size:.85rem;color:var(--accent-d);display:flex;align-items:center;gap:8px;margin-bottom:5px}
+  .ai-sub{font-weight:600;font-size:.66rem;color:var(--muted)}
+  .ai-row{display:flex;align-items:center;gap:8px;margin:3px 0;flex-wrap:wrap}
+  .ai-lbl{font-size:.72rem;font-weight:700;color:var(--muted);min-width:66px}
+  .ai-chips{display:flex;gap:5px;flex-wrap:wrap}
+  .ai-veh{border:1px solid var(--accent);background:#fff;color:var(--accent-d);border-radius:14px;padding:2px 12px;font-size:.82rem;font-weight:800;cursor:pointer}
+  .ai-veh.top{background:var(--accent);color:#fff}
+  .ai-veh:hover{filter:brightness(.96)}
+  .ai-why{font-size:.72rem;color:var(--ink2);margin:1px 0 3px}
+  .ai-why.dim{color:var(--muted)}
+  .ai-est{font-size:.85rem;color:var(--ink)}.ai-est b{color:var(--accent-d)}
+  /* 配車アシスト */
+  .asf{background:#f6f8fb;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:12px}
+  .asf-row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+  .asf-row label{display:flex;flex-direction:column;gap:3px;font-size:.72rem;font-weight:700;color:var(--muted)}
+  .asf-row input,.asf-row select{border:1px solid var(--line);border-radius:7px;padding:6px 9px;font-size:.85rem;color:var(--ink);min-width:130px}
+  .asf-res{margin-top:10px}
+  .asr-h{font-size:.8rem;font-weight:800;color:var(--navy);margin-bottom:6px}
+  .asr-list{display:flex;flex-direction:column;gap:5px}
+  .asr{display:flex;gap:10px;align-items:center;font-size:.83rem;padding:6px 10px;border-radius:8px}
+  .asr.ok{background:var(--jisha-bg);border:1px solid #bfe3cd}
+  .asr.ok.best{outline:2px solid var(--jisha)}
+  .asr.ok b{color:#237a4e;min-width:56px}
+  .asr.ng{color:var(--muted);font-size:.78rem;padding:3px 10px}
+  .asr-busy{margin-top:8px;font-size:.8rem}.asr-busy summary{cursor:pointer;color:var(--muted);font-weight:700}
+  .dim{color:var(--muted);font-size:.82rem}
+  .tl-head{font-size:.76rem;font-weight:700;color:var(--muted);margin:4px 0 6px}
+  .tl{border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .tl-axis,.tl-row{display:flex;align-items:stretch;border-bottom:1px solid var(--line2)}
+  .tl-row:last-child{border-bottom:none}
+  .tl-vname{flex:0 0 78px;font-size:.78rem;font-weight:800;color:var(--ink);padding:6px 8px;background:#f6f8fb;border-right:1px solid var(--line2);display:flex;align-items:center;gap:4px}
+  .tl-vname .uni{font-size:.6rem;background:var(--accent);color:#fff;border-radius:4px;padding:0 3px}
+  .tl-track{position:relative;flex:1;height:28px}
+  .tl-axis .tl-track{height:18px}
+  .tl-tick{position:absolute;top:2px;font-size:.62rem;color:var(--muted);transform:translateX(-50%)}
+  .tl-blk{position:absolute;top:3px;height:22px;background:linear-gradient(180deg,#f6b783,var(--accent));color:#fff;font-size:.66rem;font-weight:700;border-radius:4px;padding:2px 4px;overflow:hidden;white-space:nowrap;box-shadow:0 1px 2px rgba(0,0,0,.15)}
+  .tl-flex{position:absolute;right:3px;top:5px;font-size:.62rem;color:var(--muted);background:#fff;border:1px dashed var(--line);border-radius:4px;padding:0 4px}
+  /* 引取先・届け先の 作業階数/時間 の小さい入力 */
+  .locsub{display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap}
+  .ls-lbl{font-size:.72rem;font-weight:700;color:var(--muted)}
+  .ls-in{width:90px;border:1px solid var(--line);border-radius:7px;padding:5px 8px;font-size:.85rem;color:var(--ink)}
+  /* AI配車（サジェスト・配車アシスト）は開発中のため一旦非表示。再表示するにはこの1行を削除 */
+  #assist,#aiSuggest{display:none!important}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="bar">
+    <div class="brand"><span class="logo">🚚</span><div>配車ボード<small>ナイスキャリード / 試作</small></div></div>
+    <div class="spacer"></div>
+    <div class="view-toggle"><button id="v_table" class="on">エクセル表示</button><button id="v_board">カード</button></div>
+    <div class="datenav"><button class="icon" id="prev">‹</button><input type="date" id="date"><button class="icon" id="next">›</button><button class="btn ghost mini" id="today">今日</button></div>
+    <button class="btn amber" id="add">＋ 案件追加</button>
+    <button class="btn ghost" id="addveh">＋ 車両</button>
+    <button class="btn ghost" id="assist">🗓 配車アシスト</button>
+    <button class="btn ghost" id="csv">CSV出力</button>
+    <button class="btn ghost" id="masters">マスタ</button>
+  </header>
+  <div class="daylabel" id="daylabel"></div>
+  <section class="staffpanel" id="staffpanel"></section>
+  <div class="strip" id="strip"></div>
+  <div id="viewhost"></div>
+</div>
+
+<!-- 案件 modal -->
+<div class="ov" id="ov">
+  <div class="modal">
+    <h2 id="mtitle">案件追加 <button class="x" id="mx">×</button></h2>
+    <div class="form">
+      <div class="fld full ai-box" id="aiSuggest"></div>
+      <div class="fld"><label>日付（移動する場合は変更）</label><input type="date" id="f_date"></div>
+      <div class="fld"><label>車両</label><select id="f_vehicle"></select></div>
+      <div class="fld"><label>請求（元請）</label><input id="f_client"></div>
+      <div class="fld"><label>品名・型番</label><input id="f_item"></div>
+      <div class="fld"><label>重量</label><input id="f_weight"></div>
+      <div class="fld"><div class="toggle"><input type="checkbox" id="f_setti"><div><b>設置あり（赤表示）</b><br><small>設置作業手当のカウント対象</small></div></div></div>
+      <div class="fld"><div class="toggle"><input type="checkbox" id="f_heavy"><div><b>重量物</b><br><small>設置作業手当のカウント対象</small></div></div></div>
+      <div class="fld"><label>電話番号</label><input id="f_phone" inputmode="tel"></div>
+      <div class="fld full pickf"><label>引取先（黄）※空欄なら「届けのみ」</label><input id="f_pick"><div class="locsub"><span class="ls-lbl">お客様名</span><input id="f_pick_cust" class="ls-in"><span class="ls-lbl">作業階数</span><input id="f_pick_floor" class="ls-in" list="floors"><span class="ls-lbl">時間</span><input id="f_pick_time" class="ls-in"></div></div>
+      <div class="fld full dropf"><label>届け先（青）</label><input id="f_drop"><div class="locsub"><span class="ls-lbl">お客様名</span><input id="f_drop_cust" class="ls-in"><span class="ls-lbl">作業階数</span><input id="f_drop_floor" class="ls-in" list="floors"><span class="ls-lbl">時間</span><input id="f_drop_time" class="ls-in"><datalist id="floors"></datalist></div></div>
+      <div class="fld"><label>配送時間</label><input id="f_tours"></div>
+      <div class="fld full"><label>状態</label><div class="seg status-seg"><div class="chk" data-status="仮">仮</div><div class="chk" data-status="確定">確定</div><div class="chk" data-status="アポインOK">アポインOK</div><div class="chk" data-status="アポOK（メール）">アポOK（メール）</div><div class="chk" data-status="キャンセル">キャンセル</div></div></div>
+      <div class="fld full"><label>備考</label><textarea id="f_memo"></textarea>
+        <div class="memo-opts">
+          <label class="mini-chk"><input type="checkbox" id="f_moneyReady"> 持参金 用意済</label>
+          <button type="button" class="mini-btn" id="f_matBtn">＋ 必要な資材</button>
+        </div>
+        <div class="mat-bar" id="f_matBar"><span class="mat-lbl">持参資材</span><input id="f_materials"></div>
+      </div>
+    </div>
+    <div class="foot"><button class="btn danger" id="del">削除</button><button class="btn copy" id="copy">合同作業にコピー</button><div class="right"><button class="btn gray" id="cancel">キャンセル</button><button class="btn save" id="save">保存</button></div></div>
+  </div>
+</div>
+
+<!-- 連絡メモ modal -->
+<div class="ov" id="ovn">
+  <div class="modal" style="max-width:500px">
+    <h2 id="ovn_title">連絡メモ <button class="x" id="nx">×</button></h2>
+    <div class="form" style="grid-template-columns:1fr">
+      <div class="fld"><label>メモ内容（自由入力）</label><textarea id="n_text" style="min-height:60px" placeholder="例：端末持参　カード・現金どちらでも対応できるよう準備をお願いします"></textarea></div>
+      <div class="fld"><label>色</label><div class="chips" id="n_colors"></div></div>
+      <div class="fld"><label>文字サイズ</label><div class="seg" id="n_sizes"></div></div>
+      <div class="fld"><label>プレビュー</label><div id="n_preview" style="border-radius:8px;padding:10px 12px;text-align:center;font-weight:800;white-space:pre-line;border:1px solid var(--line)">（プレビュー）</div></div>
+    </div>
+    <div class="foot"><button class="btn danger" id="n_del">削除</button><div class="right"><button class="btn gray" id="n_cancel">キャンセル</button><button class="btn save" id="n_save">保存</button></div></div>
+  </div>
+</div>
+
+<!-- 合同作業コピー modal -->
+<div class="ov" id="ovcp">
+  <div class="modal" style="max-width:440px">
+    <h2>合同作業にコピー <button class="x" id="cpx">×</button></h2>
+    <div style="padding:16px 20px">
+      <p class="hint" style="margin:0 0 10px">同じ案件を他の車両にもコピーします（1号車＋2号車の合同作業など）。コピー先を選んでください（複数可）。</p>
+      <div class="chips" id="cp_list"></div>
+      <p class="hint" id="cp_done" style="margin-top:10px;color:var(--jisha);font-weight:700"></p>
+    </div>
+    <div class="foot"><div class="hint"></div><div class="right"><button class="btn gray" id="cpclose">閉じる</button></div></div>
+  </div>
+</div>
+
+<!-- 号車ヘッダー modal -->
+<div class="ov" id="ovh">
+  <div class="modal" style="max-width:460px">
+    <h2 id="htitle">車両の情報 <button class="x" id="hx">×</button></h2>
+    <div class="form" style="grid-template-columns:1fr">
+      <div class="fld"><label>車両</label><input id="h_vehicle" disabled></div>
+      <div class="fld" id="h_fleet_fld"><div class="toggle"><input type="checkbox" id="h_fleet"><div><b>毎日つねに表示（常設）</b><br><small>OFFにすると毎日の一覧から外れます（全日共通・入替や運休に）</small></div></div></div>
+      <div class="fld"><label>出勤時間（早朝手当に関わる）</label><input id="h_depart" placeholder="7:30"></div>
+      <div class="fld full"><div class="toggle"><input type="checkbox" id="h_shitei"><div><b>指定＆申請済み</b><br><small>号車バーの作業員名を赤文字で表示します</small></div></div></div>
+      <p class="hint" style="margin:2px 0 0">※作業員は「本日のスタッフ」からこの号車へドラッグして配置します。</p>
+    </div>
+    <div class="foot"><div class="hint"></div><div class="right"><button class="btn gray" id="hcancel">閉じる</button><button class="btn save" id="hsave">保存</button></div></div>
+  </div>
+</div>
+
+<!-- 車両情報送信 modal -->
+<div class="ov" id="ovsend">
+  <div class="modal" style="max-width:600px">
+    <h2>🚗 車両情報 送信 <button class="x" id="svx">×</button></h2>
+    <div class="form" style="grid-template-columns:1fr 1fr">
+      <div class="fld"><label>号車</label><select id="sv_veh"></select></div>
+      <div class="fld"><label>案件（訪問時間の取得元）</label><select id="sv_case"></select></div>
+      <div class="fld full"><label>お客様名（宛先・任意）</label><input id="sv_cust"></div>
+      <div class="fld"><label>車両ナンバー</label><input id="sv_plate"></div>
+      <div class="fld"><label>訪問時間</label><input id="sv_time"></div>
+      <div class="fld"><label>担当スタッフ名</label><input id="sv_staff"></div>
+      <div class="fld"><label>連絡先（携帯）</label><input id="sv_phone"></div>
+      <div class="fld full"><label>マスタから携帯を呼び出す（予備携帯など）</label><select id="sv_addphone"></select></div>
+      <div class="fld full"><label>送信メッセージ（編集できます）</label><textarea id="sv_msg" style="min-height:170px"></textarea></div>
+    </div>
+    <div class="foot"><div class="hint">※メールへのファイル添付はできないため、本文に記載します</div><div class="right"><button class="btn gray" id="sv_copy">コピー</button><button class="btn save" id="sv_mail">メールで送る</button></div></div>
+  </div>
+</div>
+
+<!-- 配車アシスト modal -->
+<div class="ov" id="ova">
+  <div class="modal" style="max-width:940px">
+    <h2>🗓 配車アシスト <span class="ai-sub" id="ova_date"></span> <button class="x" id="ax">×</button></h2>
+    <div style="padding:12px 16px">
+      <div class="asf">
+        <div class="asf-row">
+          <label>希望時間<input id="as_time" placeholder="13-15 / 10:00 / AM"></label>
+          <label>エリア（市区町村）<input id="as_area" placeholder="世田谷区 / 港区"></label>
+          <label>作業<select id="as_work"><option value="">通常</option><option value="unic">吊り（ユニック）</option><option value="stair">階段</option></select></label>
+          <label>所要（分）<input id="as_dur" type="number" placeholder="自動"></label>
+          <button class="btn amber mini" id="as_find">空き号車を探す</button>
+        </div>
+        <div id="as_result" class="asf-res"></div>
+      </div>
+      <div class="tl-head">当日タイムライン（6:00〜19:00）／色=稼働・白=空き・「ユ」=ユニック車</div>
+      <div id="as_timeline" class="tl"></div>
+    </div>
+    <div class="foot"><div class="hint">時間の重複・空きから提案します（10号車は廃車で除外）。あくまで提案→人が承認。</div><div class="right"><button class="btn gray" id="aclose">閉じる</button></div></div>
+  </div>
+</div>
+
+<!-- 車両追加 modal -->
+<div class="ov" id="ovav">
+  <div class="modal" style="max-width:440px">
+    <h2>車両を追加 <button class="x" id="avx">×</button></h2>
+    <div style="padding:16px 20px">
+      <p class="hint" style="margin:0 0 10px">この日（<b id="av_date"></b>）の一覧に表示する車両を選びます。</p>
+      <div class="chips" id="av_list"></div>
+      <div class="addtag" style="margin-top:14px"><input id="av_new" placeholder="新しい車両名（例：キャラバン／6号車）"><button class="btn amber mini" id="av_addnew">新規追加</button></div>
+      <p class="hint" style="margin:8px 0 0">※新規追加はこの日に表示します。毎日つねに表示するには「マスタ→車両」で「毎日」をONにしてください。</p>
+    </div>
+    <div class="foot"><div class="hint">選ぶと即追加されます</div><div class="right"><button class="btn gray" id="avclose">閉じる</button></div></div>
+  </div>
+</div>
+
+<!-- masters modal -->
+<div class="ov" id="ovm">
+  <div class="modal">
+    <h2>マスタ管理 <button class="x" id="mmx">×</button></h2>
+    <div style="padding:16px 20px">
+      <p class="hint" style="margin:0 0 12px">選択肢に出る項目を管理します。</p>
+      <div class="mrow"><h4>現場スタッフ（作業員）</h4><div class="taglist" id="m_crew"></div><div class="addtag"><input id="add_crew" placeholder="現場スタッフ名"><button class="btn amber mini" data-add="crew">追加</button></div></div>
+      <div class="mrow"><h4>事務・倉庫スタッフ</h4><div class="taglist" id="m_jimu"></div><div class="addtag"><input id="add_jimu" placeholder="例：山本"><button class="btn amber mini" data-add="jimu">追加</button></div></div>
+      <div class="mrow"><h4>車両（「毎日」ONで毎日つねに表示）</h4><div id="m_veh"></div><div class="addtag"><input id="add_veh" placeholder="例：キャラバン／6号車"><button class="btn amber mini" data-add="veh">追加</button></div></div>
+      <div class="mrow"><h4>請求（元請）</h4><div class="taglist" id="m_cli"></div><div class="addtag"><input id="add_cli" placeholder="例：SG"><button class="btn amber mini" data-add="cli">追加</button></div></div>
+      <div class="mrow"><h4>作業階数</h4><div class="taglist" id="m_sho"></div><div class="addtag"><input id="add_sho" placeholder="例：4EV / 2K / 2P"><button class="btn amber mini" data-add="sho">追加</button></div></div>
+      <div class="mrow"><h4>携帯連絡先（予備携帯など）</h4><div class="taglist" id="m_phones"></div><div class="addtag"><input id="add_phones" placeholder="例：予備⑤ 080-0000-0000"><button class="btn amber mini" data-add="phones">追加</button></div></div>
+    </div>
+    <div class="foot"><div class="hint">変更は自動保存されます</div><div class="right"><button class="btn gray" id="mmclose">閉じる</button></div></div>
+  </div>
+</div>
+
+<!-- 共通の確認ダイアログ（標準confirmは共有iframeで無効なため独自実装） -->
+<div class="ov" id="ovc">
+  <div class="modal" style="max-width:400px">
+    <h2 id="ovc_title">確認 <button class="x" id="ovc_x">×</button></h2>
+    <div style="padding:18px 20px"><p id="ovc_msg" style="margin:0;font-size:.95rem;line-height:1.7"></p></div>
+    <div class="foot"><div class="hint"></div><div class="right" id="ovc_btns"></div></div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const LS="nc_haisha_proto_v5";
+// 号車→車両ナンバー（2024車両情報より・編集可）
+const VEHICLE_PLATES={"1号車":"品川500 あ 00-01","2号車":"品川500 あ 00-02","3号車":"品川500 あ 00-03","4号車":"品川500 あ 00-04","5号車":"品川500 あ 00-05","6号車":"品川500 あ 00-06","7号車":"品川500 あ 00-07","8号車":"品川500 あ 00-08","9号車":"品川500 あ 00-09","12号車":"品川500 あ 00-12","13号車":"品川500 あ 00-13","14号車":"品川500 あ 00-14","キャラバン":"品川500 あ 00-99"};
+// 作業員（姓）→携帯番号（会社携帯より・編集可）
+const STAFF_PHONES={"山田":"080-0000-0001","佐藤":"080-0000-0002","鈴木":"080-0000-0003","田中":"080-0000-0004","高橋":"080-0000-0005","中村":"080-0000-0006","小林":"080-0000-0007","山本":"080-0000-0008"};
+// ===== AI配車：過去実績(2025-2026/18か月・16221件)から生成した実績辞書（コンパクト版）=====
+const AIDICT={"cust":{"顧客A":["13号車","12号車","4号車"],"顧客B":["13号車","3号車","4号車"],"顧客C":["13号車","12号車","9号車"],"顧客D":["13号車","9号車","4号車"],"顧客E":["13号車","4号車","3号車"],"顧客F":["13号車","2号車","9号車"],"一般":["13号車","2号車"],"顧客G":["3号車","7号車","13号車"],"顧客H":["8号車","2号車"]},"area":{"大田区":["13号車","9号車","4号車"],"横浜市":["13号車","3号車","4号車"],"港区":["13号車","4号車","3号車"],"世田谷区":["13号車","3号車","4号車"],"さいたま市":["13号車","2号車","7号車"],"江東区":["13号車","12号車","4号車"],"渋谷区":["13号車","3号車","7号車"],"品川区":["13号車","12号車","4号車"],"足立区":["13号車","12号車"],"千代田区":["13号車","7号車","3号車"],"新宿区":["13号車","3号車","7号車"],"中央区":["13号車","4号車","3号車"],"川崎市":["13号車","12号車","3号車"],"江戸川区":["13号車","2号車"],"文京区":["13号車","8号車","1号車"],"練馬区":["13号車","12号車"],"川口市":["13号車","7号車","2号車"],"杉並区":["13号車","2号車","8号車"],"台東区":["13号車","7号車","12号車"],"千葉市":["13号車","2号車","12号車"],"葛飾区":["2号車","13号車"],"板橋区":["13号車","2号車","3号車"],"北区":["13号車","8号車","2号車"],"豊島区":["13号車","3号車","4号車"],"目黒区":["13号車","8号車","2号車"],"越谷市":["13号車","4号車","7号車"],"中野区":["13号車","2号車"],"墨田区":["13号車","12号車","2号車"],"船橋市":["13号車","2号車","12号車"],"町田市":["13号車","3号車"],"相模原市":["13号車","3号車","5号車"],"市川市":["13号車","4号車","2号車"],"八王子市":["13号車","4号車"],"柏市":["4号車","13号車","5号車"],"草加市":["4号車","2号車"],"松戸市":["13号車","2号車"],"調布市":["13号車","2号車"],"川越市":["13号車","5号車"],"浦安市":["13号車","9号車","3号車"],"所沢市":["13号車","2号車","協力号車"],"三郷市":["13号車","7号車","4号車"],"つくば市":["13号車","12号車"],"藤沢市":["13号車","3号車"],"八潮市":["13号車","7号車","2号車"],"戸田市":["13号車","3号車"],"荒川区":["3号車","1号車","8号車"],"春日部市":["13号車","5号車"],"我孫子市":["2号車","13号車"],"富津市":["9号車","13号車","7号車"],"流山市":["13号車","2号車"],"立川市":["13号車","3号車"],"府中市":["13号車","2号車","5号車"],"小金井市":["13号車","5号車","2号車"],"市原市":["13号車","12号車","2号車"],"上尾市":["13号車","5号車","1号車"],"吉川市":["13号車","2号車"],"入間市":["13号車","12号車","2号車"],"日野市":["13号車","12号車"],"久喜市":["13号車","7号車","5号車"],"小田原市":["13号車","3号車","4号車"]},"unic":["1号車","2号車","8号車"],"retired":["10号車"],"avgLoad":4.67,"hoistAvg":2.15,"cases":16221,"months":18};
+const seed={
+  masters:{
+    crew:["山田 太郎","佐藤 次郎","鈴木 三郎","田中 四郎","高橋 五郎","伊藤 六郎","渡辺 七郎","中村 八郎","小林 九郎","加藤 十郎","吉田 一馬","山本 二馬","松本","井上"],
+    veh:["1号車","2号車","3号車","4号車","5号車","7号車","8号車","9号車","12号車","13号車","キャラバン"],
+    cli:["顧客A","顧客B","顧客C","顧客D","顧客E","顧客F"],
+    sho:["1F","2F","3F","1K","2K","3K","2EV","3EV","4EV"],
+    work:["通常搬入","搬出","設置","組立","回収","養生","階段作業","吊り作業","2階吊り作業","3階吊り作業","下見","買取査定"],
+    jimu:[],
+    phones:["予備① 080-0000-0011","予備② 080-0000-0012","予備③ 080-0000-0013","予備④ 080-0000-0014","山田 080-0000-0001","佐藤 080-0000-0002","鈴木 080-0000-0003","田中 080-0000-0004","高橋 080-0000-0005","中村 080-0000-0006","小林 080-0000-0007","山本 080-0000-0008"]
+  },
+  fleet:["1号車","2号車","3号車","4号車","5号車","7号車","8号車","9号車","12号車","13号車"],   // 毎日つねに表示する車両
+  special:["外注車両","倉庫作業"],   // 車両以外の常設バー（常に一番下に表示）
+  dayAdded:{},   // "date":[号車] その日だけ追加
+  dayHidden:{},  // "date":[号車] その日だけ非表示
+  headers:{},   // "date|号車": {crew:[],depart:""}
+  entries:[],
+  notes:[]      // 連絡メモ行 {id,date,vehicle,text,bg,fg,size}
+};
+let db=load();
+if(!Array.isArray(db.fleet))db.fleet=["1号車","2号車","3号車","4号車","5号車","7号車","8号車","9号車","12号車","13号車"];
+if(!db.dayAdded)db.dayAdded={};
+if(!db.dayHidden)db.dayHidden={};
+if(!Array.isArray(db.special))db.special=["外注車両","倉庫作業"];
+if(!Array.isArray(db.notes))db.notes=[];
+if(!db.staff)db.staff={genba:[],jimu:[],days:{},open:true};
+if(!Array.isArray(db.staff.genba))db.staff.genba=[];
+if(!Array.isArray(db.staff.jimu))db.staff.jimu=[];
+if(!db.staff.days)db.staff.days={};
+(db.entries||[]).forEach(e=>{if(e.status==="完了")e.status="アポインOK";else if(e.status==="中止")e.status="キャンセル";});
+if(!Array.isArray(db.masters.jimu))db.masters.jimu=[];
+if(!Array.isArray(db.masters.phones))db.masters.phones=["予備① 080-0000-0011","予備② 080-0000-0012","予備③ 080-0000-0013","予備④ 080-0000-0014","山田 080-0000-0001","佐藤 080-0000-0002","鈴木 080-0000-0003","田中 080-0000-0004","高橋 080-0000-0005","中村 080-0000-0006","小林 080-0000-0007","山本 080-0000-0008"];
+// 旧・パネル内名簿(db.staff.genba/jimu)をマスタへ移行
+if(db.staff){(db.staff.genba||[]).forEach(n=>{if(!db.masters.crew.includes(n))db.masters.crew.push(n);});(db.staff.jimu||[]).forEach(n=>{if(!db.masters.jimu.includes(n))db.masters.jimu.push(n);});}
+const NOTE_COLORS=[{bg:"#e7e0f5",fg:"#5b3ea8",name:"紫"},{bg:"#fff3c4",fg:"#7a5c00",name:"黄"},{bg:"#d6f0fb",fg:"#0f5f7d",name:"水色"},{bg:"#dff0e6",fg:"#1f7a4d",name:"緑"},{bg:"#f7d9d4",fg:"#b0342b",name:"赤"},{bg:"#fbe0ef",fg:"#9c2d6b",name:"桃"},{bg:"#e9edf2",fg:"#3c4b5b",name:"灰"},{bg:"#ffffff",fg:"#16202e",name:"白"}];
+const NOTE_SIZES=[{px:"0.85rem",name:"小"},{px:"1rem",name:"中"},{px:"1.3rem",name:"大"},{px:"1.7rem",name:"特大"}];
+function load(){try{const d=JSON.parse(localStorage.getItem(LS));if(d&&d.masters&&d.masters.sho)return d;}catch(e){}return JSON.parse(JSON.stringify(seed));}
+function save(){localStorage.setItem(LS,JSON.stringify(db));}
+function uid(){return 'e'+Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-3);}
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const DOW=["日","月","火","水","木","金","土"];
+function fmt(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+let cur=fmt(new Date()),mode="table";
+$("#date").value=cur;
+function hkey(v){return cur+"|"+v;}
+function getHeader(v){return db.headers[hkey(v)]||{crew:[],depart:""};}
+
+function shiftDay(n){const p=cur.split("-");const d=new Date(+p[0],+p[1]-1,+p[2]);d.setDate(d.getDate()+n);cur=fmt(d);$("#date").value=cur;render();}
+$("#prev").onclick=()=>shiftDay(-1);$("#next").onclick=()=>shiftDay(1);
+$("#today").onclick=()=>{cur=fmt(new Date());$("#date").value=cur;render();};
+$("#date").onchange=e=>{cur=e.target.value;render();};
+$("#v_board").onclick=()=>{mode="board";$("#v_board").classList.add("on");$("#v_table").classList.remove("on");render();};
+$("#v_table").onclick=()=>{mode="table";$("#v_table").classList.add("on");$("#v_board").classList.remove("on");render();};
+
+function dayEntries(){return db.entries.filter(x=>x.date===cur);}
+
+// ===== 本日のスタッフ（現場／事務・倉庫／その他予定）=====
+function staffDay(){let d=db.staff.days[cur];if(!d){d={offG:[],offJ:[],other:""};db.staff.days[cur]=d;}if(!d.offG)d.offG=[];if(!d.offJ)d.offJ=[];if(d.other==null)d.other="";return d;}
+function genbaCrewSet(){const s=new Set();Object.keys(db.headers).forEach(k=>{if(k.startsWith(cur+"|")){(db.headers[k].crew||[]).forEach(n=>s.add(n));}});return s;}
+function unassignCrewAll(name){Object.keys(db.headers).forEach(k=>{if(k.startsWith(cur+"|")){const h=db.headers[k];if(h.crew)h.crew=h.crew.filter(n=>n!==name);}});}
+function renderStaff(){
+  const host=$("#staffpanel"); if(!host)return;
+  const d=staffDay();
+  const open=db.staff.open!==false;
+  const assigned=genbaCrewSet();
+  const sname=n=>esc(String(n).split(/[ 　]/)[0]);
+  const schip=(key,n,cls)=>`<span class="stfchip ${cls}" data-staff="${key}" data-name="${esc(n)}" draggable="true" title="${esc(n)}｜ドラッグで移動・タップで休み">${sname(n)}</span>`;
+  // 現場スタッフ＝マスタの作業員。出勤=登録者のうち 休みでも号車配置でもない人 / 号車へ配置された人は消える
+  const gr=db.masters.crew||[];
+  const gPool=gr.filter(n=>!d.offG.includes(n)&&!assigned.has(n));
+  const gOff=gr.filter(n=>d.offG.includes(n));
+  const gAsg=gr.filter(n=>assigned.has(n)&&!d.offG.includes(n)).length;
+  // 事務・倉庫スタッフ＝マスタ。出勤／休みのみ（号車配置なし）
+  const jr=db.masters.jimu||[];
+  const jPool=jr.filter(n=>!d.offJ.includes(n));
+  const jOff=jr.filter(n=>d.offJ.includes(n));
+  const emptyOff='<span class="stf-empty">ここへドラッグで休み</span>';
+  host.innerHTML=`
+   <div class="stf-head"><b>👷 本日のスタッフ</b><span class="stf-hint">登録は「マスタ」／現場＝号車へドラッグで配置・休みへドラッグ</span><button class="stf-collapse" id="stfToggle">${open?"▼":"▶"}</button></div>
+   <div class="stf-body" style="${open?"":"display:none"}">
+    <div class="stf-grid">
+      <div class="stf-card">
+        <div class="stf-title">現場作業スタッフ${gAsg?`<span class="stf-asg">配置済 ${gAsg}名</span>`:""}</div>
+        <div class="stf-col" data-staffzone="pool-genba"><div class="stf-lbl att">出勤 <b>${gPool.length}</b>名</div><div class="stf-chips">${gPool.map(n=>schip("genba",n,"ison")).join("")||'<span class="stf-empty">マスタで現場スタッフを登録</span>'}</div></div>
+        <div class="stf-col" data-staffzone="off-genba"><div class="stf-lbl offl">休み <b>${gOff.length}</b>名</div><div class="stf-chips">${gOff.map(n=>schip("genba",n,"isoff")).join("")||emptyOff}</div></div>
+      </div>
+      <div class="stf-card">
+        <div class="stf-title">事務・倉庫スタッフ</div>
+        <div class="stf-col" data-staffzone="pool-jimu"><div class="stf-lbl att">出勤 <b>${jPool.length}</b>名</div><div class="stf-chips">${jPool.map(n=>schip("jimu",n,"ison")).join("")||'<span class="stf-empty">マスタで事務・倉庫を登録</span>'}</div></div>
+        <div class="stf-col" data-staffzone="off-jimu"><div class="stf-lbl offl">休み <b>${jOff.length}</b>名</div><div class="stf-chips">${jOff.map(n=>schip("jimu",n,"isoff")).join("")||emptyOff}</div></div>
+      </div>
+      <div class="stf-card">
+        <div class="stf-title">その他予定</div>
+        <textarea class="stf-other" id="stfOther" placeholder="予定がある人は自由に記入（例：田中 15時〜歯医者 / 直帰）">${esc(d.other)}</textarea>
+      </div>
+    </div>
+   </div>`;
+}
+function toggleStaff(key,name){const d=staffDay();const off=key==="genba"?d.offG:d.offJ;const i=off.indexOf(name);if(i<0){off.push(name);if(key==="genba")unassignCrewAll(name);}else off.splice(i,1);save();render();}
+// 現場スタッフを号車の作業員へ配置 / 休み・出勤ゾーンへ移動
+function staffTarget(el){
+  if(!el||!el.closest)return null;
+  const zone=el.closest("[data-staffzone]"); if(zone)return {type:"zone",zone:zone.dataset.staffzone,el:zone};
+  const veh=el.closest("[data-vehname]"); if(veh)return {type:"veh",veh:veh.dataset.vehname,el:veh};
+  return null;
+}
+function applyStaffDrop(z,s){
+  const d=staffDay();
+  if(z.type==="veh"){
+    if(s.staff!=="genba")return;                 // 事務は号車へ配置しない
+    if(z.veh==="外注車両")return;                 // 外注車両は作業員配置なし
+    unassignCrewAll(s.name);                      // 別の号車に居れば外して振り替え（移動）
+    const key=cur+"|"+z.veh;const h=db.headers[key]||(db.headers[key]={crew:[],depart:""});if(!h.crew)h.crew=[];
+    if(!h.crew.includes(s.name))h.crew.push(s.name);
+    d.offG=d.offG.filter(n=>n!==s.name);
+  }else{
+    const zn=z.zone;
+    if(zn.endsWith("genba")&&s.staff!=="genba")return;
+    if(zn.endsWith("jimu")&&s.staff!=="jimu")return;
+    if(zn==="off-genba"){unassignCrewAll(s.name);if(!d.offG.includes(s.name))d.offG.push(s.name);}
+    else if(zn==="off-jimu"){if(!d.offJ.includes(s.name))d.offJ.push(s.name);}
+    else if(zn==="pool-genba"){unassignCrewAll(s.name);d.offG=d.offG.filter(n=>n!==s.name);}
+    else if(zn==="pool-jimu"){d.offJ=d.offJ.filter(n=>n!==s.name);}
+  }
+  save();render();
+}
+function clearStaffMarks(){document.querySelectorAll(".staff-drop").forEach(x=>x.classList.remove("staff-drop"));}
+function markStaffZone(z){clearStaffMarks();z.el.classList.add("staff-drop");}
+$("#staffpanel").addEventListener("click",e=>{
+  if(stJustDragged&&Date.now()-stJustDragged<400){stJustDragged=0;return;}
+  if(e.target.closest("#stfToggle")){db.staff.open=!(db.staff.open!==false);save();renderStaff();return;}
+  const tg=e.target.closest("[data-staff]");if(tg){toggleStaff(tg.dataset.staff,tg.dataset.name);return;}
+});
+$("#staffpanel").addEventListener("input",e=>{if(e.target.id==="stfOther"){staffDay().other=e.target.value;save();}});
+// スタッフのドラッグ（PC=HTML5／スマホ=長押し）— パネルと号車をまたぐので document で処理
+let sdg=null;
+document.addEventListener("dragstart",e=>{const c=e.target.closest("[data-staff]");if(!c)return;sdg={staff:c.dataset.staff,name:c.dataset.name};e.dataTransfer.effectAllowed="move";try{e.dataTransfer.setData("text/plain",sdg.name);}catch(_){}c.classList.add("dragging");});
+document.addEventListener("dragend",e=>{const c=e.target.closest("[data-staff]");if(c)c.classList.remove("dragging");clearStaffMarks();sdg=null;});
+document.addEventListener("dragover",e=>{if(!sdg)return;const z=staffTarget(e.target);if(!z)return;e.preventDefault();e.dataTransfer.dropEffect="move";markStaffZone(z);});
+document.addEventListener("drop",e=>{if(!sdg)return;const z=staffTarget(e.target);if(z){e.preventDefault();applyStaffDrop(z,sdg);}clearStaffMarks();sdg=null;});
+let stDrag=null,stGhost=null,stLast=null,stLp=null,stStart=null,stJustDragged=0;
+function endStaffTouch(){if(stLp){clearTimeout(stLp);stLp=null;}document.querySelectorAll('[data-staff].dragging').forEach(x=>x.classList.remove("dragging"));clearStaffMarks();if(stGhost){stGhost.remove();stGhost=null;}if(stDrag){stJustDragged=Date.now();}stDrag=null;stLast=null;stStart=null;}
+document.addEventListener("touchstart",e=>{
+  const c=e.target.closest("[data-staff]");if(!c||e.target.closest("[data-rm]"))return;
+  const staff=c.dataset.staff,name=c.dataset.name,t=e.touches[0];stStart={x:t.clientX,y:t.clientY};
+  stLp=setTimeout(()=>{stLp=null;stDrag={staff,name};c.classList.add("dragging");
+    stGhost=document.createElement("div");stGhost.className="drag-ghost";stGhost.textContent="⇅ "+name;document.body.appendChild(stGhost);stGhost.style.left=t.clientX+"px";stGhost.style.top=(t.clientY-24)+"px";
+    if(navigator.vibrate)navigator.vibrate(12);
+  },280);
+},{passive:true});
+document.addEventListener("touchmove",e=>{
+  if(!stDrag){if(stLp&&stStart){const t=e.touches[0];if(Math.abs(t.clientX-stStart.x)>10||Math.abs(t.clientY-stStart.y)>10){clearTimeout(stLp);stLp=null;}}return;}
+  e.preventDefault();const t=e.touches[0];if(stGhost){stGhost.style.left=t.clientX+"px";stGhost.style.top=(t.clientY-24)+"px";}
+  const el=document.elementFromPoint(t.clientX,t.clientY),z=el?staffTarget(el):null;
+  if(z){markStaffZone(z);stLast=z;}else{clearStaffMarks();stLast=null;}
+},{passive:false});
+document.addEventListener("touchend",()=>{if(stDrag&&stLast){const z=stLast,s=stDrag;endStaffTouch();applyStaffDrop(z,s);return;}endStaffTouch();});
+document.addEventListener("touchcancel",endStaffTouch);
+
+function render(){
+  const p=cur.split("-");const d=new Date(+p[0],+p[1]-1,+p[2]);
+  $("#daylabel").innerHTML=`${+p[1]}月${+p[2]}日 <span class="dow">（${DOW[d.getDay()]}）</span> <span class="hint">${mode==="board"?"号車ごと（タイトルで作業員/出勤を編集）":"一覧"}・タップで編集</span>`;
+  const es=dayEntries();
+  const total=es.length,jisha=es.filter(x=>kubunOf(x)==="自社").length,kyo=es.filter(x=>kubunOf(x)==="協力").length,setti=es.filter(x=>x.setti).length;
+  $("#strip").innerHTML=`
+    <div class="kpi"><div class="n">${total}</div><div class="l">案件数</div></div>
+    <div class="kpi jisha"><div class="n">${jisha}</div><div class="l">自社便</div></div>
+    <div class="kpi kyo"><div class="n">${kyo}</div><div class="l">協力業者</div></div>
+    <div class="kpi set"><div class="n">${setti}</div><div class="l">設置あり</div></div>
+    <button class="kpi-send" id="sendVehBtn" title="お客様へ車両・担当・連絡先を送る"><span class="ic">🚗</span><span>車両情報<br>送信</span></button>`;
+  renderStaff();
+  const host=$("#viewhost");
+  const vehSet=computeVehSet();
+  if(!vehSet.size){host.innerHTML=`<div class="board"><div class="empty"><b>この日に表示する車両がありません</b><span class="hint">上の「＋ 車両」で車両を追加してください</span></div></div>`;return;}
+  mode==="table"?renderTable(host,es,vehSet):renderBoard(host,es,vehSet);
+}
+const isSpecial=v=>Array.isArray(db.special)&&db.special.includes(v);
+// 自社／協力は「外注車両」に載っているかで判定（旧データのkubunも尊重）
+function kubunOf(e){return (e&&(e.vehicle==="外注車両"||e.kubun==="協力"))?"協力":"自社";}
+function vord(v){return isSpecial(v)?1000+db.special.indexOf(v):(db.masters.veh.indexOf(v)<0?900:db.masters.veh.indexOf(v));}
+function computeVehSet(){
+  const set=new Set();
+  db.fleet.forEach(v=>set.add(v));
+  (db.special||[]).forEach(v=>set.add(v));
+  (db.dayAdded[cur]||[]).forEach(v=>set.add(v));
+  const es=dayEntries();
+  es.forEach(e=>set.add(e.vehicle));
+  (db.notes||[]).forEach(n=>{if(n.date===cur)set.add(n.vehicle);});
+  Object.keys(db.headers).forEach(k=>{if(k.startsWith(cur+"|")){const h=db.headers[k];if((h.crew&&h.crew.length)||h.depart)set.add(k.split("|")[1]);}});
+  (db.dayHidden[cur]||[]).forEach(v=>{if(!isSpecial(v)&&!es.some(e=>e.vehicle===v))set.delete(v);});
+  return set;
+}
+// 車両ごとの並び（案件＋連絡メモを ord 順に統合）
+function vehItems(v){
+  const items=[];
+  dayEntries().forEach(e=>{if(e.vehicle===v)items.push({kind:"entry",data:e});});
+  (db.notes||[]).forEach(n=>{if(n.date===cur&&n.vehicle===v)items.push({kind:"note",data:n});});
+  items.sort((a,b)=>{
+    const ao=typeof a.data.ord==="number"?a.data.ord:null, bo=typeof b.data.ord==="number"?b.data.ord:null;
+    if(ao!=null&&bo!=null)return ao-bo;
+    if(ao!=null)return -1; if(bo!=null)return 1;
+    if(a.kind!==b.kind)return a.kind==="entry"?-1:1;
+    if(a.kind==="entry")return (a.data.tours||a.data.treq||"").localeCompare(b.data.tours||b.data.treq||"");
+    return 0;
+  });
+  return items;
+}
+function nextOrd(v){const os=vehItems(v).map(it=>typeof it.data.ord==="number"?it.data.ord:-1);return os.length?Math.max(...os)+1:0;}
+// 案件／メモを targetVeh の idx 番目へ挿入し、ord を振り直す
+function moveItem(kind,id,targetVeh,idx){
+  const coll=kind==="note"?db.notes:db.entries;
+  const item=coll.find(x=>x.id===id); if(!item)return;
+  const srcVeh=item.vehicle;
+  let dst=vehItems(targetVeh).map(it=>it.data).filter(d=>d!==item);
+  idx=Math.max(0,Math.min(idx,dst.length));
+  item.vehicle=targetVeh;
+  dst.splice(idx,0,item);
+  dst.forEach((d,i)=>d.ord=i);
+  if(srcVeh!==targetVeh)vehItems(srcVeh).map(it=>it.data).forEach((d,i)=>d.ord=i);
+  save();render();
+}
+function renderBoard(host,es,vehSet){
+  const keys=[...vehSet].sort((a,b)=>vord(a)-vord(b));
+  host.innerHTML=`<div class="board">`+keys.map(v=>{
+    const h=getHeader(v);
+    const jobs=es.filter(e=>e.vehicle===v).sort((a,b)=>(a.tours||a.treq||"").localeCompare(b.tours||b.treq||""));
+    const crew=(h.crew&&h.crew.length)?`<span class="crew">${h.crew.map(n=>`<span class="crewchip" data-staff="genba" data-name="${esc(n)}" draggable="true" title="${esc(n)}｜ドラッグで別の号車・出勤・休みへ">${esc(String(n).split(/[ 　]/)[0])}</span>`).join("")}</span>`:`<span class="crew" style="opacity:.6">作業員未設定</span>`;
+    const dep=h.depart?`<span class="dep">出勤 <b>${esc(h.depart)}</b></span>`:`<span class="dep" style="opacity:.6">出勤 —</span>`;
+    const sp=isSpecial(v), isOut=v==="外注車両", spc=sp?(v==="倉庫作業"?" sb-wh":" sb-out"):"";
+    return `<div class="veh${spc}" data-vehname="${esc(v)}"><h3 class="vehhdr" data-veh="${esc(v)}"><span class="vname">${esc(v)}</span>${isOut?"":crew}${(sp&&v!=="倉庫作業")?"":dep}${es.some(e=>e.vehicle===v&&(e.setti||e.heavy))?`<input type="checkbox" class="alw-flag-card" data-allowance-flag data-allowance-veh="${esc(v)}" title="${esc(v)}に「設置あり／重量物」の案件あり" checked disabled onclick="event.stopPropagation()">`:""}${sp?"":`<button class="veh-del" data-del-veh="${esc(v)}" title="この車両を今日の一覧から外す">×</button>`}</h3><div>`+
+      (()=>{const its=vehItems(v);return its.length?its.map((it,i)=>it.kind==="entry"?jobCard(it.data,i):noteCard(it.data,i)).join(""):`<div class="job" style="color:var(--muted);cursor:default" data-vehname="${esc(v)}">案件なし</div>`;})()+
+      `<div class="addslot"><span class="addlink" data-addcase="${esc(v)}">＋ 案件</span><span class="addlink note" data-addnote="${esc(v)}">＋ 連絡メモ</span></div></div></div>`;
+  }).join("")+`</div>`;
+}
+function noteCard(n,pos){return `<div class="job note-card" data-noteid="${n.id}" data-vehname="${esc(n.vehicle)}" data-pos="${pos}" draggable="true" style="background:${esc(n.bg)};color:${esc(n.fg)};font-size:${esc(n.size)}">${esc(n.text)}</div>`;}
+function jobCard(j,pos){
+  const kb=kubunOf(j)==="協力"?'<span class="badge kyo">協力</span>':'<span class="badge jisha">自社</span>';
+  const stc=j.status==="仮"?"kari":j.status==="アポインOK"?"apoOK":j.status==="アポOK（メール）"?"apoMail":j.status==="キャンセル"?"cancel":"kakutei";
+  const pOurs=j.status==="アポインOK"?" p-apo":j.status==="アポOK（メール）"?" p-mail":"";
+  const st=`<span class="st ${stc}">${esc(j.status||"仮")}</span>`;
+  const item=j.item?`<span class="item ${j.setti?"setti":""}">${esc(j.item)}</span>`:"";
+  const setb=j.setti?`<span class="settibadge">設置</span>`:"";
+  const wt=j.weight?`<span class="weight">${esc(j.weight)}</span>`:"";
+  const pick=j.pick?`<span class="achip pick"><span class="tag">引取</span>${esc(j.pick)}</span>`:"";
+  const drop=j.drop?`<span class="achip drop"><span class="tag">届け</span>${esc(j.drop)}</span>`:"";
+  const meta=[];
+  const fl=[j.pickFloor||j.shonyu,j.dropFloor].filter(Boolean).join(" / ");
+  if(fl)meta.push(`<span class="pill ${j.special?"spec":""}">${esc(fl)}</span>`);
+  const tm=[j.pickTime||j.treq,j.dropTime].filter(Boolean).join(" / ");
+  if(tm)meta.push(`<span class="pill time">客 ${esc(tm)}</span>`);
+  if(j.tours)meta.push(`<span class="arrow">→</span><span class="pill ours${pOurs}">配送 ${esc(j.tours)}</span>`);
+  const memo=j.memo?`<div class="memoline">${esc(j.memo)}</div>`:"";
+  const matline=j.materials?`<div class="matline">持参資材：${esc(j.materials)}</div>`:"";
+  return `<div class="job ${stc} ${j.joint?"joint":""}" data-id="${j.id}" data-vehname="${esc(j.vehicle)}" data-pos="${pos}" draggable="true">
+    <div class="jtop"><span class="seikyu">${esc(j.client||"—")}</span>${kb}${st}${j.joint?'<span class="badge joint-b">合同作業</span>':""}</div>
+    <div class="itemline">${item}${setb}${wt}</div>
+    <div class="cust">${esc(j.customer||"")}${j.phone?` <span class="subtle">☎${esc(j.phone)}</span>`:""}</div>
+    ${(pick||drop)?`<div class="addr">${pick}${drop}</div>`:""}
+    <div class="metarow">${meta.join("")}</div>
+    ${memo}${matline}
+  </div>`;
+}
+// 引取／届け を分けて表示（作業階数・時間の欄用）
+function pdPair(a,b){
+  const A=esc(a||""),B=esc(b||"");
+  if(!A&&!B)return "";
+  return `<div class="pd"><span class="pdl p">引</span><span>${A||"—"}</span></div>`+
+         `<div class="pd"><span class="pdl d">届</span><span>${B||"—"}</span></div>`;
+}
+function renderTable(host,es,vehSet){
+  const keys=[...vehSet].sort((a,b)=>vord(a)-vord(b));
+  const cols=`<colgroup><col class="w-st"><col class="w-seikyu"><col class="w-item"><col class="w-cust"><col class="w-tel"><col class="w-addr"><col class="w-spec"><col class="w-time"><col class="w-ours"><col class="w-memo"></colgroup>`;
+  const thead=`<thead><tr><th class="w-st"></th><th>請求</th><th>品名</th><th>お客様名</th><th>電話番号</th><th>住所（引取／届け）</th><th>作業階数</th><th>時間</th><th>配送</th><th>備考</th></tr></thead>`;
+  const dotOf=s=>s==="アポインOK"?'<span class="stdot" style="background:#fde8e8;color:#c0392b">OK</span>':s==="アポOK（メール）"?'<span class="stdot" style="background:#dff1fb;color:#12a0d6">✉</span>':s==="仮"?'<span class="stdot" style="background:#eef1f5;color:#6b7480">仮</span>':s==="キャンセル"?'<span class="stdot" style="background:#e2e5e9;color:#6b7480">×</span>':'<span class="stdot" style="background:#e5edf5;color:#22405f">確</span>';
+  // 合流便（同じ請求＋品名が複数号車にまたがる）を自動検出して色地を割当
+  const joinMap={};
+  {const g={},pal=["#ffe9a8","#c9e7ff","#d8f3d0","#f7d6f0","#ffd9c2","#ded9f7"];let i=0;
+   dayEntries().forEach(e=>{const k=(e.client||"")+"|"+(e.item||"");if(k==="|")return;(g[k]=g[k]||new Set()).add(e.vehicle);});
+   Object.keys(g).forEach(k=>{if(g[k].size>=2)joinMap[k]=pal[i++%pal.length];});}
+  let body="";
+  keys.forEach(v=>{
+    const h=getHeader(v);
+    const crew=(h.crew&&h.crew.length)?h.crew.map(n=>`<span class="crewchip" data-staff="genba" data-name="${esc(n)}" draggable="true" title="${esc(n)}｜ドラッグで別の号車・出勤・休みへ">${esc(String(n).split(/[ 　]/)[0])}</span>`).join(""):'<span style="opacity:.55">作業員未設定</span>';
+    const dep=h.depart?`出勤 <b>${esc(h.depart)}</b>`:'出勤 —';
+    const sp=isSpecial(v), isOut=v==="外注車両", spc=sp?(v==="倉庫作業"?" special-band sb-wh":" special-band sb-out"):"";
+    body+=`<tr class="veh-band${spc}${h.shitei?" shitei":""}" data-vehname="${esc(v)}"><td colspan="10"><div class="vehhdr" data-veh="${esc(v)}"><span class="vname">${esc(v)}</span>${isOut?"":`<span class="crew">${crew}</span>`}${(sp&&v!=="倉庫作業")?"":`<span class="dep">${dep}</span>`}${es.some(e=>e.vehicle===v&&(e.setti||e.heavy))?`<label class="alw-flag" title="${esc(v)}に「設置あり／重量物」の案件あり（設置作業手当の対象・自動化準備用フラグ）" onclick="event.stopPropagation()"><input type="checkbox" data-allowance-flag data-allowance-veh="${esc(v)}" checked disabled></label>`:""}${isOut?"":`<span class="edithint">タップで編集</span>`}${sp?"":`<button class="veh-del" data-del-veh="${esc(v)}" title="この車両を今日の一覧から外す">×</button>`}</div></td></tr>`;
+    vehItems(v).forEach((it,i)=>{
+      if(it.kind==="note"){const n=it.data;
+        body+=`<tr class="note-row" data-noteid="${n.id}" data-vehname="${esc(v)}" data-pos="${i}" draggable="true"><td colspan="10" style="background:${esc(n.bg)};color:${esc(n.fg)};font-size:${esc(n.size)};text-align:center;font-weight:800;padding:8px 12px;white-space:pre-line;cursor:pointer">${esc(n.text)}</td></tr>`;
+        return;
+      }
+      const e=it.data;
+      const stc=e.status==="仮"?"kari":e.status==="アポインOK"?"apoOK":e.status==="アポOK（メール）"?"apoMail":e.status==="キャンセル"?"cancel":"";
+      const ap=e.pick?`<div class="ap"><span class="lb">引取</span>${esc(e.pick)}</div>`:`<div class="blank ap">引取なし</div>`;
+      const ad=e.drop?`<div class="ad"><span class="lb">届け</span>${esc(e.drop)}</div>`:`<div class="blank ad">届けなし</div>`;
+      const memo=esc(e.memo||"");
+      // ==== 予定表の色分けルール（既存項目から自動判定）====
+      const itemTxt=e.item||"", memoTxt=e.memo||"";
+      const specTxt=(e.pickFloor||e.shonyu||"")+" "+(e.dropFloor||"")+" "+(e.work||"");
+      const spCls=/手吊|螺旋|ゴンドラ|要注意/.test(specTxt+memoTxt)?"sp-red"                              // ④赤地
+                 :(e.special||/階段|吊|\d+\s*K|\d+\s*P/i.test(specTxt))?"sp-green":"sp-white";           // ④緑/白
+      const tmTxt=(e.pickTime||e.treq||"")+" "+(e.dropTime||"");
+      const tmGray=!tmTxt.trim()||/未定|未確定|不明/.test(tmTxt);                                        // ⑤グレー地
+      const oursCls=e.status==="アポインOK"?"ours-apo":e.status==="アポOK（メール）"?"ours-mail":"";       // ⑤'赤塗り/水色塗り
+      const joinBg=joinMap[(e.client||"")+"|"+(e.item||"")]||"";                                          // ⑤'合流便の色地
+      const memoCls=e.moneyReady?"memo-ready"                                                            // ⑥赤地（持参金 用意済）
+                   :(/集金|代払|買取|持参金/.test(memoTxt)?"memo-money":"");                             // ⑥薄黄
+      body+=`<tr class="datarow ${stc}" data-id="${e.id}" data-vehname="${esc(e.vehicle)}" data-pos="${i}" draggable="true">
+        <td class="x-st">${dotOf(e.status)}</td>
+        <td class="x-seikyu">${esc(e.client)}</td>
+        <td class="x-item ${e.setti?"setti":""}">${esc(e.item)}${e.weight?`<small>${esc(e.weight)}</small>`:""}</td>
+        <td class="x-cust ${e.status==="仮"?"hl-temp":""}" title="${esc([e.customerPick||e.customer,e.customerDrop].filter(Boolean).join(" / "))}">${pdPair(e.customerPick||e.customer,e.customerDrop)}</td>
+        <td class="x-tel"${e.joint&&e.phone?` title="電話 ${esc(e.phone)}"`:""}>${e.joint?'<div class="joint-mark">合同作業</div>':esc(e.phone)}</td>
+        <td class="x-addr">${ap}${ad}</td>
+        <td class="x-spec ${spCls}">${pdPair(e.pickFloor||e.shonyu,e.dropFloor)}</td>
+        <td class="x-time ${tmGray?"tm-gray":""}">${pdPair(e.pickTime||e.treq,e.dropTime)}</td>
+        <td class="x-ours ${oursCls}"${joinBg?` style="background:${joinBg}"`:""}>${esc(e.tours)}</td>
+        <td class="x-memo ${memoCls}">${memo}</td>
+      </tr>`;
+      // 持参資材（案件と同じカテゴリー：ドラッグでも一緒に動く）
+      if(e.materials){
+        body+=`<tr class="mat-row" data-id="${e.id}" data-vehname="${esc(e.vehicle)}" data-pos="${i}" draggable="true"><td colspan="10"><span class="mat-tag">持参資材</span>${esc(e.materials)}</td></tr>`;
+      }
+    });
+    body+=`<tr class="addrow" data-vehname="${esc(v)}"><td colspan="10"><span class="addlink" data-addcase="${esc(v)}">＋ 案件</span><span class="addlink note" data-addnote="${esc(v)}">＋ 連絡メモ</span></td></tr>`;
+  });
+  host.innerHTML=`<div class="tblwrap"><table class="xls">${cols}${thead}<tbody>${body}</tbody></table></div>`;
+}
+
+// ---- 案件 modal ----
+let editId=null,sel={status:"仮"},copySource=null;
+function fillList(id,arr){$(id).innerHTML=arr.map(v=>`<option value="${esc(v)}">`).join("");}
+function openEntry(id,presetVeh){
+  editId=id;const e=id?db.entries.find(x=>x.id===id):null;
+  $("#mtitle").firstChild.textContent=id?"案件編集 ":"案件追加 ";
+  $("#del").style.display=id?"":"none";
+  $("#f_vehicle").innerHTML=[...db.masters.veh,...db.special].map(v=>`<option>${esc(v)}</option>`).join("");
+  fillList("#floors",db.masters.sho||[]);  // 作業階数プルダウン（マスタ連動・自由入力可）
+  sel={status:(e&&e.status)||"仮"};
+  $("#f_date").value=(e&&e.date)||cur;
+  $("#f_vehicle").value=(e&&e.vehicle)||presetVeh||db.masters.veh[0];
+  $("#f_client").value=(e&&e.client)||"";$("#f_item").value=(e&&e.item)||"";$("#f_weight").value=(e&&e.weight)||"";
+  $("#f_setti").checked=!!(e&&e.setti);$("#f_heavy").checked=!!(e&&e.heavy);$("#f_pick_cust").value=(e&&(e.customerPick||e.customer))||"";$("#f_drop_cust").value=(e&&e.customerDrop)||"";$("#f_phone").value=(e&&e.phone)||"";
+  $("#f_pick").value=(e&&e.pick)||"";$("#f_drop").value=(e&&e.drop)||"";
+  $("#f_pick_floor").value=(e&&e.pickFloor)||"";$("#f_pick_time").value=(e&&e.pickTime)||"";
+  $("#f_drop_floor").value=(e&&e.dropFloor)||"";$("#f_drop_time").value=(e&&e.dropTime)||"";
+  $("#f_tours").value=(e&&e.tours)||"";
+  $("#f_memo").value=(e&&e.memo)||"";$("#f_moneyReady").checked=!!(e&&e.moneyReady);
+  $("#f_materials").value=(e&&e.materials)||"";$("#f_matBar").classList.toggle("on",!!(e&&e.materials));
+  syncSel();renderAISuggest();$("#ov").classList.add("on");
+}
+// ---- AIサジェスト（実績辞書ベース）----
+function aiCity(s){const m=(s||"").match(/([一-龠々ヶァ-ヶぁ-んA-Za-z0-9]+?[市区町村])/);return m?m[1]:"";}
+function aiSuggestData(){
+  const client=$("#f_client").value.trim(),pick=$("#f_pick").value.trim(),drop=$("#f_drop").value.trim();
+  const gv=id=>{const el=$(id);return el?String(el.value||"").trim():"";};
+  const gc=id=>{const el=$(id);return !!(el&&el.checked);};
+  const shonyu=gv("#f_shonyu")||[gv("#f_pick_floor"),gv("#f_drop_floor")].filter(Boolean).join(" "),item=gv("#f_item"),work=gv("#f_work");
+  const setti=gc("#f_setti"),special=gc("#f_special");
+  const pM=shonyu.match(/(\d+)\s*[pPＰ]/);const hoist=pM?parseInt(pM[1]):0;
+  const isUnic=hoist>0||/吊/.test(item)||/吊/.test(work);
+  const fM=shonyu.match(/(\d+)\s*(EV|K|F)/i);const floor=fM?parseInt(fM[1]):0;const method=fM?fM[2].toUpperCase():"";
+  let recs=[];
+  const add=(veh,reason,score)=>{if(!veh||AIDICT.retired.indexOf(veh)>=0)return;let r=recs.find(x=>x.veh===veh);if(!r){r={veh,reasons:[],score:0};recs.push(r);}if(r.reasons.indexOf(reason)<0)r.reasons.push(reason);r.score+=score;};
+  if(isUnic){AIDICT.unic.forEach((v,i)=>add(v,"吊り作業＝ユニック車",1000-i));}
+  const cv=AIDICT.cust[client];if(cv)cv.forEach((v,i)=>add(v,"顧客「"+client+"」実績多",30-i*5));
+  const city=aiCity(drop)||aiCity(pick);const av=city?AIDICT.area[city]:null;
+  if(av)av.forEach((v,i)=>add(v,city+"で実績多",20-i*4));
+  recs.sort((a,b)=>b.score-a.score);recs=recs.slice(0,4);
+  let crew=2,mins=30,notes=[];
+  if(isUnic){crew=Math.max(crew,3);mins+=25+hoist*15;notes.push("吊り"+(hoist||1)+"回");}
+  if(method==="EV"&&floor>=7){mins+=20;notes.push(floor+"階EV");}
+  if(method==="K"){crew=Math.max(crew,3);mins+=floor*10;notes.push(floor+"階 階段");}
+  if(special){crew=Math.max(crew,3);mins+=15;}
+  if(setti){mins+=20;notes.push("設置");}
+  if(/ピアノ|UP|GP|金庫|蓄電池|冷蔵庫|複合機|ｻｰﾊﾞｰ|サーバー|精密|レントゲン|ﾚﾝﾄｹﾞﾝ/i.test(item)){crew=Math.max(crew,3);mins+=15;if(notes.indexOf("重量物")<0)notes.push("重量物");}
+  return {recs,crew,mins,notes,isUnic,city,client};
+}
+function renderAISuggest(){
+  const box=$("#aiSuggest");if(!box||getComputedStyle(box).display==="none")return;
+  const d=aiSuggestData();
+  let h=`<div class="ai-h">🤖 AIサジェスト<span class="ai-sub">過去${AIDICT.months}か月・${AIDICT.cases.toLocaleString()}件の実績より</span></div>`;
+  if(d.recs.length){
+    h+=`<div class="ai-row"><span class="ai-lbl">おすすめ号車</span><span class="ai-chips">`+
+      d.recs.map((r,i)=>`<button type="button" class="ai-veh${i===0?" top":""}" data-aiveh="${esc(r.veh)}" title="${esc(r.reasons.join(" / "))}">${esc(r.veh)}</button>`).join("")+`</span></div>`;
+    h+=`<div class="ai-why">${esc(d.recs[0].reasons.join(" / "))}${d.isUnic?"（吊りはユニック車1・2・8号車が対応）":""}</div>`;
+  }else{
+    h+=`<div class="ai-why dim">請求先・住所・特殊（吊りは「2P」等）を入れると号車を提案します</div>`;
+  }
+  h+=`<div class="ai-row"><span class="ai-lbl">作業目安</span><span class="ai-est"><b>${d.crew}名</b> ・ 約<b>${d.mins}分</b>${d.notes.length?"（"+d.notes.join("・")+"）":""}</span></div>`;
+  box.innerHTML=h;
+}
+$("#ov").addEventListener("input",e=>{if(["f_client","f_pick","f_drop","f_shonyu","f_item","f_work"].indexOf(e.target.id)>=0)renderAISuggest();});
+$("#ov").addEventListener("change",e=>{if(e.target.id==="f_setti")renderAISuggest();});
+$("#f_matBtn").onclick=()=>{const b=$("#f_matBar");b.classList.toggle("on");if(b.classList.contains("on"))$("#f_materials").focus();else $("#f_materials").value="";};
+$("#ov").addEventListener("click",e=>{const a=e.target.closest("[data-aiveh]");if(!a)return;const v=a.dataset.aiveh,sv=$("#f_vehicle");if(![...sv.options].some(o=>o.value===v)){const o=document.createElement("option");o.textContent=v;sv.appendChild(o);}sv.value=v;});
+
+// ==== 配車アシスト（空き状況ベースの自動配車エンジン・第1版）====
+function parseWin(s){
+  s=(s||"").trim(); if(!s)return null;
+  s=s.replace(/[：]/g,":").replace(/[０-９]/g,c=>String.fromCharCode(c.charCodeAt(0)-0xFEE0));
+  if(/午前|AM/i.test(s))return [540,720];
+  if(/午後|PM/i.test(s))return [720,1020];
+  let m=s.match(/(\d{1,2}):(\d{2})\s*[-~〜]\s*(\d{1,2}):(\d{2})/); if(m)return [(+m[1])*60+ +m[2],(+m[3])*60+ +m[4]];
+  m=s.match(/(\d{1,2})\s*[-~〜]\s*(\d{1,2})(?!:)/); if(m)return [(+m[1])*60,(+m[2])*60];
+  m=s.match(/(\d{1,2}):(\d{2})/); if(m){const t=(+m[1])*60+ +m[2];return [t,t+60];}
+  m=s.match(/(\d{1,2})\s*時/); if(m){const t=(+m[1])*60;return [t,t+60];}
+  return null; // 指定/そのまま/不明 → 時間未定
+}
+function fmtMin(m){return Math.floor(m/60)+":"+String(Math.round(m%60)).padStart(2,"0");}
+function estMin(e){
+  let mins=30; const sh=((e.shonyu||"")+" "+(e.pickFloor||"")+" "+(e.dropFloor||""));
+  const pM=sh.match(/(\d+)\s*[pPＰ]/); const hoist=pM?+pM[1]:0;
+  const fM=sh.match(/(\d+)\s*(EV|K|F)/i); const floor=fM?+fM[1]:0; const meth=fM?fM[2].toUpperCase():"";
+  if(hoist>0||/吊/.test(e.item||"")||/吊/.test(e.work||"")) mins+=25+(hoist||1)*15;
+  if(meth==="EV"&&floor>=7) mins+=20;
+  if(meth==="K") mins+=floor*10;
+  if(e.special) mins+=15;
+  if(e.setti) mins+=20;
+  if(/ピアノ|UP|GP|金庫|蓄電池|冷蔵庫|複合機|ｻｰﾊﾞｰ|サーバー|精密|レントゲン|ﾚﾝﾄｹﾞﾝ/i.test(e.item||"")) mins+=15;
+  return mins;
+}
+function dayVehicles(){ return [...computeVehSet()].filter(v=>!isSpecial(v)&&AIDICT.retired.indexOf(v)<0).sort((a,b)=>vord(a)-vord(b)); }
+function jobBlocks(v){
+  const items=vehItems(v).filter(it=>it.kind==="entry").map(it=>it.data);
+  const blocks=[],flex=[];
+  items.forEach(e=>{ const w=parseWin(e.tours||e.pickTime||e.dropTime||e.treq); const dur=estMin(e);
+    if(w) blocks.push({e,start:w[0],end:Math.max(w[1],w[0]+dur)}); else flex.push(e); });
+  blocks.sort((a,b)=>a.start-b.start);
+  return {blocks,flex};
+}
+const AX0=360,AX1=1140,SP=AX1-AX0;
+function renderTimeline(){
+  const host=$("#as_timeline"); if(!host)return;
+  const hours=[6,8,10,12,14,16,18];
+  let head=`<div class="tl-axis"><span class="tl-vname"></span><span class="tl-track">`+hours.map(h=>`<span class="tl-tick" style="left:${(h*60-AX0)/SP*100}%">${h}時</span>`).join("")+`</span></div>`;
+  const rows=dayVehicles().map(v=>{
+    const {blocks,flex}=jobBlocks(v); const unic=AIDICT.unic.indexOf(v)>=0;
+    const bl=blocks.map(b=>{const l=Math.max(0,(b.start-AX0)/SP*100),wd=Math.max(2.5,(b.end-b.start)/SP*100);
+      return `<span class="tl-blk" style="left:${l}%;width:${wd}%" title="${esc(b.e.client||"")} ${esc(b.e.item||"")} ${fmtMin(b.start)}-${fmtMin(b.end)}">${esc(b.e.client||b.e.item||"案件")}</span>`;}).join("");
+    return `<div class="tl-row"><span class="tl-vname">${esc(v)}${unic?'<b class="uni">ユ</b>':""}</span><span class="tl-track">${bl}${flex.length?`<span class="tl-flex">時間未定 ${flex.length}</span>`:""}</span></div>`;
+  }).join("");
+  host.innerHTML=head+(rows||'<div class="dim" style="padding:10px">この日に表示する号車がありません</div>');
+}
+function findSlots(){
+  const w=parseWin($("#as_time").value);
+  const area=aiCity($("#as_area").value)||$("#as_area").value.trim();
+  const work=$("#as_work").value; let dur=parseInt($("#as_dur").value)||0;
+  if(!dur) dur = work==="unic"?70:(work==="stair"?60:45);
+  if(!w){ $("#as_result").innerHTML='<div class="dim">希望時間を入れてください（例：13-15 / 10:00 / AM）</div>'; return; }
+  const wStart=w[0], wEnd=Math.max(w[1],w[0]+dur);
+  const res=dayVehicles().map(v=>{
+    const unic=AIDICT.unic.indexOf(v)>=0;
+    if(work==="unic"&&!unic) return {v,ok:false,reasons:["ユニック非搭載"]};
+    const {blocks}=jobBlocks(v);
+    const conflict=blocks.find(b=>wStart<b.end && b.start<wEnd);
+    if(conflict) return {v,ok:false,reasons:["稼働中("+fmtMin(conflict.start)+"-"+fmtMin(conflict.end)+")"]};
+    const sameArea = area && vehItems(v).filter(it=>it.kind==="entry").some(it=>aiCity(it.data.drop)===area||aiCity(it.data.pick)===area);
+    const load=blocks.length; let score=50,reasons=["この時間 空き"];
+    if(work==="unic"&&unic){score+=30;reasons.push("ユニック対応");}
+    if(sameArea){score+=25;reasons.push(area+"に既に配車あり（近い）");}
+    if(load>0){score-=load*4;reasons.push("当日"+load+"件");}else{score+=5;reasons.push("当日空車");}
+    return {v,ok:true,score,reasons};
+  });
+  const free=res.filter(r=>r.ok).sort((a,b)=>b.score-a.score);
+  const busy=res.filter(r=>!r.ok);
+  let h=`<div class="asr-h">${fmtMin(wStart)}〜${fmtMin(wEnd)}${area?" / "+esc(area):""}${work==="unic"?" / 吊り":work==="stair"?" / 階段":""}（目安${dur}分）に入れる号車</div>`;
+  if(free.length) h+='<div class="asr-list">'+free.map((r,i)=>`<div class="asr ok${i===0?" best":""}"><b>${esc(r.v)}</b><span>${esc(r.reasons.join(" / "))}</span></div>`).join("")+'</div>';
+  else h+='<div class="dim">この時間に空いている'+(work==="unic"?"ユニック":"")+'号車がありません。時間をずらすか、外注をご検討ください。</div>';
+  if(busy.length) h+='<details class="asr-busy"><summary>稼働中／対象外 '+busy.length+'台</summary>'+busy.map(r=>`<div class="asr ng">${esc(r.v)}：${esc(r.reasons.join(" / "))}</div>`).join("")+'</details>';
+  $("#as_result").innerHTML=h;
+}
+$("#assist").onclick=()=>{ $("#ova_date").textContent=cur; renderTimeline(); $("#as_result").innerHTML=""; $("#ova").classList.add("on"); };
+$("#ax").onclick=$("#aclose").onclick=()=>$("#ova").classList.remove("on");
+$("#ova").addEventListener("click",e=>{if(e.target.id==="ova")$("#ova").classList.remove("on");});
+$("#as_find").onclick=findSlots;
+$("#as_time").addEventListener("keydown",e=>{if(e.key==="Enter")findSlots();});
+
+// ==== 車両情報 送信 ====
+function svStaffPhones(veh){
+  const h=getHeader(veh);const crew=(h.crew||[]);
+  const names=crew.map(n=>String(n).split(/[ 　]/)[0]);
+  const phones=names.map(sn=>STAFF_PHONES[sn]).filter(Boolean);
+  return {staff:names.join("・"),phones:[...new Set(phones)].join(" / ")};
+}
+function svBuildMsg(){
+  const cust=$("#sv_cust").value.trim();
+  const lines=[];
+  lines.push((cust||"〇〇")+"様");
+  lines.push("いつもお世話になっております。ナイスキャリードです。","お伺いする車両・担当は下記の通りです。どうぞよろしくお願いいたします。","");
+  lines.push("■ 車両ナンバー："+$("#sv_plate").value.trim());
+  lines.push("■ 訪問時間："+$("#sv_time").value.trim());
+  lines.push("■ 担当スタッフ："+$("#sv_staff").value.trim());
+  lines.push("■ 連絡先（携帯）："+$("#sv_phone").value.trim());
+  $("#sv_msg").value=lines.join("\n");
+}
+function svFillFromCase(){
+  const veh=$("#sv_veh").value;
+  const cid=$("#sv_case").value;
+  const e=cid?db.entries.find(x=>x.id===cid):null;
+  $("#sv_plate").value=VEHICLE_PLATES[veh]||"";
+  const sp=svStaffPhones(veh); $("#sv_staff").value=sp.staff; $("#sv_phone").value=sp.phones;
+  if(e){ $("#sv_time").value=e.tours||e.dropTime||e.pickTime||""; $("#sv_cust").value=e.customerDrop||e.customerPick||e.customer||""; }
+  else{ $("#sv_time").value=""; $("#sv_cust").value=""; }   // 案件ブランク時はお客様名・訪問時間もブランク
+  svBuildMsg();
+}
+function svFillCases(){
+  const veh=$("#sv_veh").value;
+  const cases=vehItems(veh).filter(it=>it.kind==="entry").map(it=>it.data);
+  $("#sv_case").innerHTML='<option value="">（案件を選ぶ／任意）</option>'+cases.map(e=>`<option value="${e.id}">${esc((e.customerDrop||e.customerPick||e.customer||e.client||"案件")+" "+(e.tours||e.dropTime||e.pickTime||""))}</option>`).join("");
+  $("#sv_case").value="";   // 案件は初期ブランク（お客様名・訪問時間もブランク）
+  svFillFromCase();
+}
+function svFillPhoneOptions(){
+  const list=db.masters.phones||[];
+  $("#sv_addphone").innerHTML='<option value="">（マスタから携帯を選んで追加）</option>'+list.map(p=>`<option value="${esc(p)}">${esc(p)}</option>`).join("");
+  $("#sv_addphone").value="";
+}
+function svTel(s){const m=String(s).match(/[0-9][0-9\-]{7,}/);return m?m[0]:String(s).trim();}
+$("#strip").addEventListener("click",e=>{if(e.target.closest("#sendVehBtn"))openSend();});
+function openSend(presetVeh){
+  const vs=[...computeVehSet()].sort((a,b)=>vord(a)-vord(b));
+  $("#sv_veh").innerHTML=vs.map(v=>`<option>${esc(v)}</option>`).join("");
+  if(presetVeh&&vs.includes(presetVeh))$("#sv_veh").value=presetVeh;
+  svFillPhoneOptions();
+  svFillCases();
+  $("#ovsend").classList.add("on");
+}
+$("#svx").onclick=()=>$("#ovsend").classList.remove("on");
+$("#ovsend").addEventListener("click",e=>{if(e.target.id==="ovsend")$("#ovsend").classList.remove("on");});
+$("#sv_veh").addEventListener("change",svFillCases);
+$("#sv_case").addEventListener("change",svFillFromCase);
+$("#sv_addphone").addEventListener("change",function(){
+  const tel=svTel(this.value); if(!tel){return;}
+  const cur=$("#sv_phone").value.trim();
+  const parts=cur?cur.split(/\s*\/\s*/):[];
+  if(!parts.includes(tel)){parts.push(tel);}
+  $("#sv_phone").value=parts.join(" / ");
+  this.value="";
+  svBuildMsg();
+});
+["sv_cust","sv_plate","sv_time","sv_staff","sv_phone"].forEach(id=>$("#"+id).addEventListener("input",svBuildMsg));
+$("#sv_copy").onclick=()=>{const t=$("#sv_msg");t.select();try{navigator.clipboard.writeText(t.value);}catch(_){document.execCommand("copy");}$("#sv_copy").textContent="コピー済み";setTimeout(()=>$("#sv_copy").textContent="コピー",1500);};
+$("#sv_mail").onclick=()=>{const subj="【ナイスキャリード】車両・担当のご連絡";window.location.href="mailto:?subject="+encodeURIComponent(subj)+"&body="+encodeURIComponent($("#sv_msg").value);};
+function syncSel(){
+  document.querySelectorAll("[data-status]").forEach(el=>el.classList.toggle("on",el.dataset.status===sel.status));
+}
+document.addEventListener("click",e=>{
+  const s=e.target.closest("[data-status]");if(s){sel.status=s.dataset.status;syncSel();}
+});
+$("#add").onclick=()=>openEntry(null);
+$("#viewhost").addEventListener("click",e=>{
+  if(justDragged&&Date.now()-justDragged<400){justDragged=0;return;}
+  const dv=e.target.closest("[data-del-veh]");if(dv){delVeh(dv.dataset.delVeh);return;}
+  if(stJustDragged&&Date.now()-stJustDragged<400){stJustDragged=0;return;}
+  const hd=e.target.closest(".vehhdr[data-veh]");if(hd){openHeader(hd.dataset.veh);return;}
+  const ne=e.target.closest("[data-noteid]");if(ne){openNote(ne.dataset.noteid);return;}
+  const ac=e.target.closest("[data-addcase]");if(ac){openEntry(null,ac.dataset.addcase);return;}
+  const an=e.target.closest("[data-addnote]");if(an){openNote(null,an.dataset.addnote);return;}
+  const job=e.target.closest("[data-id]");if(job){openEntry(job.dataset.id);}
+});
+function delVeh(v){
+  if(dayEntries().some(e=>e.vehicle===v)){uiAlert(v+" には案件が入っています。案件を移動または削除してから車両を外してください。");return;}
+  uiConfirm(v+" を "+cur+" の一覧から外しますか？（上の「＋ 車両」でまた追加できます）",()=>{
+    db.dayHidden[cur]=[...new Set([...(db.dayHidden[cur]||[]),v])];
+    db.dayAdded[cur]=(db.dayAdded[cur]||[]).filter(x=>x!==v);
+    save();render();
+  },"外す");
+}
+function closeEntry(){$("#ov").classList.remove("on");editId=null;}
+$("#mx").onclick=closeEntry;$("#cancel").onclick=closeEntry;
+$("#ov").addEventListener("click",e=>{if(e.target.id==="ov")closeEntry();});
+function buildEntry(id){
+  const vehicle=$("#f_vehicle").value;
+  const date=$("#f_date").value||cur;
+  const ex=id?db.entries.find(x=>x.id===id):null;
+  // 同じ日付・同じ車両なら並び順を維持、日付/車両が変わったら移動先で採番
+  const same=ex&&typeof ex.ord==="number"&&ex.vehicle===vehicle&&ex.date===date;
+  const ord=same?ex.ord:(function(){const os=db.entries.filter(x=>x.date===date&&x.vehicle===vehicle&&x.id!==id).map(x=>typeof x.ord==="number"?x.ord:-1);return os.length?Math.max(...os)+1:0;})();
+  return {id:id||uid(),date,vehicle,ord,client:$("#f_client").value.trim(),
+    item:$("#f_item").value.trim(),weight:$("#f_weight").value.trim(),setti:$("#f_setti").checked,heavy:$("#f_heavy").checked,
+    customerPick:$("#f_pick_cust").value.trim(),customerDrop:$("#f_drop_cust").value.trim(),phone:$("#f_phone").value.trim(),pick:$("#f_pick").value.trim(),
+    drop:$("#f_drop").value.trim(),pickFloor:$("#f_pick_floor").value.trim(),pickTime:$("#f_pick_time").value.trim(),
+    dropFloor:$("#f_drop_floor").value.trim(),dropTime:$("#f_drop_time").value.trim(),tours:$("#f_tours").value.trim(),
+    status:sel.status,memo:$("#f_memo").value.trim(),moneyReady:$("#f_moneyReady").checked,materials:$("#f_materials").value.trim()};
+}
+$("#save").onclick=()=>{
+  const obj=buildEntry(editId);
+  if(editId){const i=db.entries.findIndex(x=>x.id===editId);db.entries[i]=obj;}else{db.entries.push(obj);}
+  save();closeEntry();render();
+};
+// 合同作業コピー：現在の案件を保存してから、他の車両へ複製
+$("#copy").onclick=()=>{
+  const obj=buildEntry(editId);
+  if(editId){const i=db.entries.findIndex(x=>x.id===editId);db.entries[i]=obj;}
+  else{db.entries.push(obj);editId=obj.id;$("#del").style.display="";$("#mtitle").firstChild.textContent="案件編集 ";}
+  save();render();copySource=obj;openCopy();
+};
+function openCopy(){
+  const shown=[...computeVehSet()].filter(v=>v!==copySource.vehicle).sort((a,b)=>vord(a)-vord(b));
+  $("#cp_list").innerHTML=shown.length?shown.map(v=>`<span class="chk" data-copyto="${esc(v)}">${esc(v)}</span>`).join(""):'<span class="hint">コピー先の車両がありません</span>';
+  $("#cp_done").textContent="";
+  $("#ovcp").classList.add("on");
+}
+$("#ovcp").addEventListener("click",e=>{
+  const c=e.target.closest("[data-copyto]");
+  if(c){if(c.classList.contains("on"))return;const tv=c.dataset.copyto;db.entries.push({...copySource,id:uid(),vehicle:tv,ord:nextOrd(tv),joint:true});save();render();c.classList.add("on");$("#cp_done").textContent=[...document.querySelectorAll('#cp_list .chk.on')].map(x=>x.textContent).join("・")+" にコピーしました。";return;}
+  if(e.target.id==="ovcp")$("#ovcp").classList.remove("on");
+});
+$("#cpx").onclick=$("#cpclose").onclick=()=>$("#ovcp").classList.remove("on");
+// ---- 連絡メモ ----
+let noteEdit=null,noteVeh=null,noteSel={bg:"#e7e0f5",fg:"#5b3ea8",size:"1rem"};
+function openNote(id,vehicle){
+  const n=id?db.notes.find(x=>x.id===id):null;
+  noteEdit=id||null; noteVeh=(n&&n.vehicle)||vehicle;
+  $("#ovn_title").firstChild.textContent="連絡メモ（"+noteVeh+"） ";
+  $("#n_text").value=n?n.text:"";
+  noteSel={bg:n?n.bg:"#e7e0f5",fg:n?n.fg:"#5b3ea8",size:n?n.size:"1rem"};
+  $("#n_del").style.display=id?"":"none";
+  renderNoteOpts();updateNotePreview();
+  $("#ovn").classList.add("on");
+}
+function renderNoteOpts(){
+  $("#n_colors").innerHTML=NOTE_COLORS.map(c=>`<span class="chk colorchip ${noteSel.bg===c.bg?'on':''}" data-notebg="${c.bg}" data-notefg="${c.fg}" title="${c.name}" style="background:${c.bg}"></span>`).join("");
+  $("#n_sizes").innerHTML=NOTE_SIZES.map(s=>`<span class="chk ${noteSel.size===s.px?'on':''}" data-notesize="${s.px}">${s.name}</span>`).join("");
+}
+function updateNotePreview(){const p=$("#n_preview");p.textContent=$("#n_text").value||"（プレビュー）";p.style.background=noteSel.bg;p.style.color=noteSel.fg;p.style.fontSize=noteSel.size;}
+$("#ovn").addEventListener("click",e=>{
+  const c=e.target.closest("[data-notebg]");if(c){noteSel.bg=c.dataset.notebg;noteSel.fg=c.dataset.notefg;renderNoteOpts();updateNotePreview();return;}
+  const s=e.target.closest("[data-notesize]");if(s){noteSel.size=s.dataset.notesize;renderNoteOpts();updateNotePreview();return;}
+  if(e.target.id==="ovn")$("#ovn").classList.remove("on");
+});
+$("#n_text").addEventListener("input",updateNotePreview);
+$("#nx").onclick=$("#n_cancel").onclick=()=>$("#ovn").classList.remove("on");
+$("#n_save").onclick=()=>{
+  const text=$("#n_text").value.trim();if(!text){uiAlert("メモ内容を入力してください。");return;}
+  const nex=noteEdit?db.notes.find(x=>x.id===noteEdit):null;
+  const nord=(nex&&typeof nex.ord==="number"&&nex.vehicle===noteVeh)?nex.ord:nextOrd(noteVeh);
+  const obj={id:noteEdit||uid(),date:cur,vehicle:noteVeh,text,bg:noteSel.bg,fg:noteSel.fg,size:noteSel.size,ord:nord};
+  if(noteEdit){const i=db.notes.findIndex(x=>x.id===noteEdit);db.notes[i]=obj;}else{db.notes.push(obj);}
+  save();$("#ovn").classList.remove("on");render();
+};
+$("#n_del").onclick=()=>{if(!noteEdit)return;const id=noteEdit;uiConfirm("この連絡メモを削除しますか？",()=>{db.notes=db.notes.filter(x=>x.id!==id);save();$("#ovn").classList.remove("on");render();},"削除",true);};
+// ドラッグで別の車両へ移動
+// ===== 並べ替え・移動（案件／連絡メモ：車両間＋案件の間へ挿入）=====
+let justDragged=0;
+function clearMarks(){document.querySelectorAll(".drop-before,.drop-after,.drop-band").forEach(x=>x.classList.remove("drop-before","drop-after","drop-band"));}
+function markZone(z,clientY){
+  clearMarks();
+  if(z.matches(".veh-band")||z.matches(".veh")||z.matches(".addrow")){z.classList.add("drop-band");return;}
+  if(z.dataset.pos!=null){const r=z.getBoundingClientRect();z.classList.add(clientY>r.top+r.height/2?"drop-after":"drop-before");}
+  else z.classList.add("drop-band");
+}
+function calcInsert(z,clientY){
+  const v=z.dataset.vehname;
+  if(z.matches(".veh-band"))return {v,idx:0};
+  if(z.matches(".addrow")||z.matches(".veh"))return {v,idx:vehItems(v).length};
+  if(z.dataset.pos!=null){const r=z.getBoundingClientRect();return {v,idx:parseInt(z.dataset.pos)+(clientY>r.top+r.height/2?1:0)};}
+  return {v,idx:vehItems(v).length};
+}
+// --- マウス（PC）: HTML5 ドラッグ&ドロップ ---
+let dg=null;
+$("#viewhost").addEventListener("dragstart",e=>{const r=e.target.closest('[draggable="true"]');if(!r)return;if(r.dataset.id)dg={kind:"entry",id:r.dataset.id};else if(r.dataset.noteid)dg={kind:"note",id:r.dataset.noteid};else return;e.dataTransfer.effectAllowed="move";try{e.dataTransfer.setData("text/plain",dg.id);}catch(_){}r.classList.add("dragging");});
+$("#viewhost").addEventListener("dragend",()=>{document.querySelectorAll(".dragging").forEach(x=>x.classList.remove("dragging"));clearMarks();dg=null;});
+$("#viewhost").addEventListener("dragover",e=>{if(!dg)return;const z=e.target.closest("[data-vehname]");if(!z)return;e.preventDefault();e.dataTransfer.dropEffect="move";markZone(z,e.clientY);});
+$("#viewhost").addEventListener("drop",e=>{if(!dg)return;const z=e.target.closest("[data-vehname]");if(z){e.preventDefault();const {v,idx}=calcInsert(z,e.clientY);moveItem(dg.kind,dg.id,v,idx);}clearMarks();dg=null;});
+// --- タッチ（スマホ）: 長押しで移動開始 ---
+let tDrag=null,tGhost=null,tLast=null,lpTimer=null,tStart=null;
+function endTouch(){if(lpTimer){clearTimeout(lpTimer);lpTimer=null;}document.querySelectorAll(".dragging").forEach(x=>x.classList.remove("dragging"));clearMarks();if(tGhost){tGhost.remove();tGhost=null;}if(tDrag){justDragged=Date.now();}tDrag=null;tLast=null;tStart=null;}
+$("#viewhost").addEventListener("touchstart",e=>{
+  const r=e.target.closest('[draggable="true"]');if(!r)return;
+  const kind=r.dataset.id?"entry":(r.dataset.noteid?"note":null);if(!kind)return;
+  const id=r.dataset.id||r.dataset.noteid,t=e.touches[0];tStart={x:t.clientX,y:t.clientY};
+  lpTimer=setTimeout(()=>{lpTimer=null;tDrag={kind,id};r.classList.add("dragging");
+    const lbl=kind==="note"?((db.notes.find(x=>x.id===id)||{}).text||"メモ"):((db.entries.find(x=>x.id===id)||{}).client||"案件");
+    tGhost=document.createElement("div");tGhost.className="drag-ghost";tGhost.textContent="⇅ "+String(lbl).slice(0,14);document.body.appendChild(tGhost);
+    tGhost.style.left=t.clientX+"px";tGhost.style.top=(t.clientY-24)+"px";
+    if(navigator.vibrate)navigator.vibrate(12);
+  },280);
+},{passive:true});
+$("#viewhost").addEventListener("touchmove",e=>{
+  if(!tDrag){if(lpTimer&&tStart){const t=e.touches[0];if(Math.abs(t.clientX-tStart.x)>10||Math.abs(t.clientY-tStart.y)>10){clearTimeout(lpTimer);lpTimer=null;}}return;}
+  e.preventDefault();const t=e.touches[0];
+  if(tGhost){tGhost.style.left=t.clientX+"px";tGhost.style.top=(t.clientY-24)+"px";}
+  const el=document.elementFromPoint(t.clientX,t.clientY),z=el&&el.closest("[data-vehname]");
+  if(z){markZone(z,t.clientY);tLast={z,y:t.clientY};}else{clearMarks();tLast=null;}
+},{passive:false});
+$("#viewhost").addEventListener("touchend",()=>{
+  if(tDrag&&tLast&&tLast.z){const {v,idx}=calcInsert(tLast.z,tLast.y);const d=tDrag;endTouch();moveItem(d.kind,d.id,v,idx);return;}
+  endTouch();
+});
+$("#viewhost").addEventListener("touchcancel",endTouch);
+$("#del").onclick=()=>{if(!editId)return;const id=editId;uiConfirm("この案件を削除しますか？",()=>{db.entries=db.entries.filter(x=>x.id!==id);save();closeEntry();render();},"削除",true);};
+
+// ---- 号車ヘッダー modal ----
+let hVeh=null,hSel=[];
+function openHeader(v){
+  hVeh=v;const h=getHeader(v);
+  $("#htitle").firstChild.textContent="車両の情報 ";
+  $("#h_vehicle").value=v;$("#h_depart").value=h.depart||"";$("#h_shitei").checked=!!h.shitei;
+  $("#h_fleet").checked=db.fleet.includes(v);
+  $("#h_fleet_fld").style.display=isSpecial(v)?"none":"";
+  $("#ovh").classList.add("on");
+}
+$("#ovh").addEventListener("click",e=>{
+  if(e.target.id==="ovh")$("#ovh").classList.remove("on");
+});
+$("#hx").onclick=$("#hcancel").onclick=()=>$("#ovh").classList.remove("on");
+$("#hsave").onclick=()=>{
+  const ex=getHeader(hVeh);
+  db.headers[hkey(hVeh)]={crew:[...(ex.crew||[])],depart:$("#h_depart").value.trim(),shitei:$("#h_shitei").checked};
+  if($("#h_fleet").checked){if(!db.fleet.includes(hVeh))db.fleet.push(hVeh);}else{db.fleet=db.fleet.filter(x=>x!==hVeh);}
+  save();$("#ovh").classList.remove("on");render();
+};
+
+// ---- 号車 追加/削除 ----
+$("#addveh").onclick=()=>openAddVeh();
+function openAddVeh(){
+  $("#av_date").textContent=cur;
+  const shown=computeVehSet();
+  const avail=db.masters.veh.filter(v=>!shown.has(v));
+  $("#av_list").innerHTML=avail.length?avail.map(v=>`<span class="chk" data-addveh="${esc(v)}">${esc(v)}</span>`).join(""):'<span class="hint">追加できる号車はありません（「マスタ」で号車を増やせます）</span>';
+  $("#ovav").classList.add("on");
+}
+$("#ovav").addEventListener("click",e=>{
+  const a=e.target.closest("[data-addveh]");
+  if(a){const v=a.dataset.addveh;db.dayAdded[cur]=[...new Set([...(db.dayAdded[cur]||[]),v])];db.dayHidden[cur]=(db.dayHidden[cur]||[]).filter(x=>x!==v);save();render();openAddVeh();return;}
+  if(e.target.id==="ovav")$("#ovav").classList.remove("on");
+});
+$("#avx").onclick=$("#avclose").onclick=()=>$("#ovav").classList.remove("on");
+$("#av_addnew").onclick=()=>{
+  const inp=$("#av_new"),v=inp.value.trim();if(!v)return;
+  if(!db.masters.veh.includes(v))db.masters.veh.push(v);
+  db.dayAdded[cur]=[...new Set([...(db.dayAdded[cur]||[]),v])];
+  db.dayHidden[cur]=(db.dayHidden[cur]||[]).filter(x=>x!==v);
+  inp.value="";save();render();openAddVeh();
+};
+
+// ---- masters ----
+function renderMasters(){
+  const mk=(arr,kind)=>arr.map((v,i)=>`<span class="tag2">${esc(v)}<button data-del="${kind}" data-i="${i}">×</button></span>`).join("");
+  $("#m_crew").innerHTML=mk(db.masters.crew,"crew");
+  $("#m_jimu").innerHTML=mk(db.masters.jimu||[],"jimu");
+  $("#m_cli").innerHTML=mk(db.masters.cli,"cli");$("#m_sho").innerHTML=mk(db.masters.sho,"sho");
+  $("#m_phones").innerHTML=mk(db.masters.phones||[],"phones");
+  $("#m_veh").innerHTML=db.masters.veh.map(v=>`<div class="vehman"><label class="vswitch"><input type="checkbox" data-fleet="${esc(v)}" ${db.fleet.includes(v)?"checked":""}>毎日</label><span class="vname2">${esc(v)}</span><button class="btn danger mini" data-delvehm="${esc(v)}" title="この車両を廃車（名簿から削除）">削除</button></div>`).join("");
+}
+$("#masters").onclick=()=>{renderMasters();$("#ovm").classList.add("on");};
+$("#mmx").onclick=$("#mmclose").onclick=()=>$("#ovm").classList.remove("on");
+$("#ovm").addEventListener("click",e=>{if(e.target.id==="ovm")$("#ovm").classList.remove("on");});
+document.addEventListener("click",e=>{
+  const a=e.target.closest("[data-add]");if(a){const kind=a.dataset.add,inp=document.getElementById("add_"+kind),val=inp.value.trim();if(val){if(!db.masters[kind].includes(val))db.masters[kind].push(val);if(kind==="veh"&&!db.fleet.includes(val))db.fleet.push(val);inp.value="";save();renderMasters();render();}}
+  const d=e.target.closest("[data-del]");if(d){db.masters[d.dataset.del].splice(+d.dataset.i,1);save();renderMasters();render();}
+  const dvm=e.target.closest("[data-delvehm]");if(dvm){const v=dvm.dataset.delvehm;uiConfirm(v+" を名簿から削除（廃車）しますか？\n毎日表示と車両リストから消えます（登録済みの案件は残ります）。",()=>{db.masters.veh=db.masters.veh.filter(x=>x!==v);db.fleet=db.fleet.filter(x=>x!==v);save();renderMasters();render();},"廃車（削除）",true);}
+});
+document.addEventListener("change",e=>{
+  const f=e.target.closest("[data-fleet]");if(f){const v=f.dataset.fleet;if(f.checked){if(!db.fleet.includes(v))db.fleet.push(v);}else{db.fleet=db.fleet.filter(x=>x!==v);}save();render();}
+});
+
+// ---- CSV ----
+function toCSV(rows){const q=v=>{v=v==null?"":String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};return "﻿"+rows.map(r=>r.map(q).join(",")).join("\r\n");}
+function exportCSV(scope){
+  const head=["日付","号車","作業員","出勤","請求","品名","重量","設置","電話","引取先","引取お客様","引取階数","引取時間","届け先","届けお客様","届け階数","届け時間","配送時間","区分","状態","備考"];
+  const src=scope==="month"?db.entries.filter(x=>x.date.slice(0,7)===cur.slice(0,7)):dayEntries();
+  const rows=[head].concat(src.sort((a,b)=>(a.date+a.vehicle).localeCompare(b.date+b.vehicle)).map(e=>{
+    const savedcur=cur; // header lookup uses cur; for month, temporarily map by date
+    const h=db.headers[e.date+"|"+e.vehicle]||{crew:[],depart:""};
+    return [e.date,e.vehicle,(h.crew||[]).join(" "),h.depart,e.client,e.item,e.weight,e.setti?"設置":"",e.phone,e.pick,e.customerPick||e.customer||"",e.pickFloor||e.shonyu||"",e.pickTime||e.treq||"",e.drop,e.customerDrop||"",e.dropFloor||"",e.dropTime||"",e.tours,kubunOf(e),e.status,e.memo];
+  }));
+  const blob=new Blob([toCSV(rows)],{type:"text/csv;charset=utf-8"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);
+  a.download=(scope==="month"?"配車_"+cur.slice(0,7):"配車_"+cur)+".csv";a.click();URL.revokeObjectURL(a.href);
+}
+$("#csv").onclick=()=>{uiModal("CSVをどの範囲で書き出しますか？",[{label:"この日だけ",cls:"gray",onClick:()=>exportCSV("day")},{label:"この月ぜんぶ",cls:"save",onClick:()=>exportCSV("month")}],"CSV出力");};
+
+// ---- 共通ダイアログ（標準confirm/alertは共有iframeで無効なため） ----
+function uiModal(msg,buttons,title){
+  $("#ovc_title").firstChild.textContent=(title||"確認")+" ";
+  $("#ovc_msg").textContent=msg;
+  const box=$("#ovc_btns");box.innerHTML="";
+  buttons.forEach(b=>{const el=document.createElement("button");el.className="btn "+(b.cls||"gray");el.textContent=b.label;el.onclick=()=>{$("#ovc").classList.remove("on");if(b.onClick)b.onClick();};box.appendChild(el);});
+  $("#ovc").classList.add("on");
+}
+function uiConfirm(msg,onYes,yesLabel,danger){uiModal(msg,[{label:"キャンセル",cls:"gray"},{label:yesLabel||"OK",cls:danger?"danger":"save",onClick:onYes}]);}
+function uiAlert(msg){uiModal(msg,[{label:"OK",cls:"gray"}],"お知らせ");}
+$("#ovc_x").onclick=()=>$("#ovc").classList.remove("on");
+$("#ovc").addEventListener("click",e=>{if(e.target.id==="ovc")$("#ovc").classList.remove("on");});
+
+render();
+</script>
+</body>
+</html>
