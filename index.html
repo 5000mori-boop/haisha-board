@@ -433,6 +433,7 @@
   .modal h2 .x{cursor:pointer;color:var(--muted);font-size:1.4rem;line-height:1;background:none;border:none}
   .form{padding:15px 20px;display:grid;grid-template-columns:1fr 1fr;gap:11px 14px}
   .form .full{grid-column:1/-1}
+  .pdrow{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px;align-items:start}
   .fld label{display:block;font-size:.74rem;font-weight:700;color:var(--muted);margin-bottom:4px}
   .fld input,.fld select,.fld textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:.92rem;font-family:inherit;background:#fff;color:var(--ink)}
   .fld input:focus,.fld select:focus,.fld textarea:focus{outline:2px solid var(--accent);border-color:var(--accent)}
@@ -510,7 +511,7 @@
   .vehman .vswitch input{width:15px;height:15px;margin:0}
   .vehman .tag-del{border:none;background:none;color:#b0492f;cursor:pointer;font-weight:800;font-size:1rem;line-height:1}
   .addtag{display:flex;gap:6px}.addtag input{flex:1;border:1px solid var(--line);border-radius:7px;padding:6px 9px;font-size:.85rem}
-  @media(max-width:560px){.form{grid-template-columns:1fr}.brand small{display:none}}
+  @media(max-width:560px){.form{grid-template-columns:1fr}.pdrow{grid-template-columns:1fr}.brand small{display:none}}
   /* AIサジェスト欄 */
   .ai-box{grid-column:1/-1;background:linear-gradient(180deg,#fff7ef,#fdeede);border:1px solid #f0d3b3;border-radius:10px;padding:9px 12px}
   .ai-h{font-weight:800;font-size:.85rem;color:var(--accent-d);display:flex;align-items:center;gap:8px;margin-bottom:5px}
@@ -551,9 +552,10 @@
   .tl-blk{position:absolute;top:3px;height:22px;background:linear-gradient(180deg,#f6b783,var(--accent));color:#fff;font-size:.66rem;font-weight:700;border-radius:4px;padding:2px 4px;overflow:hidden;white-space:nowrap;box-shadow:0 1px 2px rgba(0,0,0,.15)}
   .tl-flex{position:absolute;right:3px;top:5px;font-size:.62rem;color:var(--muted);background:#fff;border:1px dashed var(--line);border-radius:4px;padding:0 4px}
   /* 引取先・届け先の 作業階数/時間 の小さい入力 */
-  .locsub{display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap}
-  .ls-lbl{font-size:.72rem;font-weight:700;color:var(--muted)}
-  .ls-in{width:90px;border:1px solid var(--line);border-radius:7px;padding:5px 8px;font-size:.85rem;color:var(--ink)}
+  .locsub{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px;margin-top:6px}
+  .lscell{display:flex;align-items:center;gap:6px;min-width:0}
+  .ls-lbl{font-size:.72rem;font-weight:700;color:var(--muted);flex:0 0 auto}
+  .locsub .ls-in{flex:1 1 auto;min-width:0;width:auto;border:1px solid var(--line);border-radius:7px;padding:5px 8px;font-size:.85rem;color:var(--ink)}
   /* AI配車（サジェスト・配車アシスト）は開発中のため一旦非表示。再表示するにはこの1行を削除 */
   #assist,#aiSuggest{display:none!important}
 </style>
@@ -661,8 +663,10 @@
       <div class="fld"><label>重量</label><input id="f_weight"></div>
       <div class="fld"><div class="toggle"><input type="checkbox" id="f_setti"><div><b>設置あり（赤表示）</b><br><small>設置作業手当のカウント対象</small></div></div></div>
       <div class="fld"><div class="toggle"><input type="checkbox" id="f_heavy"><div><b>重量物</b><br><small>設置作業手当のカウント対象</small></div></div></div>
-      <div class="fld full pickf"><label>引取先（黄）※空欄なら「届けのみ」</label><input id="f_pick"><div class="locsub"><span class="ls-lbl">お客様名</span><input id="f_pick_cust" class="ls-in"><span class="ls-lbl">電話</span><input id="f_pick_phone" class="ls-in" inputmode="tel" style="width:118px"><span class="ls-lbl">作業階数</span><input id="f_pick_floor" class="ls-in" list="floors"><span class="ls-lbl">時間</span><input id="f_pick_time" class="ls-in"></div></div>
-      <div class="fld full dropf"><label>届け先（青）</label><input id="f_drop"><div class="locsub"><span class="ls-lbl">お客様名</span><input id="f_drop_cust" class="ls-in"><span class="ls-lbl">電話</span><input id="f_drop_phone" class="ls-in" inputmode="tel" style="width:118px"><span class="ls-lbl">作業階数</span><input id="f_drop_floor" class="ls-in" list="floors"><span class="ls-lbl">時間</span><input id="f_drop_time" class="ls-in"><datalist id="floors"></datalist></div></div>
+      <div class="full pdrow">
+      <div class="fld pickf"><label>引取先（黄）※空欄なら「届けのみ」</label><input id="f_pick"><div class="locsub"><div class="lscell"><span class="ls-lbl">お客様名</span><input id="f_pick_cust" class="ls-in"></div><div class="lscell"><span class="ls-lbl">電話</span><input id="f_pick_phone" class="ls-in" inputmode="tel"></div><div class="lscell"><span class="ls-lbl">階数</span><input id="f_pick_floor" class="ls-in" list="floors"></div><div class="lscell"><span class="ls-lbl">時間</span><input id="f_pick_time" class="ls-in"></div></div></div>
+      <div class="fld dropf"><label>届け先（青）</label><input id="f_drop"><div class="locsub"><div class="lscell"><span class="ls-lbl">お客様名</span><input id="f_drop_cust" class="ls-in"></div><div class="lscell"><span class="ls-lbl">電話</span><input id="f_drop_phone" class="ls-in" inputmode="tel"></div><div class="lscell"><span class="ls-lbl">階数</span><input id="f_drop_floor" class="ls-in" list="floors"></div><div class="lscell"><span class="ls-lbl">時間</span><input id="f_drop_time" class="ls-in"></div><datalist id="floors"></datalist></div></div>
+      </div>
       <div class="fld"><label>配送時間</label><input id="f_tours"></div>
       <div class="fld full"><label>状態</label><div class="seg status-seg"><div class="chk" data-status="仮">仮</div><div class="chk" data-status="確定">確定</div><div class="chk" data-status="アポインOK">アポインOK</div><div class="chk" data-status="アポOK（メール）">アポOK（メール）</div><div class="chk" data-status="キャンセル">キャンセル</div></div></div>
       <div class="fld full"><label>備考</label><textarea id="f_memo"></textarea>
@@ -868,8 +872,10 @@
           <div class="fld"><label>重量</label><input id="ar_weight"></div>
           <div class="fld"><div class="toggle"><input type="checkbox" id="ar_setti"><div><b>設置あり（赤表示）</b></div></div></div>
           <div class="fld"><div class="toggle"><input type="checkbox" id="ar_heavy"><div><b>重量物</b></div></div></div>
-          <div class="fld full pickf"><label>引取先（黄）※空欄なら「届けのみ」</label><input id="ar_pick"><div class="locsub"><span class="ls-lbl">お客様名</span><input id="ar_pick_cust" class="ls-in"><span class="ls-lbl">電話</span><input id="ar_pick_phone" class="ls-in" inputmode="tel" style="width:118px"><span class="ls-lbl">作業階数</span><input id="ar_pick_floor" class="ls-in" list="floors"><span class="ls-lbl">時間</span><input id="ar_pick_time" class="ls-in"></div></div>
-          <div class="fld full dropf"><label>届け先（青）</label><input id="ar_drop"><div class="locsub"><span class="ls-lbl">お客様名</span><input id="ar_drop_cust" class="ls-in"><span class="ls-lbl">電話</span><input id="ar_drop_phone" class="ls-in" inputmode="tel" style="width:118px"><span class="ls-lbl">作業階数</span><input id="ar_drop_floor" class="ls-in" list="floors"><span class="ls-lbl">時間</span><input id="ar_drop_time" class="ls-in"></div></div>
+          <div class="full pdrow">
+          <div class="fld pickf"><label>引取先（黄）※空欄なら「届けのみ」</label><input id="ar_pick"><div class="locsub"><div class="lscell"><span class="ls-lbl">お客様名</span><input id="ar_pick_cust" class="ls-in"></div><div class="lscell"><span class="ls-lbl">電話</span><input id="ar_pick_phone" class="ls-in" inputmode="tel"></div><div class="lscell"><span class="ls-lbl">階数</span><input id="ar_pick_floor" class="ls-in" list="floors"></div><div class="lscell"><span class="ls-lbl">時間</span><input id="ar_pick_time" class="ls-in"></div></div></div>
+          <div class="fld dropf"><label>届け先（青）</label><input id="ar_drop"><div class="locsub"><div class="lscell"><span class="ls-lbl">お客様名</span><input id="ar_drop_cust" class="ls-in"></div><div class="lscell"><span class="ls-lbl">電話</span><input id="ar_drop_phone" class="ls-in" inputmode="tel"></div><div class="lscell"><span class="ls-lbl">階数</span><input id="ar_drop_floor" class="ls-in" list="floors"></div><div class="lscell"><span class="ls-lbl">時間</span><input id="ar_drop_time" class="ls-in"></div></div></div>
+          </div>
           <div class="fld"><label>配送時間</label><input id="ar_tours"></div>
           <div class="fld"><label>状態</label><select id="ar_status"><option>仮</option><option>確定</option><option>アポインOK</option><option>アポOK（メール）</option><option>キャンセル</option></select></div>
           <div class="fld full"><label>備考</label><textarea id="ar_memo"></textarea></div>
