@@ -200,8 +200,9 @@
   .vehsum{font-size:.82rem;margin:0 0 10px;padding:8px 10px;border-radius:8px;background:#f4f6f9;color:var(--muted)}
   .vehsum b{color:#8f261a}
   .vehedit-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-  .repair-row{display:grid;grid-template-columns:130px 1fr 92px 90px 1fr auto;gap:6px;margin-bottom:6px;align-items:center}
-  .repair-row input,.repair-row select{padding:5px 7px;border:1px solid var(--line);border-radius:6px;font-size:.8rem}
+  .repair-row{display:grid;grid-template-columns:130px 1fr 92px 90px 1fr auto;gap:6px;margin-bottom:6px;align-items:start}
+  .repair-row input,.repair-row select,.repair-row textarea{padding:5px 7px;border:1px solid var(--line);border-radius:6px;font-size:.8rem}
+  .repair-row textarea{resize:none;overflow-y:auto;line-height:1.4;height:31px;max-height:82px;font-family:inherit;box-sizing:border-box;width:100%}
   @media(max-width:640px){.repair-row{grid-template-columns:1fr 1fr;gap:5px}}
   .docrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:#f7f9fc}
   .docrow .docname{font-weight:700;font-size:.86rem;word-break:break-all}
@@ -215,6 +216,21 @@
   .surv-name{font-size:.66rem;color:var(--muted);max-width:96px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .surv-item .btn.danger.mini{padding:0 6px}
   .survtop{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  /* 請求書取り込み（左PDF・右OCR一覧） */
+  #ovinvocr .modal{width:97vw;max-width:1320px;max-height:95vh;display:flex;flex-direction:column}
+  .invocr-body{display:flex;gap:12px;padding:12px 16px;flex:1;min-height:0}
+  .invocr-left{flex:1.2;min-width:0;border:1px solid var(--line);border-radius:8px;overflow:auto;background:#f4f6f9}
+  .invocr-left embed{width:100%;height:100%;min-height:100%;display:block;border:0}
+  .invocr-left img{width:100%;height:auto;display:block}
+  .invocr-right{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden}
+  .invocr-status{font-size:.82rem;color:var(--muted);margin-bottom:8px}
+  #invLines{flex:1;min-height:0;display:flex;flex-direction:column}
+  .inv-head{background:#eef4fb;border:1px solid #cfe0f2;border-radius:8px;padding:8px 10px;margin-bottom:10px;font-size:.85rem;color:#1f4e79}
+  .inv-text{flex:1;overflow:auto;white-space:pre-wrap;word-break:break-word;user-select:text;-webkit-user-select:text;font-size:.98rem;line-height:1.75;border:1px solid var(--line);border-radius:8px;padding:12px 14px;background:#fff}
+  .invocr-empty{color:var(--muted);font-size:.85rem;padding:24px;text-align:center}
+  .invocr-foot{flex-wrap:wrap;gap:10px}
+  .invocr-foot #invVeh{padding:5px 8px;border:1px solid var(--line);border-radius:6px;font-size:.9rem}
+  @media(max-width:820px){#ovinvocr .modal{max-height:96vh}.invocr-body{flex-direction:column}.invocr-left{height:42vh;flex:none}.invocr-right{height:38vh;flex:none}}
   .survtbl{border:1px solid var(--line);border-radius:9px;overflow:hidden}
   .survtbl-r{display:grid;grid-template-columns:2.2fr 1fr 1.2fr .6fr;gap:8px;padding:9px 12px;border-bottom:1px solid var(--line);font-size:.85rem;align-items:center;cursor:pointer}
   .survtbl-r:last-child{border-bottom:none}
@@ -321,6 +337,8 @@
   /* 利用予約カレンダー */
   .resv-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
   .resv-nav b{font-size:1.05rem}
+  .modal .btn.ghost{background:#eef1f6;color:#1f2530;border:1px solid var(--line)}
+  .modal .btn.ghost:hover{background:#e0e5ee}
   .resv-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
   .resv-dow{text-align:center;font-size:.72rem;color:var(--muted);font-weight:700;padding:2px 0}
   .resv-cell{min-height:60px;border:1px solid var(--line);border-radius:7px;padding:3px 4px;display:flex;flex-direction:column;gap:2px;background:#fff;overflow:hidden}
@@ -338,6 +356,12 @@
   .veh-alert{display:inline-block;margin-left:8px;font-size:.72rem;font-weight:800;padding:2px 7px;border-radius:6px;cursor:pointer;vertical-align:middle;white-space:nowrap}
   .veh-alert.warn{background:#ffe27a;color:#7a5c00}
   .veh-alert.danger{background:#f3b1a8;color:#8f261a}
+  /* 点検・車検で押さえた日 */
+  .veh-insp{display:inline-block;margin-left:8px;font-size:.74rem;font-weight:800;padding:2px 9px;border-radius:6px;background:#c0392b;color:#fff;white-space:nowrap;vertical-align:middle}
+  .insp-block{color:#c0392b;font-weight:700;font-size:.82rem;margin-right:14px}
+  .resv-cell.insp-pick{cursor:pointer}
+  .resv-cell.insp-pick:hover{background:#eef4fb}
+  .resv-cell.ins-on{background:#fdecec;border-color:#c0392b}
   /* ===== 業務ポータル（トップ画面） ===== */
   #portal{position:fixed;inset:0;z-index:1000;overflow:auto;--pcard:#111621;--pcard2:#0d121b;--pline:rgba(255,255,255,.07);--pline2:rgba(255,255,255,.13);--pink:#f1f4fa;--pmuted:#8b95a7;--pgold:#e6b455;--pgold2:#f7d488;--pteal:#3fd6c4;--psh:0 14px 40px rgba(0,0,0,.55);color:var(--pink);font-family:"Segoe UI","Hiragino Kaku Gothic ProN","Yu Gothic UI",sans-serif;-webkit-font-smoothing:antialiased;background:radial-gradient(1200px 560px at 82% -10%,rgba(230,180,85,.13),transparent 58%),radial-gradient(1000px 560px at 4% 2%,rgba(63,214,196,.08),transparent 56%),#07090d}
   #portal.hidden{display:none}
@@ -401,6 +425,34 @@
   .matline{margin-top:4px;background:#fff4c2;border:1px solid #e6d287;border-radius:6px;padding:3px 7px;font-size:.74rem;font-weight:700;color:#d32f2f}
   /* 合同作業（コピー側）＝電話番号欄にはっきり大きく表示 */
   .joint-mark{display:block;font-size:1.05rem;font-weight:900;letter-spacing:.06em;color:#fff;background:#2f6fbf;border-radius:6px;padding:5px 4px;text-align:center;line-height:1.2;white-space:nowrap}
+  .tel-ghost-wrap{position:relative}
+  .joint-ghost{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.05rem;font-weight:900;letter-spacing:.06em;color:rgba(47,111,191,.32);pointer-events:none;white-space:nowrap}
+  /* 案件フォーム：寸法/重量物/設置あり＋状態チェック（コンパクト） */
+  .dimrow{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+  .dimcol{display:grid;gap:7px}
+  .itagcol{display:grid;gap:6px;align-content:start}
+  .itag-hd{font-size:.74rem;color:var(--muted);font-weight:700}
+  .mini-chk{display:flex;align-items:center;gap:6px;font-size:.88rem;font-weight:700;color:#111;cursor:pointer;padding:2px 0}
+  .mini-chk .mini-note{font-size:.66rem;font-weight:500;color:var(--muted);margin-left:2px}
+  .itag-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .itag-chk{display:flex;align-items:center;gap:5px;padding:4px 7px;border:1px solid var(--line);border-radius:6px;font-size:.82rem;font-weight:700;color:#111;cursor:pointer}
+  .itag-chk input,.mini-chk input{margin:0;width:16px!important;height:16px;flex:0 0 auto;min-width:0}
+  .itag-chk.genchi{background:#e2f5db}
+  .itag-chk.iremachi,.itag-chk.hokan{background:#fbdedb}
+  .itag-chk.shutsu{background:#dcebfb}
+  @media(max-width:460px){.dimrow{grid-template-columns:1fr}}
+  /* 受付者（合同作業コピーの右横） */
+  .recv-wrap{display:flex;align-items:center;gap:5px;margin-left:8px}
+  .recv-in{width:130px!important;padding:6px 9px;border:1px solid var(--line);border-radius:7px;font-size:.85rem}
+  .recv-hist{cursor:help;font-size:1rem;opacity:.35;user-select:none}
+  .recv-hist.on{opacity:.95}
+  /* 品名欄の縦帯（状態タグ） */
+  .itemcell{display:flex;align-items:flex-start;gap:3px}
+  .itemtxt{flex:1;min-width:0}
+  .itag-strip{writing-mode:vertical-rl;text-orientation:upright;font-size:.6rem;font-weight:800;color:#000;padding:3px 1px;border-radius:3px;line-height:1.05;letter-spacing:.03em;flex:0 0 auto;white-space:nowrap}
+  /* 前作業からの距離・移動時間（うっすら） */
+  .dist-hint{flex:0 0 auto;font-size:.56rem;color:#9aa7b5;font-weight:600;white-space:nowrap}
+  .dist-hint:empty{display:none}
   .badge.joint-b{background:#2f6fbf;color:#fff}
   td.x-st{text-align:center;padding:2px}
   .stdot{display:inline-block;font-size:.78rem;font-weight:800;padding:2px 6px;border-radius:9px;white-space:nowrap}
@@ -409,8 +461,9 @@
   td.x-item.setti{background:var(--setti);color:#fff}
   td.x-item small{display:block;font-weight:700;font-size:.82rem;opacity:.9}
   td.x-addr{padding:0}
-  td.x-addr .ap{background:var(--pick);padding:3px 7px;border-bottom:1px solid #c2c7d0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  td.x-addr .ad{background:var(--drop);padding:3px 7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  td.x-addr .ap{background:var(--pick);padding:3px 7px;border-bottom:1px solid #c2c7d0;display:flex;align-items:baseline;gap:5px}
+  td.x-addr .ad{background:var(--drop);padding:3px 7px;display:flex;align-items:baseline;gap:5px}
+  td.x-addr .atx{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   td.x-addr .blank{padding:3px 7px;color:#b6bcc5;font-size:.72rem}
   td.x-addr .blank.ad{background:#f7fbfd} td.x-addr .blank.ap{background:#fffdf0;border-bottom:1px solid #c2c7d0}
   td.x-addr .lb{font-size:.6rem;font-weight:800;opacity:.75;margin-right:4px}
@@ -671,7 +724,7 @@
 <div class="app">
   <header class="bar">
     <button class="btn ghost home-btn" id="homeBtn">🏠 ホーム</button>
-    <div class="brand"><span class="logo">🚚</span><div>配車ボード<small>ナイスキャリード / 試作 <span style="opacity:.5">v0730-2</span></small></div></div>
+    <div class="brand"><span class="logo">🚚</span><div>配車ボード<small>ナイスキャリード / 試作 <span style="opacity:.5">v0802</span></small></div></div>
     <div class="spacer"></div>
     <div class="view-toggle"><button id="v_table" class="on">エクセル表示</button><button id="v_board">カード</button></div>
     <div class="datenav"><button class="icon" id="prev">‹</button><input type="date" id="date"><button class="icon" id="next">›</button><button class="btn ghost mini" id="today">今日</button></div>
@@ -679,6 +732,7 @@
     <button class="btn ghost" id="addveh">＋ 車両</button>
     <button class="btn ghost" id="assist">🗓 配車アシスト</button>
     <button class="btn ghost" id="csv">CSV出力</button>
+    <button class="btn ghost" id="backup">💾控え</button><input type="file" id="backupFile" accept="application/json" style="display:none">
     <button class="btn ghost" id="printBtn">🖨 印刷</button>
     <button class="btn ghost" id="vehmgr">🚚 車両管理</button>
     <button class="btn ghost" id="masters">マスタ</button>
@@ -699,9 +753,24 @@
       <div class="fld"><label>車両</label><select id="f_vehicle"></select></div>
       <div class="fld"><label>請求（元請）</label><input id="f_client"></div>
       <div class="fld"><label>品名・型番</label><input id="f_item"></div>
-      <div class="fld"><label>寸法重量</label><input id="f_weight"></div>
-      <div class="fld"><div class="toggle"><input type="checkbox" id="f_setti"><div><b>設置あり（赤表示）</b><br><small>設置作業手当のカウント対象</small></div></div></div>
-      <div class="fld"><div class="toggle"><input type="checkbox" id="f_heavy"><div><b>重量物</b><br><small>設置作業手当のカウント対象</small></div></div></div>
+      <div class="fld full">
+        <div class="dimrow">
+          <div class="dimcol">
+            <div class="fld" style="margin:0"><label>寸法重量</label><input id="f_weight"></div>
+            <label class="mini-chk"><input type="checkbox" id="f_heavy"> 重量物<span class="mini-note">設置手当カウント</span></label>
+            <label class="mini-chk"><input type="checkbox" id="f_setti"> 設置あり<span class="mini-note">赤表示・手当カウント</span></label>
+          </div>
+          <div class="itagcol">
+            <label class="itag-hd">状態（品名欄に縦帯・複数可）</label>
+            <div class="itag-grid">
+              <label class="itag-chk genchi"><input type="checkbox" id="f_st_genchi"> 現地</label>
+              <label class="itag-chk iremachi"><input type="checkbox" id="f_st_iremachi"> 入待</label>
+              <label class="itag-chk hokan"><input type="checkbox" id="f_st_hokan"> 保管品</label>
+              <label class="itag-chk shutsu"><input type="checkbox" id="f_st_shutsu"> 出準備済</label>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="full pdrow">
       <div class="fld pickf"><label>引取先（黄）※空欄なら「届けのみ」</label><input id="f_pick"><div class="locsub"><div class="lscell"><span class="ls-lbl">お客様名</span><input id="f_pick_cust" class="ls-in"></div><div class="lscell"><span class="ls-lbl">電話</span><input id="f_pick_phone" class="ls-in" inputmode="tel"></div><div class="lscell"><span class="ls-lbl">階数</span><input id="f_pick_floor" class="ls-in" list="floors"></div><div class="lscell"><span class="ls-lbl">時間</span><input id="f_pick_time" class="ls-in"></div></div></div>
       <div class="fld dropf"><label>届け先（青）</label><input id="f_drop"><div class="locsub"><div class="lscell"><span class="ls-lbl">お客様名</span><input id="f_drop_cust" class="ls-in"></div><div class="lscell"><span class="ls-lbl">電話</span><input id="f_drop_phone" class="ls-in" inputmode="tel"></div><div class="lscell"><span class="ls-lbl">階数</span><input id="f_drop_floor" class="ls-in" list="floors"></div><div class="lscell"><span class="ls-lbl">時間</span><input id="f_drop_time" class="ls-in"></div><datalist id="floors"></datalist></div></div>
@@ -720,7 +789,7 @@
       </div>
       <div class="fld full" id="f_surveylink"></div>
     </div>
-    <div class="foot"><button class="btn danger" id="del">削除</button><button class="btn copy" id="copy">合同作業にコピー</button><div class="right"><button class="btn gray" id="cancel">キャンセル</button><button class="btn save" id="save">保存</button></div></div>
+    <div class="foot"><button class="btn danger" id="del">削除</button><button class="btn copy" id="copy">合同作業にコピー</button><div class="recv-wrap"><input id="f_recv" class="recv-in" placeholder="受付者(苗字)" autocomplete="off"><span class="recv-hist" id="f_recv_hist" title="（履歴なし）">🕒</span></div><div class="right"><button class="btn gray" id="cancel">キャンセル</button><button class="btn save" id="save">保存</button></div></div>
   </div>
 </div>
 
@@ -902,6 +971,47 @@
   </div>
 </div>
 
+<!-- 請求書から修理内容を取り込み（左PDF・右OCR一覧） modal -->
+<input type="file" id="invOcrFile" accept="application/pdf,image/*" style="display:none">
+<div class="ov" id="ovinvocr">
+  <div class="modal invocr-modal">
+    <h2>📄 請求書から修理内容を取り込み <button class="x" id="invocrx">×</button></h2>
+    <div class="invocr-body">
+      <div class="invocr-left" id="invPdf"><div class="invocr-empty">「📎 請求書を読み込む」を押すと、ここにPDFが大きく表示されます。</div></div>
+      <div class="invocr-right">
+        <div class="invocr-status" id="invStatus">下の「📎 請求書を読み込む」からPDF／画像を選んでください。</div>
+        <div id="invLines"></div>
+      </div>
+    </div>
+    <div class="foot invocr-foot">
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <button class="btn amber mini" id="invLoad">📎 請求書を読み込む</button>
+        <button class="btn gray mini" id="invAiCfg">⚙ AI設定</button>
+        <button class="btn danger mini" id="invDelete">🗑 PDFを削除</button>
+      </div>
+      <div class="right" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <span class="hint">貼り付け先の号車：</span>
+        <select id="invVeh"></select>
+        <button class="btn save mini" id="invGo">この号車の修理リストへ →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 点検・車検の日程押さえ modal -->
+<div class="ov" id="ovinsp">
+  <div class="modal" style="max-width:620px">
+    <h2>🔧 <span id="inspTitle">点検・車検の日程</span> <button class="x" id="inspx">×</button></h2>
+    <div style="padding:14px 20px">
+      <div class="tehai-lead" id="inspLead"></div>
+      <div class="resv-nav"><button class="btn ghost mini" id="inspPrev">‹ 前月</button><b id="inspMonthLbl"></b><button class="btn ghost mini" id="inspNext">翌月 ›</button></div>
+      <div id="inspCal"></div>
+      <p class="hint" style="margin-top:10px">入庫する日を押すと <b style="color:#c0392b">点検・車検</b> で押さえます（もう一度押すと解除）。押さえた日は配車ボードに「🔧 点検・車検」と表示され、案件を入れられなくなります。</p>
+    </div>
+    <div class="foot"><div class="right"><button class="btn save" id="inspDoneBtn">完了</button></div></div>
+  </div>
+</div>
+
 <!-- 予定自動登録 modal -->
 <div class="ov" id="ovauto">
   <div class="modal" style="max-width:1020px">
@@ -1013,10 +1123,12 @@
     <h2>⚙ AI OCR 設定 <button class="x" id="aikeyx">×</button></h2>
     <div style="padding:14px 20px">
       <div class="form" style="grid-template-columns:1fr">
-        <div class="fld full"><label>Anthropic APIキー（この端末にのみ保存）</label><input id="aikey_key" type="password" placeholder="sk-ant-..." autocomplete="off"></div>
-        <div class="fld full"><label>モデル</label><input id="aikey_model" placeholder="claude-sonnet-5"></div>
+        <div class="fld full"><label>Google AI Studio APIキー（この端末にのみ保存）</label><input id="aikey_gem" type="password" placeholder="AIza…（aistudio.google.com で無料発行）" autocomplete="off"></div>
+        <div class="fld full"><label>モデル</label><input id="aikey_model" placeholder="gemini-flash-latest"></div>
+        <div class="fld full"><label class="mini-chk" style="font-weight:700"><input type="checkbox" id="aikey_travel"> 🚚 移動距離・時間を表示（無料）</label><p class="hint" style="margin:3px 0 0;line-height:1.5">前作業→次作業の道路距離と所要時間を、住所欄に薄く表示します。<b>無料・キー不要</b>で動きます（国土地理院＋OSRM／乗用車基準の概算）。<b>リアルタイム渋滞は非反映</b>。住所は外部サービスへ送信されます。</p></div>
+        <div class="fld full"><label>ルート精度キー（トラック対応・無料／任意）</label><input id="aikey_ors" type="password" placeholder="OpenRouteServiceのAPIキー（未入力なら乗用車で概算）" autocomplete="off"><p class="hint" style="margin:3px 0 0;line-height:1.5">openrouteservice.org で<b>無料発行（クレジットカード不要）</b>。入れると<b>トラック（大型車）向けの道・速度</b>で計算し、より正確になります。1日約2,000回まで無料。</p></div>
       </div>
-      <p class="hint" style="margin:10px 0 0;line-height:1.6">※ キーはこの端末のブラウザ内（localStorage）にのみ保存され、外部には出しません。<b>公開版（社員トライアル）には登録しないでください</b>（誰でも読めてしまうため）。<br>※ AI読み取り時、FAX画像は Anthropic に送信されます（1枚あたり数円程度）。</p>
+      <p class="hint" style="margin:10px 0 0;line-height:1.6">※ キーは <b>aistudio.google.com</b> の「Get API key／APIキーを取得」で<b>無料発行</b>できます。<br>※ キーは<b>この端末のブラウザにのみ保存</b>され、公開版には入りません。<br>※ 読み取り時、画像は Google（Gemini）へ送信されます。無料枠には日次・レート上限があります。</p>
     </div>
     <div class="foot"><div class="right"><button class="btn gray" id="aikey_cancel">キャンセル</button><button class="btn save" id="aikey_save">保存</button></div></div>
   </div>
@@ -1042,6 +1154,7 @@ const STAFF_PHONES={"山田":"080-0000-0001","佐藤":"080-0000-0002","鈴木":"
 const VEHICLE_INFO={};  // 車両管理は準備中のため公開版では空にしています
 // ===== AI配車：過去実績(2025-2026/18か月・16221件)から生成した実績辞書（コンパクト版）=====
 const AIDICT={"cust":{"顧客A":["13号車","12号車","4号車"],"顧客B":["13号車","3号車","4号車"],"顧客C":["13号車","12号車","9号車"],"顧客D":["13号車","9号車","4号車"],"顧客E":["13号車","4号車","3号車"],"顧客F":["13号車","2号車","9号車"],"一般":["13号車","2号車"],"顧客G":["3号車","7号車","13号車"],"顧客H":["8号車","2号車"]},"area":{"大田区":["13号車","9号車","4号車"],"横浜市":["13号車","3号車","4号車"],"港区":["13号車","4号車","3号車"],"世田谷区":["13号車","3号車","4号車"],"さいたま市":["13号車","2号車","7号車"],"江東区":["13号車","12号車","4号車"],"渋谷区":["13号車","3号車","7号車"],"品川区":["13号車","12号車","4号車"],"足立区":["13号車","12号車"],"千代田区":["13号車","7号車","3号車"],"新宿区":["13号車","3号車","7号車"],"中央区":["13号車","4号車","3号車"],"川崎市":["13号車","12号車","3号車"],"江戸川区":["13号車","2号車"],"文京区":["13号車","8号車","1号車"],"練馬区":["13号車","12号車"],"川口市":["13号車","7号車","2号車"],"杉並区":["13号車","2号車","8号車"],"台東区":["13号車","7号車","12号車"],"千葉市":["13号車","2号車","12号車"],"葛飾区":["2号車","13号車"],"板橋区":["13号車","2号車","3号車"],"北区":["13号車","8号車","2号車"],"豊島区":["13号車","3号車","4号車"],"目黒区":["13号車","8号車","2号車"],"越谷市":["13号車","4号車","7号車"],"中野区":["13号車","2号車"],"墨田区":["13号車","12号車","2号車"],"船橋市":["13号車","2号車","12号車"],"町田市":["13号車","3号車"],"相模原市":["13号車","3号車","5号車"],"市川市":["13号車","4号車","2号車"],"八王子市":["13号車","4号車"],"柏市":["4号車","13号車","5号車"],"草加市":["4号車","2号車"],"松戸市":["13号車","2号車"],"調布市":["13号車","2号車"],"川越市":["13号車","5号車"],"浦安市":["13号車","9号車","3号車"],"所沢市":["13号車","2号車","協力号車"],"三郷市":["13号車","7号車","4号車"],"つくば市":["13号車","12号車"],"藤沢市":["13号車","3号車"],"八潮市":["13号車","7号車","2号車"],"戸田市":["13号車","3号車"],"荒川区":["3号車","1号車","8号車"],"春日部市":["13号車","5号車"],"我孫子市":["2号車","13号車"],"富津市":["9号車","13号車","7号車"],"流山市":["13号車","2号車"],"立川市":["13号車","3号車"],"府中市":["13号車","2号車","5号車"],"小金井市":["13号車","5号車","2号車"],"市原市":["13号車","12号車","2号車"],"上尾市":["13号車","5号車","1号車"],"吉川市":["13号車","2号車"],"入間市":["13号車","12号車","2号車"],"日野市":["13号車","12号車"],"久喜市":["13号車","7号車","5号車"],"小田原市":["13号車","3号車","4号車"]},"unic":["1号車","2号車","8号車"],"retired":["10号車"],"avgLoad":4.67,"hoistAvg":2.15,"cases":16221,"months":18};
+AIDICT.custR={"ｴｰﾜﾝ":[{"v":"13号車","s":0.294,"l":1.32},{"v":"12号車","s":0.1,"l":1.07},{"v":"4号車","s":0.094,"l":1},{"v":"5号車","s":0.083,"l":1.17},{"v":"7号車","s":0.075,"l":0.89}],"丸和":[{"v":"13号車","s":0.211,"l":0.95},{"v":"3号車","s":0.126,"l":1.55},{"v":"4号車","s":0.101,"l":1.07},{"v":"7号車","s":0.101,"l":1.2},{"v":"12号車","s":0.092,"l":0.98}],"RAY":[{"v":"13号車","s":0.351,"l":1.58},{"v":"12号車","s":0.14,"l":1.49},{"v":"9号車","s":0.127,"l":2.45},{"v":"4号車","s":0.112,"l":1.18},{"v":"5号車","s":0.071,"l":1}],"SG":[{"v":"13号車","s":0.261,"l":1.17},{"v":"9号車","s":0.146,"l":2.82},{"v":"4号車","s":0.11,"l":1.16},{"v":"12号車","s":0.095,"l":1},{"v":"7号車","s":0.07,"l":0.84}],"ﾄｰﾀﾙﾄﾚﾝﾄﾞ":[{"v":"13号車","s":0.287,"l":1.29},{"v":"4号車","s":0.12,"l":1.26},{"v":"3号車","s":0.101,"l":1.24},{"v":"7号車","s":0.101,"l":1.2},{"v":"12号車","s":0.083,"l":0.88}],"OSP":[{"v":"13号車","s":0.339,"l":1.52},{"v":"2号車","s":0.102,"l":1.16},{"v":"9号車","s":0.078,"l":1.51},{"v":"12号車","s":0.071,"l":0.76}],"一般":[{"v":"13号車","s":0.172,"l":0.77},{"v":"2号車","s":0.125,"l":1.43},{"v":"8号車","s":0.098,"l":2.1},{"v":"5号車","s":0.088,"l":1.25}],"SLT":[{"v":"3号車","s":0.333,"l":4.12},{"v":"7号車","s":0.157,"l":1.87},{"v":"13号車","s":0.147,"l":0.66},{"v":"4号車","s":0.091,"l":0.96},{"v":"12号車","s":0.075,"l":0.79}],"ﾑﾗﾃｯｸ":[{"v":"13号車","s":0.241,"l":1.08},{"v":"3号車","s":0.102,"l":1.25},{"v":"7号車","s":0.097,"l":1.16},{"v":"4号車","s":0.093,"l":0.98},{"v":"12号車","s":0.091,"l":0.96}],"SS":[{"v":"13号車","s":0.293,"l":1.31},{"v":"3号車","s":0.206,"l":2.55},{"v":"7号車","s":0.164,"l":1.95},{"v":"4号車","s":0.091,"l":0.96},{"v":"12号車","s":0.073,"l":0.78}],"NW":[{"v":"13号車","s":0.346,"l":1.55},{"v":"7号車","s":0.109,"l":1.29},{"v":"12号車","s":0.077,"l":0.81},{"v":"4号車","s":0.077,"l":0.81},{"v":"3号車","s":0.077,"l":0.95}],"SMJ埼玉":[{"v":"13号車","s":0.248,"l":1.11},{"v":"7号車","s":0.137,"l":1.63},{"v":"5号車","s":0.091,"l":1.29},{"v":"12号車","s":0.089,"l":0.94},{"v":"高吉号車","s":0.086,"l":2.45}],"ﾊｰﾄ東京":[{"v":"8号車","s":0.267,"l":5.7},{"v":"2号車","s":0.152,"l":1.73},{"v":"13号車","s":0.106,"l":0.48},{"v":"1号車","s":0.088,"l":2.2}],"ｱﾙﾄ":[{"v":"13号車","s":0.364,"l":1.63},{"v":"12号車","s":0.119,"l":1.27},{"v":"4号車","s":0.078,"l":0.82},{"v":"7号車","s":0.071,"l":0.85},{"v":"5号車","s":0.065,"l":0.91}],"ｱｯﾌﾟﾙ":[{"v":"8号車","s":0.22,"l":4.69},{"v":"2号車","s":0.168,"l":1.92},{"v":"13号車","s":0.105,"l":0.47},{"v":"1号車","s":0.087,"l":2.18}],"OB":[{"v":"13号車","s":0.287,"l":1.29},{"v":"3号車","s":0.119,"l":1.47},{"v":"2号車","s":0.087,"l":1},{"v":"7号車","s":0.084,"l":1},{"v":"4号車","s":0.08,"l":0.85}],"ﾋﾟｱﾋﾟｯﾄ":[{"v":"2号車","s":0.186,"l":2.13},{"v":"5号車","s":0.143,"l":2.03},{"v":"12号車","s":0.09,"l":0.95},{"v":"4号車","s":0.09,"l":0.94}],"高吉":[{"v":"13号車","s":0.166,"l":0.75},{"v":"4号車","s":0.122,"l":1.28},{"v":"8号車","s":0.089,"l":1.89},{"v":"2号車","s":0.081,"l":0.93}],"AJL":[{"v":"5号車","s":0.135,"l":1.91},{"v":"13号車","s":0.122,"l":0.55},{"v":"7号車","s":0.106,"l":1.26},{"v":"2号車","s":0.102,"l":1.16},{"v":"12号車","s":0.098,"l":1.04}],"仙台P":[{"v":"2号車","s":0.141,"l":1.61},{"v":"12号車","s":0.115,"l":1.23},{"v":"13号車","s":0.107,"l":0.48},{"v":"8号車","s":0.103,"l":2.19}],"ﾗﾐｰ":[{"v":"13号車","s":0.197,"l":0.88},{"v":"12号車","s":0.197,"l":2.09},{"v":"7号車","s":0.096,"l":1.14},{"v":"5号車","s":0.092,"l":1.3}],"GOLFZON":[{"v":"13号車","s":0.178,"l":0.8},{"v":"12号車","s":0.136,"l":1.45},{"v":"4号車","s":0.126,"l":1.32},{"v":"5号車","s":0.12,"l":1.7},{"v":"7号車","s":0.12,"l":1.43}],"JCS":[{"v":"8号車","s":0.156,"l":3.33},{"v":"2号車","s":0.14,"l":1.59},{"v":"13号車","s":0.112,"l":0.5},{"v":"4号車","s":0.106,"l":1.12}],"ﾒｶﾞ":[{"v":"13号車","s":0.344,"l":1.54},{"v":"7号車","s":0.108,"l":1.29},{"v":"9号車","s":0.096,"l":1.84},{"v":"3号車","s":0.089,"l":1.1},{"v":"5号車","s":0.076,"l":1.08}],"ｽﾀｰﾃｨｱ":[{"v":"13号車","s":0.237,"l":1.06},{"v":"4号車","s":0.135,"l":1.42},{"v":"7号車","s":0.128,"l":1.52},{"v":"3号車","s":0.115,"l":1.42},{"v":"12号車","s":0.096,"l":1.02}],"SA":[{"v":"13号車","s":0.204,"l":0.92},{"v":"5号車","s":0.132,"l":1.86},{"v":"2号車","s":0.112,"l":1.28},{"v":"4号車","s":0.099,"l":1.04}],"ﾔﾏﾃ":[{"v":"2号車","s":0.167,"l":1.9},{"v":"5号車","s":0.146,"l":2.06},{"v":"8号車","s":0.139,"l":2.96},{"v":"13号車","s":0.104,"l":0.47}],"RB":[{"v":"13号車","s":0.256,"l":1.15},{"v":"4号車","s":0.116,"l":1.22},{"v":"7号車","s":0.107,"l":1.28},{"v":"2号車","s":0.091,"l":1.04},{"v":"12号車","s":0.091,"l":0.97}],"SMJ千葉":[{"v":"13号車","s":0.229,"l":1.03},{"v":"12号車","s":0.195,"l":2.07},{"v":"2号車","s":0.085,"l":0.97},{"v":"9号車","s":0.076,"l":1.47},{"v":"4号車","s":0.076,"l":0.8}],"SMJICT":[{"v":"13号車","s":0.227,"l":1.02},{"v":"7号車","s":0.2,"l":2.38},{"v":"12号車","s":0.118,"l":1.26},{"v":"2号車","s":0.118,"l":1.35},{"v":"4号車","s":0.1,"l":1.05}],"阿部P":[{"v":"13号車","s":0.253,"l":1.13},{"v":"12号車","s":0.126,"l":1.34},{"v":"2号車","s":0.092,"l":1.05},{"v":"7号車","s":0.08,"l":0.96},{"v":"1号車","s":0.08,"l":2}],"SLS":[{"v":"7号車","s":0.348,"l":4.14},{"v":"3号車","s":0.275,"l":3.4},{"v":"4号車","s":0.087,"l":0.92},{"v":"9号車","s":0.043,"l":0.84},{"v":"12号車","s":0.043,"l":0.46}],"ﾋﾟｱﾉﾘﾍﾟｱ":[{"v":"2号車","s":0.167,"l":1.9},{"v":"13号車","s":0.121,"l":0.54},{"v":"5号車","s":0.121,"l":1.72},{"v":"1号車","s":0.121,"l":3.02}],"武藤工業":[{"v":"4号車","s":0.283,"l":2.98},{"v":"5号車","s":0.264,"l":3.74},{"v":"12号車","s":0.17,"l":1.81},{"v":"2号車","s":0.075,"l":0.86}],"ﾃﾞｰﾀ総研":[{"v":"13号車","s":0.235,"l":1.06},{"v":"12号車","s":0.118,"l":1.25},{"v":"3号車","s":0.118,"l":1.45},{"v":"2号車","s":0.098,"l":1.12},{"v":"7号車","s":0.078,"l":0.93}],"山翔":[{"v":"13号車","s":0.3,"l":1.35},{"v":"4号車","s":0.16,"l":1.69},{"v":"2号車","s":0.14,"l":1.6},{"v":"5号車","s":0.08,"l":1.13},{"v":"12号車","s":0.06,"l":0.64}],"銀座急送":[{"v":"13号車","s":0.184,"l":0.82},{"v":"4号車","s":0.122,"l":1.29},{"v":"12号車","s":0.122,"l":1.3},{"v":"5号車","s":0.102,"l":1.44},{"v":"1号車","s":0.082,"l":2.03}],"ﾌﾘｰｼﾞｰﾈｯﾄ":[{"v":"13号車","s":0.25,"l":1.12},{"v":"5号車","s":0.125,"l":1.77},{"v":"7号車","s":0.125,"l":1.49},{"v":"9号車","s":0.083,"l":1.61}],"ﾊﾟﾜｰﾏｰｸ":[{"v":"12号車","s":0.163,"l":1.73},{"v":"3号車","s":0.163,"l":2.01},{"v":"7号車","s":0.163,"l":1.94},{"v":"13号車","s":0.116,"l":0.52},{"v":"5号車","s":0.093,"l":1.32}],"ｷｬﾘｰ":[{"v":"2号車","s":0.233,"l":2.65},{"v":"13号車","s":0.14,"l":0.63},{"v":"5号車","s":0.116,"l":1.65},{"v":"12号車","s":0.093,"l":0.99},{"v":"1号車","s":0.07,"l":1.74}],"仙台P東京":[{"v":"13号車","s":0.163,"l":0.73},{"v":"7号車","s":0.093,"l":1.11},{"v":"1号車","s":0.093,"l":2.32},{"v":"2号車","s":0.093,"l":1.06}],"ﾌｧｰｽﾄ":[{"v":"13号車","s":0.316,"l":1.42},{"v":"3号車","s":0.132,"l":1.62},{"v":"7号車","s":0.132,"l":1.56},{"v":"12号車","s":0.132,"l":1.4},{"v":"4号車","s":0.105,"l":1.11}],"SLCS":[{"v":"3号車","s":0.162,"l":2},{"v":"4号車","s":0.162,"l":1.71},{"v":"13号車","s":0.135,"l":0.61},{"v":"7号車","s":0.135,"l":1.61},{"v":"12号車","s":0.108,"l":1.15}],"ｴｺﾃｯｸ":[{"v":"7号車","s":0.189,"l":2.25},{"v":"4号車","s":0.162,"l":1.71},{"v":"13号車","s":0.135,"l":0.61},{"v":"12号車","s":0.135,"l":1.44},{"v":"3号車","s":0.081,"l":1}],"古河P":[{"v":"13号車","s":0.306,"l":1.37},{"v":"2号車","s":0.222,"l":2.54},{"v":"1号車","s":0.083,"l":2.08},{"v":"7号車","s":0.056,"l":0.66}],"銀急":[{"v":"13号車","s":0.2,"l":0.9},{"v":"2号車","s":0.171,"l":1.96},{"v":"12号車","s":0.143,"l":1.52},{"v":"8号車","s":0.114,"l":2.44}],"ｽﾀｰﾃｨｱ足立":[{"v":"12号車","s":0.229,"l":2.43},{"v":"4号車","s":0.229,"l":2.41},{"v":"13号車","s":0.2,"l":0.9},{"v":"5号車","s":0.086,"l":1.21},{"v":"9号車","s":0.057,"l":1.1}],"ﾊﾟｯｸｽｱｰﾚﾝ":[{"v":"4号車","s":0.219,"l":2.31},{"v":"3号車","s":0.188,"l":2.32},{"v":"5号車","s":0.156,"l":2.21},{"v":"2号車","s":0.125,"l":1.43},{"v":"13号車","s":0.125,"l":0.56}],"ﾘﾍﾞﾗﾙ":[{"v":"7号車","s":0.406,"l":4.83},{"v":"9号車","s":0.188,"l":3.61},{"v":"12号車","s":0.094,"l":1},{"v":"4号車","s":0.094,"l":0.99},{"v":"3号車","s":0.062,"l":0.77}],"鈴木P":[{"v":"12号車","s":0.226,"l":2.4},{"v":"8号車","s":0.161,"l":3.44},{"v":"2号車","s":0.129,"l":1.47},{"v":"13号車","s":0.129,"l":0.58},{"v":"4号車","s":0.097,"l":1.02}],"UPSS":[{"v":"4号車","s":0.172,"l":1.82},{"v":"高吉号車","s":0.138,"l":3.92},{"v":"9号車","s":0.103,"l":1.99},{"v":"7号車","s":0.103,"l":1.23}],"伸和":[{"v":"12号車","s":0.172,"l":1.83},{"v":"7号車","s":0.138,"l":1.64},{"v":"3号車","s":0.138,"l":1.7},{"v":"13号車","s":0.138,"l":0.62},{"v":"5号車","s":0.103,"l":1.46}],"ｴｺ･ﾃｯｸ":[{"v":"13号車","s":0.357,"l":1.6},{"v":"7号車","s":0.286,"l":3.4},{"v":"12号車","s":0.143,"l":1.52},{"v":"3号車","s":0.071,"l":0.88},{"v":"4号車","s":0.071,"l":0.75}],"ﾜｲｽﾞ":[{"v":"4号車","s":0.286,"l":3.01},{"v":"13号車","s":0.214,"l":0.96},{"v":"3号車","s":0.107,"l":1.32},{"v":"12号車","s":0.107,"l":1.14},{"v":"9号車","s":0.071,"l":1.38}],"鹿児島P":[{"v":"5号車","s":0.185,"l":2.62},{"v":"13号車","s":0.148,"l":0.66},{"v":"9号車","s":0.148,"l":2.86},{"v":"12号車","s":0.111,"l":1.18}],"ｵｰﾙ":[{"v":"13号車","s":0.444,"l":1.99},{"v":"9号車","s":0.185,"l":3.57},{"v":"7号車","s":0.111,"l":1.32},{"v":"2号車","s":0.074,"l":0.85},{"v":"4号車","s":0.074,"l":0.78}],"NSS":[{"v":"4号車","s":0.222,"l":2.34},{"v":"2号車","s":0.222,"l":2.54},{"v":"12号車","s":0.185,"l":1.97},{"v":"3号車","s":0.074,"l":0.91}],"ﾋﾟｱﾉﾌｫﾙﾃ":[{"v":"2号車","s":0.192,"l":2.19},{"v":"8号車","s":0.115,"l":2.46},{"v":"1号車","s":0.115,"l":2.87},{"v":"5号車","s":0.077,"l":1.09}],"三協":[{"v":"1号車","s":0.231,"l":5.75},{"v":"2号車","s":0.154,"l":1.76},{"v":"8号車","s":0.115,"l":2.46},{"v":"3号車","s":0.115,"l":1.42},{"v":"5号車","s":0.077,"l":1.09}],"ﾄﾗｽﾄｳｨﾝ":[{"v":"13号車","s":0.308,"l":1.38},{"v":"2号車","s":0.192,"l":2.19},{"v":"4号車","s":0.115,"l":1.22},{"v":"3号車","s":0.077,"l":0.95},{"v":"5号車","s":0.077,"l":1.09}],"自社":[{"v":"3号車","s":0.16,"l":1.98},{"v":"5号車","s":0.16,"l":2.26},{"v":"4号車","s":0.12,"l":1.26},{"v":"7号車","s":0.12,"l":1.43}],"一般（ﾋﾟｱﾋﾟｯﾄ）":[{"v":"5号車","s":0.16,"l":2.26},{"v":"13号車","s":0.12,"l":0.54},{"v":"2号車","s":0.12,"l":1.37},{"v":"8号車","s":0.12,"l":2.56}],"メガ":[{"v":"13号車","s":0.48,"l":2.15},{"v":"9号車","s":0.16,"l":3.08},{"v":"3号車","s":0.12,"l":1.48},{"v":"4号車","s":0.08,"l":0.84}],"ﾊｰﾄ取手":[{"v":"13号車","s":0.24,"l":1.08},{"v":"8号車","s":0.16,"l":3.41},{"v":"1号車","s":0.16,"l":3.99},{"v":"2号車","s":0.12,"l":1.37}],"ｽｶｲﾋﾞｰｽﾞ":[{"v":"13号車","s":0.208,"l":0.93},{"v":"12号車","s":0.167,"l":1.77},{"v":"4号車","s":0.125,"l":1.32},{"v":"9号車","s":0.083,"l":1.61}],"三協運輸":[{"v":"2号車","s":0.227,"l":2.59},{"v":"8号車","s":0.182,"l":3.87},{"v":"4号車","s":0.182,"l":1.92},{"v":"3号車","s":0.091,"l":1.12}],"ﾋﾟｱﾉﾘﾍﾟｱ工房":[{"v":"5号車","s":0.182,"l":2.57},{"v":"13号車","s":0.136,"l":0.61},{"v":"2号車","s":0.091,"l":1.04},{"v":"12号車","s":0.091,"l":0.97}],"エーワン返却":[{"v":"13号車","s":0.409,"l":1.84},{"v":"9号車","s":0.364,"l":7.01},{"v":"4号車","s":0.136,"l":1.44}],"名鉄":[{"v":"2号車","s":0.286,"l":3.26},{"v":"13号車","s":0.143,"l":0.64},{"v":"3号車","s":0.143,"l":1.76},{"v":"7号車","s":0.095,"l":1.13},{"v":"4号車","s":0.095,"l":1}],"OCEAN":[{"v":"2号車","s":0.286,"l":3.26},{"v":"8号車","s":0.19,"l":4.06},{"v":"高吉号車","s":0.19,"l":5.41}],"BRANCO":[{"v":"13号車","s":0.333,"l":1.5},{"v":"3号車","s":0.143,"l":1.76},{"v":"2号車","s":0.143,"l":1.63},{"v":"7号車","s":0.095,"l":1.13},{"v":"5号車","s":0.095,"l":1.35}],"田村":[{"v":"12号車","s":0.2,"l":2.13},{"v":"2号車","s":0.15,"l":1.71},{"v":"13号車","s":0.1,"l":0.45}],"ｱｸﾞﾗｽ":[{"v":"2号車","s":0.158,"l":1.8},{"v":"12号車","s":0.158,"l":1.68},{"v":"13号車","s":0.158,"l":0.71},{"v":"9号車","s":0.105,"l":2.03},{"v":"3号車","s":0.105,"l":1.3}],"ノアライン引取":[{"v":"7号車","s":0.316,"l":3.76},{"v":"12号車","s":0.158,"l":1.68},{"v":"4号車","s":0.158,"l":1.66},{"v":"6号車","s":0.105,"l":7.31},{"v":"2号車","s":0.105,"l":1.2}],"湘南":[{"v":"7号車","s":0.235,"l":2.8},{"v":"5号車","s":0.176,"l":2.5},{"v":"4号車","s":0.176,"l":1.86}],"ｴｰﾜﾝ加納":[{"v":"13号車","s":0.294,"l":1.32},{"v":"7号車","s":0.294,"l":3.5},{"v":"3号車","s":0.118,"l":1.45},{"v":"12号車","s":0.118,"l":1.25},{"v":"2号車","s":0.118,"l":1.34}],"SL":[{"v":"3号車","s":0.294,"l":3.63},{"v":"7号車","s":0.235,"l":2.8},{"v":"12号車","s":0.118,"l":1.25},{"v":"13号車","s":0.118,"l":0.53}],"島村管理課":[{"v":"5号車","s":0.25,"l":3.54},{"v":"12号車","s":0.25,"l":2.66},{"v":"2号車","s":0.188,"l":2.14},{"v":"4号車","s":0.125,"l":1.32}],"↑カード端末持参":[{"v":"8号車","s":0.312,"l":6.66},{"v":"1号車","s":0.188,"l":4.67},{"v":"2号車","s":0.125,"l":1.43},{"v":"12号車","s":0.125,"l":1.33}],"島村西新井":[{"v":"12号車","s":0.188,"l":1.99},{"v":"13号車","s":0.188,"l":0.84},{"v":"2号車","s":0.125,"l":1.43},{"v":"4号車","s":0.125,"l":1.32}],"↑　端末持参":[{"v":"2号車","s":0.312,"l":3.57},{"v":"5号車","s":0.188,"l":2.65},{"v":"8号車","s":0.125,"l":2.66}],"ﾊｰﾄ":[{"v":"8号車","s":0.312,"l":6.66},{"v":"13号車","s":0.25,"l":1.12}],"久保調律":[{"v":"2号車","s":0.267,"l":3.04},{"v":"12号車","s":0.2,"l":2.13},{"v":"13号車","s":0.133,"l":0.6}],"OB返却":[{"v":"13号車","s":0.533,"l":2.39},{"v":"5号車","s":0.133,"l":1.89},{"v":"9号車","s":0.133,"l":2.57}],"ｱｯﾌﾟｽ":[{"v":"12号車","s":0.267,"l":2.84},{"v":"4号車","s":0.2,"l":2.11},{"v":"7号車","s":0.133,"l":1.59}],"ピアピット返却":[{"v":"2号車","s":0.214,"l":2.45},{"v":"5号車","s":0.143,"l":2.02},{"v":"4号車","s":0.143,"l":1.51},{"v":"12号車","s":0.143,"l":1.52}],"ｴｰﾜﾝ\r\n加納":[{"v":"13号車","s":0.429,"l":1.92},{"v":"4号車","s":0.143,"l":1.51},{"v":"7号車","s":0.143,"l":1.7},{"v":"12号車","s":0.143,"l":1.52}],"エコ・テック返却":[{"v":"13号車","s":0.429,"l":1.92},{"v":"9号車","s":0.214,"l":4.13}],"ITC返却":[{"v":"13号車","s":0.214,"l":0.96},{"v":"高吉号車","s":0.143,"l":4.06},{"v":"12号車","s":0.143,"l":1.52},{"v":"9号車","s":0.143,"l":2.75}],"ｸﾙｰ":[{"v":"13号車","s":0.286,"l":1.28},{"v":"12号車","s":0.286,"l":3.04},{"v":"4号車","s":0.143,"l":1.51},{"v":"高吉号車","s":0.143,"l":4.06}],"OAF":[{"v":"13号車","s":0.308,"l":1.38},{"v":"12号車","s":0.231,"l":2.45},{"v":"3号車","s":0.154,"l":1.9},{"v":"4号車","s":0.154,"l":1.62}],"SOAS":[{"v":"7号車","s":0.385,"l":4.57},{"v":"2号車","s":0.154,"l":1.76},{"v":"13号車","s":0.154,"l":0.69}],"ねぶた":[{"v":"1号車","s":0.154,"l":3.83},{"v":"8号車","s":0.154,"l":3.28},{"v":"2号車","s":0.154,"l":1.76},{"v":"4号車","s":0.154,"l":1.62}],"ｸﾗﾌﾄﾋﾟｱﾉ":[{"v":"高吉号車","s":0.231,"l":6.56},{"v":"8号車","s":0.154,"l":3.28},{"v":"1号車","s":0.154,"l":3.83}],"ｸﾞﾛｰﾘｰ":[{"v":"3号車","s":0.231,"l":2.85},{"v":"5号車","s":0.231,"l":3.27}],"ｸﾞﾛｰﾘｰIST":[{"v":"2号車","s":0.308,"l":3.51},{"v":"12号車","s":0.231,"l":2.45},{"v":"4号車","s":0.154,"l":1.62}],"ｱｰﾄ浦和":[{"v":"3号車","s":0.231,"l":2.85},{"v":"13号車","s":0.231,"l":1.04}],"島村":[{"v":"8号車","s":0.231,"l":4.92},{"v":"2号車","s":0.154,"l":1.76}],"髙吉":[{"v":"13号車","s":0.25,"l":1.12},{"v":"7号車","s":0.167,"l":1.98}],"スターティア足立返却":[{"v":"12号車","s":0.167,"l":1.77},{"v":"4号車","s":0.167,"l":1.76},{"v":"5号車","s":0.167,"l":2.36}],"ﾊｰﾄ千葉":[{"v":"2号車","s":0.333,"l":3.8},{"v":"8号車","s":0.25,"l":5.33},{"v":"13号車","s":0.167,"l":0.75}],"ﾒｶﾞ別":[{"v":"3号車","s":0.333,"l":4.12},{"v":"7号車","s":0.333,"l":3.96},{"v":"5号車","s":0.167,"l":2.36}],"ﾚｲｽﾞ":[{"v":"13号車","s":0.417,"l":1.87},{"v":"12号車","s":0.167,"l":1.77}],"ｲﾝﾀｰｸﾗﾌﾄ":[{"v":"9号車","s":0.583,"l":11.25},{"v":"13号車","s":0.167,"l":0.75}],"伸和産業":{"v":"13号車","s":0.417,"l":1.87},"SMJ埼玉返却":[{"v":"4号車","s":0.25,"l":2.64},{"v":"7号車","s":0.167,"l":1.98},{"v":"5号車","s":0.167,"l":2.36}],"ｴｲﾋﾟｰ":[{"v":"13号車","s":0.167,"l":0.75},{"v":"9号車","s":0.167,"l":3.21},{"v":"1号車","s":0.167,"l":4.15}],"つばさ流通":[{"v":"1号車","s":0.273,"l":6.79},{"v":"3号車","s":0.182,"l":2.25},{"v":"4号車","s":0.182,"l":1.92},{"v":"12号車","s":0.182,"l":1.93}],"一般（ﾋﾟｱﾉﾘﾍﾟｱ）":[{"v":"5号車","s":0.273,"l":3.86},{"v":"4号車","s":0.273,"l":2.87},{"v":"3号車","s":0.182,"l":2.25}],"都立大":{"v":"4号車","s":0.455,"l":4.79},"ｾﾝﾄﾗﾙﾋﾞｼﾞﾈｽ":[{"v":"13号車","s":0.273,"l":1.22},{"v":"12号車","s":0.182,"l":1.93}],"明野":[{"v":"高吉号車","s":0.273,"l":7.75},{"v":"2号車","s":0.182,"l":2.07},{"v":"9号車","s":0.182,"l":3.51}],"太子堂楽器":[{"v":"12号車","s":0.273,"l":2.9},{"v":"8号車","s":0.182,"l":3.87},{"v":"7号車","s":0.182,"l":2.16}],"クレジット端末持参":[{"v":"3号車","s":0.182,"l":2.25},{"v":"6号車","s":0.182,"l":12.63}],"オイルチェック　※ファンベルトも見て":{"v":"13号車","s":0.2,"l":0.9},"ﾋﾟｱﾉﾌﾚﾝﾄﾞ":[{"v":"13号車","s":0.3,"l":1.35},{"v":"4号車","s":0.2,"l":2.11}],"ﾌﾘｰｼﾞｰ":[{"v":"7号車","s":0.3,"l":3.57},{"v":"13号車","s":0.2,"l":0.9}],"湘南ﾘﾋﾞﾝｸﾞ":[{"v":"3号車","s":0.2,"l":2.47},{"v":"13号車","s":0.2,"l":0.9},{"v":"4号車","s":0.2,"l":2.11}],"久保":[{"v":"2号車","s":0.3,"l":3.42},{"v":"12号車","s":0.2,"l":2.13}],"ﾎﾞｯｸｽﾜﾝ":[{"v":"13号車","s":0.8,"l":3.59},{"v":"2号車","s":0.2,"l":2.28}],"安全教育 2・事業用自動車を運転する場合の心構え　WEB受講してください。":{"v":"13号車","s":0.2,"l":0.9}};AIDICT.areaR={"大田区":[{"v":"13号車","s":0.391,"l":1.75},{"v":"9号車","s":0.175,"l":3.37},{"v":"4号車","s":0.093,"l":0.98},{"v":"12号車","s":0.072,"l":0.77},{"v":"5号車","s":0.057,"l":0.8}],"横浜市":[{"v":"13号車","s":0.324,"l":1.45},{"v":"4号車","s":0.118,"l":1.25},{"v":"3号車","s":0.113,"l":1.39},{"v":"12号車","s":0.074,"l":0.79},{"v":"7号車","s":0.074,"l":0.88}],"港区":[{"v":"13号車","s":0.281,"l":1.26},{"v":"4号車","s":0.1,"l":1.06},{"v":"3号車","s":0.094,"l":1.16},{"v":"5号車","s":0.09,"l":1.28},{"v":"12号車","s":0.077,"l":0.82}],"さいたま市":[{"v":"13号車","s":0.156,"l":0.7},{"v":"2号車","s":0.139,"l":1.59},{"v":"5号車","s":0.119,"l":1.68},{"v":"7号車","s":0.115,"l":1.36},{"v":"12号車","s":0.102,"l":1.09}],"江東区":[{"v":"13号車","s":0.158,"l":0.71},{"v":"7号車","s":0.114,"l":1.36},{"v":"12号車","s":0.101,"l":1.07},{"v":"4号車","s":0.101,"l":1.06},{"v":"5号車","s":0.101,"l":1.43}],"世田谷区":[{"v":"13号車","s":0.167,"l":0.75},{"v":"4号車","s":0.121,"l":1.28},{"v":"2号車","s":0.111,"l":1.27},{"v":"3号車","s":0.111,"l":1.37},{"v":"5号車","s":0.101,"l":1.43}],"中央区":[{"v":"13号車","s":0.275,"l":1.23},{"v":"4号車","s":0.166,"l":1.75},{"v":"12号車","s":0.098,"l":1.05},{"v":"2号車","s":0.093,"l":1.06},{"v":"3号車","s":0.078,"l":0.96}],"千代田区":[{"v":"13号車","s":0.275,"l":1.23},{"v":"7号車","s":0.127,"l":1.51},{"v":"3号車","s":0.101,"l":1.24},{"v":"2号車","s":0.095,"l":1.09},{"v":"4号車","s":0.085,"l":0.89}],"品川区":[{"v":"13号車","s":0.175,"l":0.79},{"v":"4号車","s":0.146,"l":1.54},{"v":"12号車","s":0.135,"l":1.43},{"v":"7号車","s":0.07,"l":0.83}],"渋谷区":[{"v":"13号車","s":0.188,"l":0.84},{"v":"7号車","s":0.129,"l":1.54},{"v":"3号車","s":0.106,"l":1.31},{"v":"8号車","s":0.094,"l":2.01}],"川崎市":[{"v":"13号車","s":0.306,"l":1.37},{"v":"3号車","s":0.088,"l":1.08},{"v":"12号車","s":0.075,"l":0.8},{"v":"5号車","s":0.075,"l":1.06},{"v":"高吉号車","s":0.075,"l":2.13}],"新宿区":[{"v":"13号車","s":0.264,"l":1.18},{"v":"3号車","s":0.142,"l":1.75},{"v":"7号車","s":0.108,"l":1.29},{"v":"12号車","s":0.081,"l":0.86},{"v":"4号車","s":0.074,"l":0.78}],"文京区":[{"v":"13号車","s":0.25,"l":1.12},{"v":"3号車","s":0.108,"l":1.34},{"v":"7号車","s":0.1,"l":1.19},{"v":"1号車","s":0.092,"l":2.28},{"v":"8号車","s":0.083,"l":1.78}],"江戸川区":[{"v":"13号車","s":0.2,"l":0.9},{"v":"4号車","s":0.15,"l":1.58},{"v":"12号車","s":0.1,"l":1.06},{"v":"2号車","s":0.09,"l":1.03}],"足立区":[{"v":"12号車","s":0.162,"l":1.72},{"v":"13号車","s":0.162,"l":0.73},{"v":"2号車","s":0.101,"l":1.15},{"v":"4号車","s":0.101,"l":1.06}],"川口市":[{"v":"13号車","s":0.184,"l":0.82},{"v":"7号車","s":0.153,"l":1.82},{"v":"2号車","s":0.112,"l":1.28},{"v":"12号車","s":0.102,"l":1.09},{"v":"4号車","s":0.092,"l":0.97}],"台東区":[{"v":"13号車","s":0.261,"l":1.17},{"v":"12号車","s":0.13,"l":1.39},{"v":"4号車","s":0.109,"l":1.15},{"v":"7号車","s":0.076,"l":0.9}],"千葉市":[{"v":"13号車","s":0.198,"l":0.89},{"v":"12号車","s":0.154,"l":1.64},{"v":"7号車","s":0.099,"l":1.18},{"v":"2号車","s":0.099,"l":1.13},{"v":"4号車","s":0.088,"l":0.93}],"練馬区":[{"v":"13号車","s":0.222,"l":1},{"v":"12号車","s":0.099,"l":1.05},{"v":"4号車","s":0.086,"l":0.91},{"v":"9号車","s":0.074,"l":1.43}],"目黒区":[{"v":"13号車","s":0.26,"l":1.17},{"v":"2号車","s":0.151,"l":1.72},{"v":"8号車","s":0.123,"l":2.63},{"v":"3号車","s":0.096,"l":1.18},{"v":"5号車","s":0.068,"l":0.97}],"墨田区":[{"v":"13号車","s":0.167,"l":0.75},{"v":"12号車","s":0.125,"l":1.33},{"v":"3号車","s":0.125,"l":1.54},{"v":"2号車","s":0.097,"l":1.11},{"v":"8号車","s":0.083,"l":1.78}],"豊島区":[{"v":"13号車","s":0.286,"l":1.28},{"v":"4号車","s":0.114,"l":1.2},{"v":"2号車","s":0.086,"l":0.98},{"v":"12号車","s":0.071,"l":0.76}],"板橋区":[{"v":"13号車","s":0.188,"l":0.85},{"v":"2号車","s":0.145,"l":1.65},{"v":"12号車","s":0.116,"l":1.23},{"v":"3号車","s":0.087,"l":1.07}],"相模原市":[{"v":"13号車","s":0.5,"l":2.24},{"v":"12号車","s":0.091,"l":0.97},{"v":"3号車","s":0.091,"l":1.12},{"v":"5号車","s":0.076,"l":1.07}],"北区":[{"v":"13号車","s":0.2,"l":0.9},{"v":"7号車","s":0.123,"l":1.46},{"v":"4号車","s":0.092,"l":0.97},{"v":"12号車","s":0.092,"l":0.98},{"v":"1号車","s":0.092,"l":2.3}],"船橋市":[{"v":"13号車","s":0.237,"l":1.06},{"v":"12号車","s":0.186,"l":1.98},{"v":"2号車","s":0.153,"l":1.74},{"v":"8号車","s":0.068,"l":1.44}],"杉並区":[{"v":"13号車","s":0.237,"l":1.06},{"v":"4号車","s":0.136,"l":1.43},{"v":"2号車","s":0.119,"l":1.35},{"v":"8号車","s":0.085,"l":1.81},{"v":"3号車","s":0.085,"l":1.05}],"草加市":[{"v":"5号車","s":0.155,"l":2.2},{"v":"2号車","s":0.138,"l":1.57},{"v":"4号車","s":0.121,"l":1.27},{"v":"12号車","s":0.086,"l":0.92}],"八王子市":[{"v":"13号車","s":0.304,"l":1.36},{"v":"4号車","s":0.179,"l":1.88},{"v":"5号車","s":0.089,"l":1.26},{"v":"7号車","s":0.089,"l":1.06},{"v":"12号車","s":0.089,"l":0.95}],"中野区":[{"v":"13号車","s":0.179,"l":0.8},{"v":"4号車","s":0.125,"l":1.32},{"v":"8号車","s":0.125,"l":2.66},{"v":"3号車","s":0.125,"l":1.54}],"松戸市":[{"v":"13号車","s":0.182,"l":0.82},{"v":"2号車","s":0.145,"l":1.66},{"v":"5号車","s":0.127,"l":1.8},{"v":"7号車","s":0.109,"l":1.3}],"葛飾区":[{"v":"2号車","s":0.182,"l":2.07},{"v":"13号車","s":0.145,"l":0.65},{"v":"4号車","s":0.127,"l":1.34},{"v":"7号車","s":0.109,"l":1.3}],"越谷市":[{"v":"13号車","s":0.185,"l":0.83},{"v":"7号車","s":0.148,"l":1.76},{"v":"8号車","s":0.093,"l":1.97},{"v":"5号車","s":0.074,"l":1.05}],"市川市":[{"v":"2号車","s":0.132,"l":1.51},{"v":"9号車","s":0.132,"l":2.55},{"v":"4号車","s":0.113,"l":1.19},{"v":"13号車","s":0.094,"l":0.42},{"v":"12号車","s":0.094,"l":1}],"柏市":[{"v":"13号車","s":0.113,"l":0.51},{"v":"5号車","s":0.113,"l":1.6},{"v":"2号車","s":0.113,"l":1.29},{"v":"4号車","s":0.113,"l":1.19}],"調布市":[{"v":"13号車","s":0.34,"l":1.53},{"v":"2号車","s":0.18,"l":2.05},{"v":"1号車","s":0.08,"l":1.99},{"v":"7号車","s":0.08,"l":0.95},{"v":"5号車","s":0.06,"l":0.85}],"つくば市":[{"v":"13号車","s":0.278,"l":1.25},{"v":"12号車","s":0.139,"l":1.48},{"v":"7号車","s":0.139,"l":1.65},{"v":"5号車","s":0.111,"l":1.57},{"v":"9号車","s":0.083,"l":1.61}],"川越市":[{"v":"13号車","s":0.25,"l":1.12},{"v":"5号車","s":0.222,"l":3.15},{"v":"12号車","s":0.083,"l":0.89},{"v":"2号車","s":0.056,"l":0.63}],"町田市":[{"v":"13号車","s":0.353,"l":1.58},{"v":"9号車","s":0.118,"l":2.27},{"v":"3号車","s":0.088,"l":1.09},{"v":"5号車","s":0.059,"l":0.83}],"藤沢市":[{"v":"13号車","s":0.242,"l":1.09},{"v":"3号車","s":0.152,"l":1.87},{"v":"12号車","s":0.152,"l":1.61},{"v":"5号車","s":0.091,"l":1.29}],"三郷市":[{"v":"13号車","s":0.29,"l":1.3},{"v":"7号車","s":0.161,"l":1.92},{"v":"12号車","s":0.129,"l":1.37},{"v":"9号車","s":0.097,"l":1.87}],"春日部市":[{"v":"13号車","s":0.194,"l":0.87},{"v":"5号車","s":0.161,"l":2.28},{"v":"7号車","s":0.129,"l":1.53},{"v":"2号車","s":0.097,"l":1.1}],"戸田市":[{"v":"13号車","s":0.4,"l":1.79},{"v":"12号車","s":0.133,"l":1.42},{"v":"高吉号車","s":0.1,"l":2.84},{"v":"7号車","s":0.1,"l":1.19}],"我孫子市":[{"v":"2号車","s":0.207,"l":2.36},{"v":"12号車","s":0.103,"l":1.1},{"v":"5号車","s":0.103,"l":1.46},{"v":"6号車","s":0.069,"l":4.79}],"流山市":[{"v":"13号車","s":0.214,"l":0.96},{"v":"5号車","s":0.107,"l":1.52},{"v":"4号車","s":0.107,"l":1.13},{"v":"2号車","s":0.071,"l":0.82}],"熊谷市":[{"v":"13号車","s":0.286,"l":1.28},{"v":"7号車","s":0.107,"l":1.27},{"v":"12号車","s":0.107,"l":1.14},{"v":"3号車","s":0.071,"l":0.88}],"立川市":[{"v":"13号車","s":0.308,"l":1.38},{"v":"4号車","s":0.115,"l":1.22},{"v":"2号車","s":0.077,"l":0.88},{"v":"12号車","s":0.077,"l":0.82}],"荒川区":[{"v":"8号車","s":0.192,"l":4.1},{"v":"1号車","s":0.192,"l":4.79},{"v":"4号車","s":0.192,"l":2.03},{"v":"3号車","s":0.115,"l":1.42}],"小田原市":[{"v":"13号車","s":0.192,"l":0.86},{"v":"7号車","s":0.115,"l":1.37},{"v":"3号車","s":0.115,"l":1.42},{"v":"4号車","s":0.115,"l":1.22},{"v":"12号車","s":0.115,"l":1.23}],"所沢市":[{"v":"13号車","s":0.231,"l":1.04},{"v":"高吉号車","s":0.154,"l":4.37},{"v":"2号車","s":0.154,"l":1.76},{"v":"12号車","s":0.154,"l":1.64},{"v":"3号車","s":0.115,"l":1.42}],"大和市":[{"v":"13号車","s":0.28,"l":1.26},{"v":"5号車","s":0.28,"l":3.96},{"v":"12号車","s":0.08,"l":0.85}],"入間市":[{"v":"13号車","s":0.217,"l":0.98},{"v":"5号車","s":0.13,"l":1.85},{"v":"12号車","s":0.13,"l":1.39},{"v":"3号車","s":0.087,"l":1.07}],"上尾市":[{"v":"7号車","s":0.174,"l":2.07},{"v":"5号車","s":0.13,"l":1.85},{"v":"13号車","s":0.13,"l":0.59},{"v":"3号車","s":0.087,"l":1.07},{"v":"高吉号車","s":0.087,"l":2.47}],"狭山市":[{"v":"13号車","s":0.174,"l":0.78},{"v":"9号車","s":0.174,"l":3.35},{"v":"5号車","s":0.174,"l":2.46},{"v":"7号車","s":0.13,"l":1.55},{"v":"2号車","s":0.087,"l":0.99}],"小金井市":[{"v":"13号車","s":0.364,"l":1.63},{"v":"12号車","s":0.182,"l":1.93},{"v":"9号車","s":0.091,"l":1.75}],"府中市":[{"v":"13号車","s":0.455,"l":2.04},{"v":"4号車","s":0.182,"l":1.92},{"v":"5号車","s":0.091,"l":1.29},{"v":"2号車","s":0.091,"l":1.04},{"v":"9号車","s":0.091,"l":1.75}],"吉川市":[{"v":"3号車","s":0.143,"l":1.76},{"v":"4号車","s":0.143,"l":1.51},{"v":"12号車","s":0.143,"l":1.52},{"v":"2号車","s":0.095,"l":1.09}],"八千代市":[{"v":"13号車","s":0.238,"l":1.07},{"v":"2号車","s":0.238,"l":2.72},{"v":"12号車","s":0.143,"l":1.52},{"v":"4号車","s":0.095,"l":1},{"v":"7号車","s":0.095,"l":1.13}],"八潮市":[{"v":"2号車","s":0.3,"l":3.42},{"v":"13号車","s":0.15,"l":0.67},{"v":"4号車","s":0.1,"l":1.05},{"v":"3号車","s":0.1,"l":1.23},{"v":"12号車","s":0.1,"l":1.06}],"朝霞市":[{"v":"13号車","s":0.4,"l":1.79},{"v":"5号車","s":0.1,"l":1.42},{"v":"高吉号車","s":0.1,"l":2.84},{"v":"9号車","s":0.1,"l":1.93}],"横須賀市":[{"v":"13号車","s":0.263,"l":1.18},{"v":"4号車","s":0.263,"l":2.77},{"v":"2号車","s":0.105,"l":1.2},{"v":"12号車","s":0.105,"l":1.12}],"厚木市":[{"v":"13号車","s":0.263,"l":1.18},{"v":"3号車","s":0.158,"l":1.95},{"v":"4号車","s":0.105,"l":1.11},{"v":"12号車","s":0.105,"l":1.12}],"東村":[{"v":"13号車","s":0.474,"l":2.13},{"v":"9号車","s":0.158,"l":3.04},{"v":"5号車","s":0.105,"l":1.49},{"v":"12号車","s":0.105,"l":1.12}],"茅ヶ崎市":[{"v":"7号車","s":0.222,"l":2.64},{"v":"3号車","s":0.167,"l":2.06},{"v":"13号車","s":0.167,"l":0.75}],"香取市":[{"v":"13号車","s":0.176,"l":0.79},{"v":"12号車","s":0.176,"l":1.88},{"v":"2号車","s":0.118,"l":1.34},{"v":"3号車","s":0.118,"l":1.45},{"v":"9号車","s":0.118,"l":2.27}],"取手市":[{"v":"13号車","s":0.176,"l":0.79},{"v":"9号車","s":0.176,"l":3.4},{"v":"3号車","s":0.118,"l":1.45},{"v":"5号車","s":0.118,"l":1.67},{"v":"2号車","s":0.118,"l":1.34}],"武蔵野市":[{"v":"13号車","s":0.294,"l":1.32},{"v":"5号車","s":0.235,"l":3.33}],"多摩市":[{"v":"5号車","s":0.235,"l":3.33},{"v":"13号車","s":0.176,"l":0.79},{"v":"4号車","s":0.176,"l":1.86},{"v":"2号車","s":0.118,"l":1.34}],"平塚市":[{"v":"13号車","s":0.294,"l":1.32},{"v":"4号車","s":0.176,"l":1.86},{"v":"2号車","s":0.118,"l":1.34},{"v":"12号車","s":0.118,"l":1.25},{"v":"高吉号車","s":0.118,"l":3.34}],"久喜市":[{"v":"7号車","s":0.312,"l":3.72},{"v":"8号車","s":0.188,"l":4},{"v":"5号車","s":0.125,"l":1.77},{"v":"13号車","s":0.125,"l":0.56},{"v":"4号車","s":0.125,"l":1.32}],"鎌倉市":[{"v":"3号車","s":0.25,"l":3.09},{"v":"5号車","s":0.188,"l":2.65},{"v":"1号車","s":0.125,"l":3.11},{"v":"7号車","s":0.125,"l":1.49}],"三鷹市":[{"v":"13号車","s":0.438,"l":1.96},{"v":"5号車","s":0.125,"l":1.77},{"v":"12号車","s":0.125,"l":1.33}],"日野市":[{"v":"12号車","s":0.312,"l":3.32},{"v":"4号車","s":0.188,"l":1.98},{"v":"5号車","s":0.125,"l":1.77}],"小平市":[{"v":"13号車","s":0.467,"l":2.09},{"v":"5号車","s":0.267,"l":3.77},{"v":"4号車","s":0.133,"l":1.41}],"武蔵村":[{"v":"3号車","s":0.5,"l":6.17},{"v":"13号車","s":0.214,"l":0.96},{"v":"12号車","s":0.143,"l":1.52}],"新座市":[{"v":"13号車","s":0.286,"l":1.28},{"v":"7号車","s":0.286,"l":3.4},{"v":"3号車","s":0.143,"l":1.76}],"習志野市":[{"v":"3号車","s":0.143,"l":1.76},{"v":"2号車","s":0.143,"l":1.63},{"v":"13号車","s":0.143,"l":0.64},{"v":"1号車","s":0.143,"l":3.56}],"印西市":[{"v":"13号車","s":0.308,"l":1.38},{"v":"5号車","s":0.154,"l":2.18},{"v":"4号車","s":0.154,"l":1.62},{"v":"7号車","s":0.154,"l":1.83}],"深谷市":[{"v":"13号車","s":0.231,"l":1.04},{"v":"高吉号車","s":0.231,"l":6.56}],"成田市":[{"v":"4号車","s":0.308,"l":3.24},{"v":"9号車","s":0.154,"l":2.97},{"v":"13号車","s":0.154,"l":0.69},{"v":"2号車","s":0.154,"l":1.76},{"v":"12号車","s":0.154,"l":1.64}],"市原市":[{"v":"7号車","s":0.154,"l":1.83},{"v":"13号車","s":0.154,"l":0.69},{"v":"1号車","s":0.154,"l":3.83},{"v":"4号車","s":0.154,"l":1.62},{"v":"12号車","s":0.154,"l":1.64}],"加須市":[{"v":"12号車","s":0.231,"l":2.45},{"v":"13号車","s":0.154,"l":0.69},{"v":"高吉号車","s":0.154,"l":4.37}],"野田市":[{"v":"4号車","s":0.417,"l":4.39},{"v":"13号車","s":0.167,"l":0.75}],"ふじみ野市":[{"v":"13号車","s":0.364,"l":1.63},{"v":"2号車","s":0.182,"l":2.07},{"v":"12号車","s":0.182,"l":1.93},{"v":"4号車","s":0.182,"l":1.92}],"秦野市":[{"v":"13号車","s":0.364,"l":1.63},{"v":"5号車","s":0.182,"l":2.57},{"v":"4号車","s":0.182,"l":1.92}],"小山市":[{"v":"13号車","s":0.545,"l":2.45},{"v":"9号車","s":0.182,"l":3.51},{"v":"4号車","s":0.182,"l":1.92}],"西東京市":[{"v":"13号車","s":0.455,"l":2.04},{"v":"3号車","s":0.182,"l":2.25}],"鶴ヶ島市":[{"v":"12号車","s":0.273,"l":2.9},{"v":"4号車","s":0.182,"l":1.92}],"浦安市":[{"v":"13号車","s":0.273,"l":1.22},{"v":"2号車","s":0.182,"l":2.07},{"v":"4号車","s":0.182,"l":1.92}],"海老名市":[{"v":"13号車","s":0.2,"l":0.9},{"v":"5号車","s":0.2,"l":2.83},{"v":"4号車","s":0.2,"l":2.11}],"袖ヶ浦市":[{"v":"高吉号車","s":0.3,"l":8.52},{"v":"2号車","s":0.2,"l":2.28},{"v":"13号車","s":0.2,"l":0.9},{"v":"4号車","s":0.2,"l":2.11}],"蕨市":{"v":"13号車","s":0.4,"l":1.79},"飯能市":[{"v":"12号車","s":0.5,"l":5.32},{"v":"13号車","s":0.3,"l":1.35}],"昭島市":[{"v":"13号車","s":0.8,"l":3.59},{"v":"3号車","s":0.2,"l":2.47}],"坂戸市":[{"v":"5号車","s":0.3,"l":4.25},{"v":"13号車","s":0.3,"l":1.35}]};AIDICT.crane=[{"v":"2号車","s":0.198,"l":2.26},{"v":"8号車","s":0.163,"l":3.46},{"v":"1号車","s":0.149,"l":3.72},{"v":"13号車","s":0.116,"l":0.52},{"v":"4号車","s":0.053,"l":0.56}];
 const seed={
   masters:{
     crew:["山田 太郎","佐藤 次郎","鈴木 三郎","田中 四郎","高橋 五郎","伊藤 六郎","渡辺 七郎","中村 八郎","小林 九郎","加藤 十郎","吉田 一馬","山本 二馬","松本","井上"],
@@ -1091,6 +1204,7 @@ function vehBlank(v){const info=VEHICLE_INFO[v]||{};return {plate:VEHICLE_PLATES
 (db.masters.veh||[]).forEach(v=>{if(!db.vehicles[v])db.vehicles[v]=vehBlank(v);else if(!Array.isArray(db.vehicles[v].repairs))db.vehicles[v].repairs=[];});
 if(!Array.isArray(db.cars))db.cars=["CX-8"];
 if(!Array.isArray(db.reservations))db.reservations=[];
+if(!db.inspDays||typeof db.inspDays!=="object")db.inspDays={};   // 点検・車検で押さえた日 {"YYYY-MM-DD|号車":{label}}
 if(!db.learn||typeof db.learn!=="object")db.learn={aliases:{},items:[]};
 if(!db.learn.aliases)db.learn.aliases={};
 if(!Array.isArray(db.learn.items))db.learn.items=[];
@@ -1275,6 +1389,51 @@ function render(){
   const vehSet=computeVehSet();
   if(!vehSet.size){host.innerHTML=`<div class="board"><div class="empty"><b>この日に表示する車両がありません</b><span class="hint">上の「＋ 車両」で車両を追加してください</span></div></div>`;return;}
   mode==="table"?renderTable(host,es,vehSet):renderBoard(host,es,vehSet);
+  if(mode==="table")updateTravelHints();
+}
+// ==== 前作業→次作業の距離・移動時間（無料：国土地理院ジオコーディング＋OSRMルーティング／渋滞は非反映） ====
+let _distCache={},_geoCache={},_routeCache={};
+function setDistHint(id,which,r){const el=document.querySelector('.datarow[data-id="'+id+'"] [data-dh="'+which+'"]');if(el)el.textContent="約"+(r.km<10?r.km.toFixed(1):Math.round(r.km))+"km・"+r.min+"分";}
+async function requestLeg(origin,dest,id,which){
+  const ck=origin+"⇒"+dest;
+  if(_distCache[ck]){setDistHint(id,which,_distCache[ck]);return;}
+  const ga=await geocodeAddr(origin);if(!ga)return;
+  const gb=await geocodeAddr(dest);if(!gb)return;
+  const r=await osrmRoute(ga,gb);if(!r)return;
+  _distCache[ck]=r;setDistHint(id,which,r);
+}
+async function geocodeAddr(addr){
+  addr=(addr||"").trim();if(!addr)return null;
+  if(_geoCache[addr]!==undefined)return _geoCache[addr];
+  try{const r=await fetch("https://msearch.gsi.go.jp/address-search/AddressSearch?q="+encodeURIComponent(addr));const j=await r.json();const c=j&&j[0]&&j[0].geometry&&j[0].geometry.coordinates;_geoCache[addr]=c?{lon:c[0],lat:c[1]}:null;}catch(_){_geoCache[addr]=null;}
+  return _geoCache[addr];
+}
+async function osrmRoute(a,b){
+  const ck=a.lon+","+a.lat+";"+b.lon+","+b.lat;
+  if(_routeCache[ck]!==undefined)return _routeCache[ck];
+  const cfg=getAiCfg();let v=null;
+  if(cfg.orsKey){ // OpenRouteService driving-hgv（トラック・大型貨物車）
+    try{const url="https://api.openrouteservice.org/v2/directions/driving-hgv?api_key="+encodeURIComponent(cfg.orsKey)+"&start="+a.lon+","+a.lat+"&end="+b.lon+","+b.lat;
+      const r=await fetch(url);const j=await r.json();const sm=j&&j.features&&j.features[0]&&j.features[0].properties&&j.features[0].properties.summary;
+      if(sm&&sm.distance!=null)v={km:sm.distance/1000,min:Math.round(sm.duration/60)};}catch(_){}
+  }
+  if(!v){ // ORSキー無し or 失敗 → OSRM（乗用車）で概算
+    try{const r=await fetch("https://router.project-osrm.org/route/v1/driving/"+a.lon+","+a.lat+";"+b.lon+","+b.lat+"?overview=false");const j=await r.json();const rt=j&&j.routes&&j.routes[0];if(rt)v={km:rt.distance/1000,min:Math.round(rt.duration/60)};}catch(_){}
+  }
+  _routeCache[ck]=v;return v;
+}
+function updateTravelHints(){
+  const cfg=getAiCfg();if(!cfg.travelOn||mode!=="table")return;
+  // 各号車で 引取→届け→次の引取→次の届け… と全ての立寄り地を鎖にし、各住所の右に「前の立寄り地からの距離・時間」を表示
+  [...computeVehSet()].forEach(v=>{
+    const es=vehItems(v).filter(it=>it.kind==="entry").map(it=>it.data);
+    let prev=null;
+    es.forEach(e=>{
+      const pick=(e.pick||"").trim(),drop=(e.drop||"").trim();
+      if(pick){if(prev)requestLeg(prev,pick,e.id,"pick");prev=pick;}
+      if(drop){if(prev)requestLeg(prev,drop,e.id,"drop");prev=drop;}
+    });
+  });
 }
 const isSpecial=v=>Array.isArray(db.special)&&db.special.includes(v);
 // 外注車両＝db.specialのうち「倉庫作業」以外（業者名は自由・複数可）
@@ -1311,9 +1470,14 @@ function vehItems(v){
 }
 function nextOrd(v){const os=vehItems(v).map(it=>typeof it.data.ord==="number"?it.data.ord:-1);return os.length?Math.max(...os)+1:0;}
 // 案件／メモを targetVeh の idx 番目へ挿入し、ord を振り直す
+// ==== 点検・車検で押さえた日 ====
+function inspOf(v,d){return (db.inspDays||{})[(d||cur)+"|"+v];}
+function inspBadge(v){const ip=inspOf(v);return ip?`<span class="veh-insp" title="点検・車検で入庫中（この日は案件を入れられません）">🔧 ${esc(ip.label||"点検・車検")}</span>`:"";}
+function addLinksHTML(v){const ip=inspOf(v);if(ip)return `<span class="insp-block">🔧 点検・車検のため、この日は案件を入れられません</span><span class="addlink note" data-addnote="${esc(v)}">＋ 連絡メモ</span>`;return `<span class="addlink" data-addcase="${esc(v)}">＋ 案件</span><span class="addlink note" data-addnote="${esc(v)}">＋ 連絡メモ</span><span class="addlink" data-addret="${esc(v)}" style="color:#1f7a4d">＋ 引取返却</span>`;}
 function moveItem(kind,id,targetVeh,idx){
   const coll=kind==="note"?db.notes:db.entries;
   const item=coll.find(x=>x.id===id); if(!item)return;
+  if(kind==="entry"&&inspOf(targetVeh)){uiAlert("この車両は「点検・車検」で押さえられているため、この日は案件を移動できません。");return;}
   const srcVeh=item.vehicle;
   let dst=vehItems(targetVeh).map(it=>it.data).filter(d=>d!==item);
   idx=Math.max(0,Math.min(idx,dst.length));
@@ -1331,9 +1495,9 @@ function renderBoard(host,es,vehSet){
     const crew=(h.crew&&h.crew.length)?`<span class="crew">${h.crew.map(n=>`<span class="crewchip" data-staff="genba" data-name="${esc(n)}" draggable="true" title="${esc(n)}｜ドラッグで別の号車・出勤・休みへ">${esc(String(n).split(/[ 　]/)[0])}</span>`).join("")}</span>`:`<span class="crew" style="opacity:.6">作業員未設定</span>`;
     const dep=h.depart?`<span class="dep">出勤 <b>${esc(h.depart)}</b></span>`:"";
     const sp=isSpecial(v), isOut=isOutsource(v), spc=sp?(v==="倉庫作業"?" sb-wh":" sb-out"):"";
-    return `<div class="veh${spc}" data-vehname="${esc(v)}"><h3 class="vehhdr" data-veh="${esc(v)}"><span class="vname">${esc(v)}</span>${isOut?"":crew}${(sp&&v!=="倉庫作業")?"":dep}${vehFlagHTML(v)}${(sp&&!isOut)?"":`<button class="veh-del" data-del-veh="${esc(v)}" title="この車両を今日の一覧から外す">×</button>`}</h3><div>`+
+    return `<div class="veh${spc}" data-vehname="${esc(v)}"><h3 class="vehhdr" data-veh="${esc(v)}"><span class="vname">${esc(v)}</span>${isOut?"":crew}${(sp&&v!=="倉庫作業")?"":dep}${vehFlagHTML(v)}${inspBadge(v)}${(sp&&!isOut)?"":`<button class="veh-del" data-del-veh="${esc(v)}" title="この車両を今日の一覧から外す">×</button>`}</h3><div>`+
       (()=>{const its=vehItems(v);return its.length?its.map((it,i)=>it.kind==="entry"?jobCard(it.data,i):noteCard(it.data,i)).join(""):`<div class="job" style="color:var(--muted);cursor:default" data-vehname="${esc(v)}">案件なし</div>`;})()+
-      `<div class="addslot"><span class="addlink" data-addcase="${esc(v)}">＋ 案件</span><span class="addlink note" data-addnote="${esc(v)}">＋ 連絡メモ</span><span class="addlink" data-addret="${esc(v)}" style="color:#1f7a4d">＋ 引取返却</span></div></div></div>`;
+      `<div class="addslot">${addLinksHTML(v)}</div></div></div>`;
   }).join("")+`</div>`;
 }
 function noteCard(n,pos){
@@ -1384,6 +1548,7 @@ function pdPair(a,b){
   return `<div class="pd"><span>${A||"—"}</span></div>`+
          `<div class="pd"><span>${B||"—"}</span></div>`;
 }
+function itagStrips(e){const defs=[["stGenchi","現地","#cdeec4"],["stIremachi","入待","#fbd0cc"],["stHokan","保管品","#fbd0cc"],["stShutsu","出準備済","#cfe2fb"]];return defs.filter(d=>e[d[0]]).map(d=>`<span class="itag-strip" style="background:${d[2]}">${d[1]}</span>`).join("");}
 function renderTable(host,es,vehSet){
   const keys=[...vehSet].sort((a,b)=>vord(a)-vord(b));
   const cols=`<colgroup><col class="w-st"><col class="w-seikyu"><col class="w-item"><col class="w-cust"><col class="w-tel"><col class="w-addr"><col class="w-spec"><col class="w-time"><col class="w-ours"><col class="w-memo"></colgroup>`;
@@ -1394,23 +1559,27 @@ function renderTable(host,es,vehSet){
   {const g={},pal=["#ffe9a8","#c9e7ff","#d8f3d0","#f7d6f0","#ffd9c2","#ded9f7"];let i=0;
    dayEntries().forEach(e=>{const k=(e.client||"")+"|"+(e.item||"");if(k==="|")return;(g[k]=g[k]||new Set()).add(e.vehicle);});
    Object.keys(g).forEach(k=>{if(g[k].size>=2)joinMap[k]=pal[i++%pal.length];});}
+  // 合同作業のコピー元を検出（コピー先=e.joint と一致する署名、または e.jointSrc フラグ）
+  const jsig=e=>[e.client,e.item,e.customerPick||e.customer,e.customerDrop,e.phonePick,e.phoneDrop||e.phone].map(x=>(x||"").trim()).join("¦");
+  const jointSig=new Set();dayEntries().forEach(e=>{if(e.joint){const s=jsig(e);if(s.replace(/¦/g,""))jointSig.add(s);}});
   let body="";
   keys.forEach(v=>{
     const h=getHeader(v);
     const crew=(h.crew&&h.crew.length)?h.crew.map(n=>`<span class="crewchip" data-staff="genba" data-name="${esc(n)}" draggable="true" title="${esc(n)}｜ドラッグで別の号車・出勤・休みへ">${esc(String(n).split(/[ 　]/)[0])}</span>`).join(""):'<span style="opacity:.55">作業員未設定</span>';
     const dep=h.depart?`出勤 <b>${esc(h.depart)}</b>`:'出勤 —';
     const sp=isSpecial(v), isOut=isOutsource(v), spc=sp?(v==="倉庫作業"?" special-band sb-wh":" special-band sb-out"):"";
-    body+=`<tr class="veh-band${spc}${h.shitei?" shitei":""}" data-vehname="${esc(v)}"><td colspan="10"><div class="vehhdr" data-veh="${esc(v)}"><span class="vname">${esc(v)}</span>${isOut?"":`<span class="crew">${crew}</span>`}${((sp&&v!=="倉庫作業")||!h.depart)?"":`<span class="dep">${dep}</span>`}${vehFlagHTML(v)}${isOut?"":`<span class="edithint">タップで編集</span>`}${(sp&&!isOut)?"":`<button class="veh-del" data-del-veh="${esc(v)}" title="この車両を今日の一覧から外す">×</button>`}</div></td></tr>`;
+    body+=`<tr class="veh-band${spc}${h.shitei?" shitei":""}" data-vehname="${esc(v)}"><td colspan="10"><div class="vehhdr" data-veh="${esc(v)}"><span class="vname">${esc(v)}</span>${isOut?"":`<span class="crew">${crew}</span>`}${((sp&&v!=="倉庫作業")||!h.depart)?"":`<span class="dep">${dep}</span>`}${vehFlagHTML(v)}${inspBadge(v)}${isOut?"":`<span class="edithint">タップで編集</span>`}${(sp&&!isOut)?"":`<button class="veh-del" data-del-veh="${esc(v)}" title="この車両を今日の一覧から外す">×</button>`}</div></td></tr>`;
     vehItems(v).forEach((it,i)=>{
       if(it.kind==="note"){const n=it.data;
-        if(n.retCase){body+=`<tr class="note-row ret-row" data-noteid="${n.id}" data-vehname="${esc(v)}" data-pos="${i}" draggable="true"><td colspan="8" style="background:${esc(n.bg)};color:${esc(n.fg)};font-size:${esc(n.size)};text-align:center;font-weight:800;padding:8px 12px;white-space:pre-line;cursor:pointer">${esc(n.text)}</td><td style="background:${esc(n.bg)};color:${esc(n.fg)};text-align:center;font-weight:800;padding:8px 6px;cursor:pointer">${esc(n.time||"")}</td><td style="background:${esc(n.bg)};cursor:pointer"></td></tr>`;return;}
-        body+=`<tr class="note-row" data-noteid="${n.id}" data-vehname="${esc(v)}" data-pos="${i}" draggable="true"><td colspan="10" style="background:${esc(n.bg)};color:${esc(n.fg)};font-size:${esc(n.size)};text-align:center;font-weight:800;padding:8px 12px;white-space:pre-line;cursor:pointer">${esc(n.text)}</td></tr>`;
+        if(n.retCase){body+=`<tr class="note-row ret-row" data-noteid="${n.id}" data-vehname="${esc(v)}" data-pos="${i}" draggable="true"><td colspan="8" title="${esc(n.text)}" style="background:${esc(n.bg)};color:${esc(n.fg)};font-size:${esc(n.size)};text-align:center;font-weight:800;padding:8px 12px;white-space:pre-line;cursor:pointer">${esc(n.text)}</td><td style="background:${esc(n.bg)};color:${esc(n.fg)};text-align:center;font-weight:800;padding:8px 6px;cursor:pointer">${esc(n.time||"")}</td><td style="background:${esc(n.bg)};cursor:pointer"></td></tr>`;return;}
+        body+=`<tr class="note-row" data-noteid="${n.id}" data-vehname="${esc(v)}" data-pos="${i}" draggable="true"><td colspan="10" title="${esc(n.text)}" style="background:${esc(n.bg)};color:${esc(n.fg)};font-size:${esc(n.size)};text-align:center;font-weight:800;padding:8px 12px;white-space:pre-line;cursor:pointer">${esc(n.text)}</td></tr>`;
         return;
       }
       const e=it.data;
+      if(!e.joint&&!e.jointSrc&&jointSig.has(jsig(e)))e.jointSrc=true;   // コピー元を検出したら印を残す（編集で透かしが消えないように）
       const stc=e.status==="仮"?"kari":e.status==="アポインOK"?"apoOK":e.status==="アポOK（メール）"?"apoMail":e.status==="キャンセル"?"cancel":"";
-      const ap=e.pick?`<div class="ap">${esc(e.pick)}</div>`:`<div class="blank ap">引取なし</div>`;
-      const ad=e.drop?`<div class="ad">${esc(e.drop)}</div>`:`<div class="blank ad">届けなし</div>`;
+      const ap=e.pick?`<div class="ap"><span class="atx">${esc(e.pick)}</span><span class="dist-hint" data-dh="pick"></span></div>`:`<div class="blank ap">引取なし</div>`;
+      const ad=e.drop?`<div class="ad"><span class="atx">${esc(e.drop)}</span><span class="dist-hint" data-dh="drop"></span></div>`:`<div class="blank ad">届けなし</div>`;
       const memo=esc(e.memo||"");
       // ==== 予定表の色分けルール（既存項目から自動判定）====
       const itemTxt=e.item||"", memoTxt=e.memo||"";
@@ -1425,26 +1594,26 @@ function renderTable(host,es,vehSet){
                    :(/集金|代払|買取|持参金/.test(memoTxt)?"memo-money":"");                             // ⑥薄黄
       body+=`<tr class="datarow ${stc}" data-id="${e.id}" data-vehname="${esc(e.vehicle)}" data-pos="${i}" draggable="true">
         <td class="x-st"${e.status==="留守電"&&e.callTime?` title="留守電 電話：${esc(e.callTime)}"`:""}>${dotOf(e.status)}${e.status==="留守電"&&e.callTime?'<div class="calltime-mark">☎'+esc(e.callTime)+'</div>':""}${e.noSlip?'<div class="noslip-mark">伝票なし</div>':""}</td>
-        <td class="x-seikyu">${esc(e.client)}</td>
-        <td class="x-item ${e.setti?"setti":""}">${esc(e.item)}${e.weight?`<small>${esc(e.weight)}</small>`:""}</td>
+        <td class="x-seikyu" title="${esc(e.client||"")}">${esc(e.client)}</td>
+        <td class="x-item ${e.setti?"setti":""}" title="${esc([e.item,e.weight].filter(Boolean).join(" / "))}"><div class="itemcell">${itagStrips(e)}<div class="itemtxt">${esc(e.item)}${e.weight?`<small>${esc(e.weight)}</small>`:""}</div></div></td>
         <td class="x-cust ${e.status==="仮"?"hl-temp":""}" title="${esc([e.customerPick||e.customer,e.customerDrop].filter(Boolean).join(" / "))}">${pdPair(e.customerPick||e.customer,e.customerDrop)}</td>
-        <td class="x-tel" title="${esc([e.phonePick,e.phoneDrop||e.phone].filter(Boolean).join(" / "))}">${e.joint?`<div class="joint-mark">${e.jointType==="pick"?"引取先合流":e.jointType==="drop"?"届け先合流":"合同作業"}</div>`:pdPair(e.phonePick,e.phoneDrop||e.phone)}</td>
-        <td class="x-addr">${ap}${ad}</td>
-        <td class="x-spec ${spCls}">${pdPair(e.pickFloor||e.shonyu,e.dropFloor)}</td>
-        <td class="x-time ${tmGray?"tm-gray":""}">${pdPair(e.pickTime||e.treq,e.dropTime)}</td>
-        <td class="x-ours ${oursCls}"${joinBg?` style="background:${joinBg}"`:""}>${pdPair(e.toursPick,e.toursDrop||e.tours)}</td>
-        <td class="x-memo ${memoCls}">${memo}</td>
+        <td class="x-tel" title="${esc([e.phonePick,e.phoneDrop||e.phone].filter(Boolean).join(" / "))}">${e.joint?`<div class="joint-mark">${e.jointType==="pick"?"引取先合流":e.jointType==="drop"?"届け先合流":"合同作業"}</div>`:((e.jointSrc||jointSig.has(jsig(e)))?`<div class="tel-ghost-wrap">${pdPair(e.phonePick,e.phoneDrop||e.phone)}<span class="joint-ghost">合同作業</span></div>`:pdPair(e.phonePick,e.phoneDrop||e.phone))}</td>
+        <td class="x-addr" title="${esc([e.pick,e.drop].filter(Boolean).join(" / "))}">${ap}${ad}</td>
+        <td class="x-spec ${spCls}" title="${esc([e.pickFloor||e.shonyu,e.dropFloor].filter(Boolean).join(" / "))}">${pdPair(e.pickFloor||e.shonyu,e.dropFloor)}</td>
+        <td class="x-time ${tmGray?"tm-gray":""}" title="${esc([e.pickTime||e.treq,e.dropTime].filter(Boolean).join(" / "))}">${pdPair(e.pickTime||e.treq,e.dropTime)}</td>
+        <td class="x-ours ${oursCls}"${joinBg?` style="background:${joinBg}"`:""} title="${esc([e.toursPick,e.toursDrop||e.tours].filter(Boolean).join(" / "))}">${pdPair(e.toursPick,e.toursDrop||e.tours)}</td>
+        <td class="x-memo ${memoCls}" title="${esc(e.memo||"")}">${memo}</td>
       </tr>`;
       // 持参資材＋下見結果（案件と同じカテゴリー：ドラッグでも一緒に動く）
       const eHasSurvey=e.surveyId&&(db.surveys||[]).some(s=>s.id===e.surveyId);
       if(e.materials||eHasSurvey){
         let inner=e.materials?`<span class="mat-tag">持参資材</span>${esc(e.materials)}`:"";
         if(eHasSurvey)inner+=(e.materials?"　":"")+`<span class="surv-badge" data-survview="${esc(e.surveyId)}" title="下見結果を見る">🔎 下見結果</span>`;
-        body+=`<tr class="mat-row" data-id="${e.id}" data-vehname="${esc(e.vehicle)}" data-pos="${i}" draggable="true"><td colspan="10">${inner}</td></tr>`;
+        body+=`<tr class="mat-row" data-id="${e.id}" data-vehname="${esc(e.vehicle)}" data-pos="${i}" draggable="true"><td colspan="10" title="${esc(e.materials||"")}">${inner}</td></tr>`;
       }
-      if(e.collect){body+=`<tr class="mat-row" data-id="${e.id}" data-vehname="${esc(e.vehicle)}" data-pos="${i}" draggable="true"><td colspan="10"><span class="coll-tag">集金</span>${esc(e.collect)}</td></tr>`;}
+      if(e.collect){body+=`<tr class="mat-row" data-id="${e.id}" data-vehname="${esc(e.vehicle)}" data-pos="${i}" draggable="true"><td colspan="10" title="${esc(e.collect||"")}"><span class="coll-tag">集金</span>${esc(e.collect)}</td></tr>`;}
     });
-    body+=`<tr class="addrow" data-vehname="${esc(v)}"><td colspan="10"><span class="addlink" data-addcase="${esc(v)}">＋ 案件</span><span class="addlink note" data-addnote="${esc(v)}">＋ 連絡メモ</span><span class="addlink" data-addret="${esc(v)}" style="color:#1f7a4d">＋ 引取返却</span></td></tr>`;
+    body+=`<tr class="addrow" data-vehname="${esc(v)}"><td colspan="10">${addLinksHTML(v)}</td></tr>`;
   });
   host.innerHTML=`<div class="tblwrap"><table class="xls">${cols}${thead}<tbody>${body}</tbody></table></div>`;
 }
@@ -1454,6 +1623,7 @@ let editId=null,sel={status:"仮"},copySource=null,linkSurveyId="",cpMode="full"
 function fillList(id,arr){$(id).innerHTML=arr.map(v=>`<option value="${esc(v)}">`).join("");}
 function openEntry(id,presetVeh){
   editId=id;const e=id?db.entries.find(x=>x.id===id):null;
+  if(!id&&presetVeh&&inspOf(presetVeh)){uiAlert("この車両は「点検・車検」で押さえられているため、この日は案件を追加できません。");return;}
   linkSurveyId=(e&&e.surveyId)||"";
   $("#mtitle").firstChild.textContent=id?"案件編集 ":"案件追加 ";
   $("#del").style.display=id?"":"none";
@@ -1463,7 +1633,10 @@ function openEntry(id,presetVeh){
   $("#f_date").value=(e&&e.date)||cur;
   $("#f_vehicle").value=(e&&e.vehicle)||presetVeh||db.masters.veh[0];
   $("#f_client").value=(e&&e.client)||"";$("#f_item").value=(e&&e.item)||"";$("#f_weight").value=(e&&e.weight)||"";
-  $("#f_setti").checked=!!(e&&e.setti);$("#f_heavy").checked=!!(e&&e.heavy);$("#f_pick_cust").value=(e&&(e.customerPick||e.customer))||"";$("#f_drop_cust").value=(e&&e.customerDrop)||"";$("#f_pick_phone").value=(e&&e.phonePick)||"";$("#f_drop_phone").value=(e&&(e.phoneDrop||e.phone))||"";
+  $("#f_setti").checked=!!(e&&e.setti);$("#f_heavy").checked=!!(e&&e.heavy);
+  $("#f_st_genchi").checked=!!(e&&e.stGenchi);$("#f_st_iremachi").checked=!!(e&&e.stIremachi);$("#f_st_hokan").checked=!!(e&&e.stHokan);$("#f_st_shutsu").checked=!!(e&&e.stShutsu);
+  $("#f_recv").value=(e&&e.recvBy)||"";{const rl=(e&&Array.isArray(e.recvLog))?e.recvLog:[],ht=fmtRecvLog(rl);$("#f_recv").title=ht;$("#f_recv_hist").title=ht;$("#f_recv_hist").classList.toggle("on",rl.length>0);}
+  $("#f_pick_cust").value=(e&&(e.customerPick||e.customer))||"";$("#f_drop_cust").value=(e&&e.customerDrop)||"";$("#f_pick_phone").value=(e&&e.phonePick)||"";$("#f_drop_phone").value=(e&&(e.phoneDrop||e.phone))||"";
   $("#f_pick").value=(e&&e.pick)||"";$("#f_drop").value=(e&&e.drop)||"";
   $("#f_pick_floor").value=(e&&e.pickFloor)||"";$("#f_pick_time").value=(e&&e.pickTime)||"";
   $("#f_drop_floor").value=(e&&e.dropFloor)||"";$("#f_drop_time").value=(e&&e.dropTime)||"";
@@ -1486,10 +1659,10 @@ function aiSuggestData(){
   const fM=shonyu.match(/(\d+)\s*(EV|K|F)/i);const floor=fM?parseInt(fM[1]):0;const method=fM?fM[2].toUpperCase():"";
   let recs=[];
   const add=(veh,reason,score)=>{if(!veh||AIDICT.retired.indexOf(veh)>=0)return;let r=recs.find(x=>x.veh===veh);if(!r){r={veh,reasons:[],score:0};recs.push(r);}if(r.reasons.indexOf(reason)<0)r.reasons.push(reason);r.score+=score;};
-  if(isUnic){AIDICT.unic.forEach((v,i)=>add(v,"吊り作業＝ユニック車",1000-i));}
-  const cv=AIDICT.cust[client];if(cv)cv.forEach((v,i)=>add(v,"顧客「"+client+"」実績多",30-i*5));
-  const city=aiCity(drop)||aiCity(pick);const av=city?AIDICT.area[city]:null;
-  if(av)av.forEach((v,i)=>add(v,city+"で実績多",20-i*4));
+  if(isUnic){(Array.isArray(AIDICT.crane)?AIDICT.crane:[]).forEach(r=>add(r.v,"吊り作業で実績多",600*r.s*Math.min(r.l,4)));AIDICT.unic.forEach((v,i)=>add(v,"吊り＝ユニック車",200-i));}
+  const cvR=(AIDICT.custR&&AIDICT.custR[client])||null;const cv=cvR?(Array.isArray(cvR)?cvR:[cvR]):null;if(cv)cv.forEach(r=>add(r.v,"顧客「"+client+"」で約"+Math.round(r.s*100)+"%"+(r.l>=1.6?"・この客に多い":""),100*r.s*Math.sqrt(r.l)));
+  const city=aiCity(drop)||aiCity(pick);const avR=city?((AIDICT.areaR&&AIDICT.areaR[city])||null):null;const av=avR?(Array.isArray(avR)?avR:[avR]):null;
+  if(av)av.forEach(r=>add(r.v,city+"で約"+Math.round(r.s*100)+"%",60*r.s*Math.sqrt(r.l)));
   recs.sort((a,b)=>b.score-a.score);recs=recs.slice(0,4);
   let crew=2,mins=30,notes=[];
   if(isUnic){crew=Math.max(crew,3);mins+=25+hoist*15;notes.push("吊り"+(hoist||1)+"回");}
@@ -1708,7 +1881,7 @@ async function ensureOcrLibs(){
 function dataURLtoU8(d){const b=atob(d.split(",")[1]);const u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u;}
 async function pdfToCanvases(dataURL){
   const pdf=await pdfjsLib.getDocument({data:dataURLtoU8(dataURL)}).promise;
-  const out=[];const n=Math.min(pdf.numPages,3);
+  const out=[];const n=pdf.numPages;   // 全ページ読み取り
   for(let i=1;i<=n;i++){
     const page=await pdf.getPage(i);const vp=page.getViewport({scale:2.2});
     const c=document.createElement("canvas");c.width=vp.width;c.height=vp.height;
@@ -1744,6 +1917,26 @@ $("#autoOcr").onclick=runOcr;
 // ---- AIビジョンOCR（Anthropic Claude・キーは端末のlocalStorageのみ） ----
 function getAiCfg(){try{return JSON.parse(localStorage.getItem("nc_ai")||"{}");}catch(_){return {};}}
 function setAiCfg(c){localStorage.setItem("nc_ai",JSON.stringify(c));}
+try{var _aic=getAiCfg();if(_aic.model==="gemini-2.5-flash"||_aic.model==="gemini-2.5-pro"){_aic.model="gemini-flash-latest";setAiCfg(_aic);}}catch(_){}  // 提供終了モデルの自動移行
+// ==== Gemini（Google AI Studio）ビジョン：画像→テキスト/JSON（全OCR共通） ====
+async function aiImagesFrom(dataURL){
+  if(dataURL.indexOf("data:application/pdf")===0){await ensurePdfjs();const cs=await pdfToCanvases(dataURL);return cs.map(c=>c.toDataURL("image/jpeg",0.85));}
+  return [dataURL];
+}
+async function geminiVision(images,prompt,onProg){
+  const cfg=getAiCfg();
+  if(!cfg.geminiKey)throw new Error("NO_KEY");
+  const model=cfg.model||"gemini-flash-latest";
+  const parts=images.map(u=>({inline_data:{mime_type:(u.match(/^data:(.*?);/)||[])[1]||"image/png",data:u.split(",")[1]}}));
+  parts.push({text:prompt});
+  if(onProg)onProg("AIで読み取り中…（画像を送信しています）");
+  const res=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(model)+":generateContent?key="+encodeURIComponent(cfg.geminiKey),{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({contents:[{parts}]})});
+  if(!res.ok){const t=await res.text();throw new Error("API "+res.status+"："+t.slice(0,200));}
+  const data=await res.json();
+  const cand=(data.candidates||[])[0]||{};const ps=(cand.content||{}).parts||[];
+  return ps.map(p=>p.text||"").join("");
+}
+function parseJsonLoose(txt){const m=txt&&txt.match(/\{[\s\S]*\}/);if(m){try{return JSON.parse(m[0]);}catch(_){}}return {};}
 async function ensurePdfjs(){if(!window.pdfjsLib){await loadScript("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js");window.pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";}}
 async function autoImages(){
   if(autoPdfData.indexOf("data:application/pdf")===0){await ensurePdfjs();const cs=await pdfToCanvases(autoPdfData);return cs.map(c=>c.toDataURL("image/png"));}
@@ -1762,30 +1955,73 @@ function aiFill(o){
 }
 async function runAiOcr(){
   if(!autoPdfData){uiAlert("先にPDFまたは画像を添付してください。");return;}
-  const cfg=getAiCfg();
-  if(!cfg.key){uiAlert("先に「⚙ AI設定」でAnthropic APIキーを登録してください。");return;}
-  const model=cfg.model||"claude-sonnet-5";
-  const btn=$("#autoAi");btn.disabled=true;$("#autoHint").textContent="AIで読み取り中…（FAX画像を送信しています）";
+  if(!getAiCfg().geminiKey){uiConfirm("AIで読み取るにはGoogle AI StudioのAPIキー（無料発行）が必要です。設定画面を開きますか？",openAiCfg,"設定を開く");return;}
+  const btn=$("#autoAi");btn.disabled=true;$("#autoHint").textContent="AIで読み取り中…（画像を送信しています）";
   try{
-    const imgs=await autoImages();
-    const content=imgs.map(u=>({type:"image",source:{type:"base64",media_type:"image/png",data:u.split(",")[1]}}));
-    content.push({type:"text",text:AI_OCR_PROMPT});
-    const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"content-type":"application/json","x-api-key":cfg.key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model,max_tokens:1024,messages:[{role:"user",content}]})});
-    if(!res.ok){const tt=await res.text();throw new Error("API "+res.status+"："+tt.slice(0,300));}
-    const data=await res.json();
-    const txt=(data.content&&data.content[0]&&data.content[0].text)||"";
+    const imgs=await aiImagesFrom(autoPdfData);
+    const txt=await geminiVision(imgs,AI_OCR_PROMPT,m=>{$("#autoHint").textContent=m;});
     $("#autoSrc").value=txt;
-    let obj={};const jm=txt.match(/\{[\s\S]*\}/);if(jm){try{obj=JSON.parse(jm[0]);}catch(_){}}
-    aiFill(obj);
+    aiFill(parseJsonLoose(txt));
     $("#autoHint").textContent="AI読み取り完了。右の抽出結果を確認・修正して保存してください。";
-  }catch(err){$("#autoHint").textContent="";uiAlert("AI読み取りに失敗しました。\nAPIキー・モデル名・ネット接続をご確認ください。\n\n"+err);}
+  }catch(err){$("#autoHint").textContent="";uiAlert(String(err).indexOf("NO_KEY")>=0?"先に「⚙ AI設定」でAPIキーを登録してください。":("AI読み取りに失敗しました。\nAPIキー・ネット接続をご確認ください。\n\n"+err));}
   finally{btn.disabled=false;}
 }
 $("#autoAi").onclick=runAiOcr;
-$("#autoAiCfg").onclick=()=>{const c=getAiCfg();$("#aikey_key").value=c.key||"";$("#aikey_model").value=c.model||"claude-sonnet-5";$("#ovaikey").classList.add("on");};
+function openAiCfg(){const c=getAiCfg();$("#aikey_gem").value=c.geminiKey||"";$("#aikey_model").value=c.model||"gemini-flash-latest";if($("#aikey_travel"))$("#aikey_travel").checked=!!c.travelOn;if($("#aikey_ors"))$("#aikey_ors").value=c.orsKey||"";$("#ovaikey").classList.add("on");}
+$("#autoAiCfg").onclick=openAiCfg;
 $("#aikeyx").onclick=$("#aikey_cancel").onclick=()=>$("#ovaikey").classList.remove("on");
 $("#ovaikey").addEventListener("click",e=>{if(e.target.id==="ovaikey")$("#ovaikey").classList.remove("on");});
-$("#aikey_save").onclick=()=>{setAiCfg({key:$("#aikey_key").value.trim(),model:$("#aikey_model").value.trim()||"claude-sonnet-5"});$("#ovaikey").classList.remove("on");uiAlert("AI設定を保存しました。");};
+$("#aikey_save").onclick=()=>{setAiCfg({geminiKey:$("#aikey_gem").value.trim(),model:$("#aikey_model").value.trim()||"gemini-flash-latest",travelOn:($("#aikey_travel")?$("#aikey_travel").checked:!!getAiCfg().travelOn),orsKey:($("#aikey_ors")?$("#aikey_ors").value.trim():getAiCfg().orsKey||"")});_distCache={};_routeCache={};$("#ovaikey").classList.remove("on");uiAlert("設定を保存しました。");render();};
+// ==== 請求書から修理内容を取り込み（左PDF・右OCR一覧・部分コピー→号車へ） ====
+let invOcrData=null,invOcrObj=null;   // メモリ上のみ（保存しない）
+const INV_OCR_PROMPT=`これは自動車の修理・整備の請求書または作業明細書です。画像を読み取り、次のJSONだけを返してください（前後の説明文は不要）。読み取れない項目は空文字/空配列に。手書きも読み取る。
+- date：請求日または作業完了日を西暦YYYY-MM-DDで
+- vendor：請求元（業者名）
+- total：合計金額（税込）を数字＋「円」で
+- lines：明細を1項目1行の配列に。各行は「作業/部品名 金額」の形（金額があれば付ける）。点検・整備・部品交換・工賃などを漏れなく。
+{"date":"","vendor":"","total":"","lines":[]}`;
+function copyText(t){try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).catch(()=>fallbackCopy(t));return;}}catch(_){}fallbackCopy(t);}
+function fallbackCopy(t){const ta=document.createElement("textarea");ta.value=t;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();try{document.execCommand("copy");}catch(_){}ta.remove();}
+function fillInvVeh(){$("#invVeh").innerHTML=[...(db.masters.veh||[]),...(db.cars||[])].map(v=>`<option>${esc(v)}</option>`).join("");}
+function renderInvOcr(){
+  $("#invPdf").innerHTML=invOcrData?(invOcrData.indexOf("data:application/pdf")===0?`<embed src="${invOcrData}" type="application/pdf">`:`<img src="${invOcrData}">`):'<div class="invocr-empty">「📎 請求書を読み込む」を押すと、ここにPDFが大きく表示されます。</div>';
+  if(!invOcrObj){$("#invLines").innerHTML="";return;}
+  $("#invLines").innerHTML=`<div class="inv-head">必要な行をマウスで選択 → 右クリック「コピー」（またはCtrl+C）→ 下で号車を選んで「修理リストへ」→ メモに貼り付け</div><div class="inv-text" id="invText">${esc(invAllText())}</div>`;
+  const n=(invOcrObj.lines||[]).filter(Boolean).length;
+  $("#invStatus").textContent=n?("読み取り完了（明細 "+n+"件）。必要な部分を選んでコピー→号車の修理リストのメモへ貼り付け。"):"読み取りは完了しましたが明細を抽出できませんでした。左のPDFを見ながらコピー/手入力してください。";
+}
+function invAllText(){const o=invOcrObj||{};const head=[o.date&&("日付："+o.date),o.vendor&&("業者："+o.vendor),o.total&&("合計："+o.total)].filter(Boolean).join("\n");const body=(o.lines||[]).filter(l=>l&&String(l).trim()).join("\n");return [head,body].filter(Boolean).join("\n\n");}
+function openInvOcr(){
+  fillInvVeh();
+  if(invOcrData){renderInvOcr();$("#ovinvocr").classList.add("on");return;}
+  if(!getAiCfg().geminiKey){uiConfirm("この機能はGoogle AI StudioのAPIキー（無料発行）が必要です。設定画面を開きますか？",openAiCfg,"設定を開く");return;}
+  $("#invOcrFile").value="";$("#invOcrFile").click();
+}
+$("#invOcrFile").onchange=async(ev)=>{
+  const f=ev.target.files&&ev.target.files[0];if(!f)return;
+  if(!getAiCfg().geminiKey){ev.target.value="";uiConfirm("この機能はGoogle AI StudioのAPIキー（無料発行）が必要です。設定画面を開きますか？",openAiCfg,"設定を開く");return;}
+  const dataURL=await new Promise(res=>{const r=new FileReader();r.onload=()=>res(r.result);r.readAsDataURL(f);});
+  invOcrData=dataURL;invOcrObj=null;fillInvVeh();renderInvOcr();
+  $("#ovinvocr").classList.add("on");
+  $("#invStatus").textContent="AIで読み取っています…（画像を送信中）";
+  try{
+    const imgs=await aiImagesFrom(dataURL);
+    const txt=await geminiVision(imgs,INV_OCR_PROMPT,m=>{$("#invStatus").textContent=m;});
+    invOcrObj=parseJsonLoose(txt);renderInvOcr();
+  }catch(err){$("#invStatus").textContent="読み取りに失敗しました。";uiAlert(String(err).indexOf("NO_KEY")>=0?"先に「⚙ AI設定」でAPIキーを登録してください。":("読み取りに失敗しました。\nAPIキー・ネット接続をご確認ください。\n\n"+err));}
+  ev.target.value=""; // 請求書ファイルは保存しない（メモリ上のみ）
+};
+$("#invLoad").onclick=()=>{if(!getAiCfg().geminiKey){uiConfirm("この機能はGoogle AI StudioのAPIキー（無料発行）が必要です。設定画面を開きますか？",openAiCfg,"設定を開く");return;}$("#invOcrFile").value="";$("#invOcrFile").click();};
+$("#invAiCfg").onclick=openAiCfg;
+$("#invDelete").onclick=()=>{invOcrData=null;invOcrObj=null;renderInvOcr();$("#ovinvocr").classList.remove("on");};
+$("#invocrx").onclick=()=>$("#ovinvocr").classList.remove("on");
+$("#invGo").onclick=()=>{const v=$("#invVeh").value;if(!v)return;$("#ovinvocr").classList.remove("on");if(!$("#ovveh").classList.contains("on"))$("#ovveh").classList.add("on");openVehEdit(v);};
+$("#ovinvocr").addEventListener("click",e=>{
+  const cpAll=e.target.closest("[data-invcopyall]");
+  if(cpAll){const orig=cpAll.textContent;copyText(invAllText());cpAll.textContent="✓ コピーしました";setTimeout(()=>{cpAll.textContent=orig;},1200);return;}
+  const cp=e.target.closest("[data-invcopy]");
+  if(cp){const orig=cp.textContent;copyText(cp.dataset.invcopy);cp.textContent="✓ コピー";setTimeout(()=>{cp.textContent=orig;},1200);return;}
+});
 $("#autoSave").onclick=()=>{
   const date=$("#ar_date").value,vehicle=$("#ar_veh").value;
   if(!date){uiAlert("日付を入力してください。");return;}
@@ -1877,14 +2113,22 @@ function buildEntry(id){
   const ord=same?ex.ord:(function(){const os=db.entries.filter(x=>x.date===date&&x.vehicle===vehicle&&x.id!==id).map(x=>typeof x.ord==="number"?x.ord:-1);return os.length?Math.max(...os)+1:0;})();
   return {id:id||uid(),date,vehicle,ord,client:$("#f_client").value.trim(),
     item:$("#f_item").value.trim(),weight:$("#f_weight").value.trim(),setti:$("#f_setti").checked,heavy:$("#f_heavy").checked,
+    stGenchi:$("#f_st_genchi").checked,stIremachi:$("#f_st_iremachi").checked,stHokan:$("#f_st_hokan").checked,stShutsu:$("#f_st_shutsu").checked,
     customerPick:$("#f_pick_cust").value.trim(),customerDrop:$("#f_drop_cust").value.trim(),phonePick:$("#f_pick_phone").value.trim(),phoneDrop:$("#f_drop_phone").value.trim(),pick:$("#f_pick").value.trim(),
     drop:$("#f_drop").value.trim(),pickFloor:$("#f_pick_floor").value.trim(),pickTime:$("#f_pick_time").value.trim(),
     dropFloor:$("#f_drop_floor").value.trim(),dropTime:$("#f_drop_time").value.trim(),toursPick:$("#f_pick_tours").value.trim(),toursDrop:$("#f_drop_tours").value.trim(),
     status:sel.status,noSlip:$("#f_noSlip").checked,callTime:$("#f_callTime").value.trim(),memo:$("#f_memo").value.trim(),moneyReady:$("#f_moneyReady").checked,materials:$("#f_materials").value.trim(),collect:$("#f_collect").value.trim(),
-    surveyId:linkSurveyId||"",surveyChecked:(ex&&ex.surveyChecked)||false};
+    surveyId:linkSurveyId||"",surveyChecked:(ex&&ex.surveyChecked)||false,
+    joint:(ex&&ex.joint)||false,jointType:(ex&&ex.jointType)||"",jointSrc:(ex&&ex.jointSrc)||false,  // 合同作業の印は編集しても保持（削除まで消えない）
+    recvLog:(ex&&Array.isArray(ex.recvLog))?ex.recvLog.slice():[],recvBy:(ex&&ex.recvBy)||""};  // 受付者の履歴
 }
+function nowStamp(){const d=new Date(),p=n=>String(n).padStart(2,"0");return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+" "+p(d.getHours())+":"+p(d.getMinutes());}
+function fmtRecvLog(log){return (log&&log.length)?log.slice().reverse().map(r=>r.name+"　"+r.at).join("\n"):"（受付の履歴なし）";}
 $("#save").onclick=()=>{
   const obj=buildEntry(editId);
+  if(!editId&&inspOf(obj.vehicle,obj.date)){uiAlert("「"+obj.vehicle+"」は "+obj.date+" が点検・車検で押さえられているため、案件を追加できません。");return;}
+  const rname=$("#f_recv").value.trim();
+  if(rname){obj.recvLog=obj.recvLog||[];const last=obj.recvLog[obj.recvLog.length-1];if(!last||last.name!==rname)obj.recvLog.push({name:rname,at:nowStamp()});obj.recvBy=rname;}
   if(editId){const i=db.entries.findIndex(x=>x.id===editId);db.entries[i]=obj;}else{db.entries.push(obj);}
   save();closeEntry();render();
 };
@@ -1908,6 +2152,7 @@ $("#ovcp").addEventListener("click",e=>{
   const c=e.target.closest("[data-copyto]");
   if(c){if(c.classList.contains("on"))return;const tv=c.dataset.copyto;
     const cp={...copySource,id:uid(),vehicle:tv,ord:nextOrd(tv),joint:true,jointType:cpMode==="full"?"":cpMode};
+    copySource.jointSrc=true;   // コピー元にも印（電話番号＋透かし「合同作業」表示用）※コピー生成後に付与
     if(cpMode==="pick"){cp.drop="";cp.customerDrop="";cp.dropFloor="";cp.dropTime="";cp.phoneDrop="";cp.toursDrop="";}
     else if(cpMode==="drop"){cp.pick="";cp.customerPick="";cp.customer="";cp.pickFloor="";cp.shonyu="";cp.pickTime="";cp.treq="";cp.phonePick="";cp.toursPick="";}
     db.entries.push(cp);save();render();c.classList.add("on");$("#cp_done").textContent=[...document.querySelectorAll('#cp_list .chk.on')].map(x=>x.textContent).join("・")+" にコピーしました。";return;}
@@ -2105,7 +2350,7 @@ const INSP_ITEMS=[
   {key:"insp12m",    label:"12ヶ月点検",   dateField:"insp12m",    defCycle:12, defLead:1},
   {key:"unicInsp",   label:"ユニック年次点検", dateField:"unicInsp", defCycle:12, defLead:1, truckOnly:true},
   {key:"oil",        label:"オイル交換",   dateField:"oil",        defCycle:6,  defLead:1},
-  {key:"tire",       label:"タイヤ交換",   dateField:"tire",       defCycle:24, defLead:1},
+  {key:"tire",       label:"タイヤ交換",   dateField:"tire",       defCycle:24, defLead:1, distanceBased:true},
   {key:"batteryDate",label:"バッテリー交換",dateField:"batteryDate",defCycle:36, defLead:1}
 ];
 function inspItem(key){return INSP_ITEMS.find(i=>i.key===key);}
@@ -2118,6 +2363,7 @@ function vehAlerts(v){
   const d=db.vehicles[v];if(!d)return [];const today=todayStr();const out=[];
   INSP_ITEMS.forEach(it=>{
     if(!itemApplies(v,it))return;
+    if(it.distanceBased)return;   // タイヤ交換は距離で管理（月ベースのアラート対象外）
     const dl=itemDeadline(v,it);if(!dl)return;
     const cfg=alertCfgFor(v,it);
     const leadStart=firstOfMonthStr(addMonths(dl,-Math.max(1,cfg.lead)));  // 表示開始（その月の1日）
@@ -2154,6 +2400,7 @@ function renderVehList(){
   const card=(v,isCar)=>{const d=db.vehicles[v]||{};const st=vehStatus(v);return `<button class="vehcard ${st.cls}" data-vsel="${esc(v)}"><span class="vname">${esc(v)}${isCar?' <span class="carbadge">社用車</span>':''}</span><span class="vsub">${d.shaken?("車検 "+esc(d.shaken)):"車検日 未登録"}</span>${st.label?`<span class="vbadge">${st.label}</span>`:""}</button>`;};
   let html=`<div class="vehsum">${sum}</div><h4 style="margin:0 0 8px">号車（トラック）</h4><div class="vehgrid">`+trucks.map(v=>card(v,false)).join("")+`</div>`;
   if(cars.length)html+=`<h4 style="margin:16px 0 8px">社用車</h4><div class="vehgrid">`+cars.map(v=>card(v,true)).join("")+`</div>`;
+  html+=`<div style="display:flex;justify-content:flex-end;margin-top:18px"><button class="btn amber" id="invOcrBtn">📄 請求書から修理内容を取り込み</button></div>`;
   $("#vehList").innerHTML=html;
 }
 function vfld(label,field,val,type,extra){return `<div class="fld"><label>${label}</label><input data-vf="${field}" ${type?('type="'+type+'"'):''} value="${esc(val||"")}">${extra||""}</div>`;}
@@ -2185,6 +2432,9 @@ function openVehEdit(v){
       <div class="fld mini w-bat"><label>バッテリー②</label><input data-vf="battery2" value="${esc(d.battery2||"")}"></div>
       <div class="fld mini w-tire"><label>タイヤサイズ</label><input data-vf="tireSize" value="${esc(d.tireSize||"")}"></div>
       <div class="fld mini w-tire"><label>スタッドレス（有無・日付）</label><input data-vf="studless" value="${esc(d.studless||"")}"></div>
+      <div class="fld mini w-tire"><label>タイヤ交換日</label><input type="date" data-vf="tireDate" value="${esc(d.tireDate||"")}"></div>
+      <div class="fld mini w-tire"><label>交換時の距離（km）</label><input data-vf="tireKm" value="${esc(d.tireKm||"")}" placeholder="例：45000"></div>
+      <div class="fld mini w-tire"><label>溝の深さ（mm）</label><input data-vf="tireGroove" value="${esc(d.tireGroove||"")}" placeholder="例：8.0"></div>
     </div>
     <h4 style="margin:12px 0 6px">点検・車検（日付＋アラート設定）</h4>
     <div class="insp-help hint">各項目に「実施日／満了日」と、周期・アラートを何ヶ月前から出すかを設定できます。アラートは<b>期限の1ヶ月前になる月の1日</b>から配車ボードに赤で表示します。</div>
@@ -2205,6 +2455,14 @@ function renderInspSection(v){
     const cfg=alertCfgFor(v,it),dl=itemDeadline(v,it);
     const acked=dl&&d.ack&&d.ack[it.key]===dl;
     const dateI=`<input type="date" data-vf="${it.dateField}" value="${esc(d[it.dateField]||"")}" title="${it.isExpiry?"車検満了日":"直近の実施日"}">`;
+    if(it.distanceBased){
+      const num=s=>+String(s||"").replace(/[^0-9]/g,"")||0;
+      const base=num(d.tireKm),span=num(d.tireKmSpan),lead=num(d.tireKmLead),now=num(d.tireKmNow);
+      let stat='<span class="insp-due na">距離を入力</span>';
+      if(span&&now){const remain=(base+span)-now;stat=remain>lead?`<span class="insp-due">交換まで あと ${remain.toLocaleString()} km</span>`:remain>0?`<span class="insp-due" style="color:#b26b00;font-weight:800">まもなく交換（あと ${remain.toLocaleString()} km）</span>`:`<span class="insp-due" style="color:#c0392b;font-weight:800">交換時期です（${Math.abs(remain).toLocaleString()} km超過）</span>`;}
+      const f=(lab,fld,ph)=>`<span class="insp-cyc">${lab}<input type="number" min="0" data-vf="${fld}" value="${esc(d[fld]||"")}"${ph?` placeholder="${ph}"`:""} style="width:84px">km</span>`;
+      return `<div class="insp-row"><div class="insp-name">${esc(it.label)}<br><small>実施日／距離管理</small></div><div class="insp-ctrls">${dateI}${f("交換時","tireKm")}${f("交換サイクル","tireKmSpan","40000")}${f("警告","tireKmLead","3000")}${f("現在","tireKmNow")}${stat}</div></div>`;
+    }
     const cycleI=it.isExpiry?`<span class="insp-cyc-na">満了日が期限</span>`:`<span class="insp-cyc">周期<input type="number" min="1" max="36" data-alertcfg="cycle" data-alertitem="${it.key}" value="${cfg.cycle}">ヶ月</span>`;
     const leadI=`<span class="insp-lead">アラート<input type="number" min="1" max="36" data-alertcfg="lead" data-alertitem="${it.key}" value="${cfg.lead}">ヶ月前</span>`;
     const dueI=dl?`<span class="insp-due">期限 ${esc(dl)}</span>`:`<span class="insp-due na">日付未入力</span>`;
@@ -2279,16 +2537,19 @@ function docDownload(v){
     setTimeout(()=>URL.revokeObjectURL(url),15000);
   }).catch(err=>uiAlert("ダウンロードに失敗しました：\n"+err));
 }
+function autoSizeNote(ta){if(!ta)return;ta.style.height="auto";ta.style.height=Math.min(ta.scrollHeight,82)+"px";}
 function renderRepairs(v){
   const rs=(db.vehicles[v].repairs||[]);
-  $("#vehRepairs").innerHTML=rs.map((r,i)=>`<div class="repair-row">
+  const back=invOcrData?`<div style="margin-bottom:10px"><button class="btn save mini" id="invBack">← 請求書の読み取りに戻る（別の号車へ続ける）</button></div>`:"";
+  $("#vehRepairs").innerHTML=back+rs.map((r,i)=>`<div class="repair-row">
     <input type="date" data-ri="${i}" data-rf="date" value="${esc(r.date||"")}">
     <input placeholder="故障・修理の箇所" data-ri="${i}" data-rf="part" value="${esc(r.part||"")}">
     <select data-ri="${i}" data-rf="status"><option ${r.status==="対応中"?"selected":""}>対応中</option><option ${r.status==="完了"?"selected":""}>完了</option></select>
     <input placeholder="費用" data-ri="${i}" data-rf="cost" value="${esc(r.cost||"")}">
-    <input placeholder="メモ" data-ri="${i}" data-rf="note" value="${esc(r.note||"")}">
+    <textarea placeholder="メモ" data-ri="${i}" data-rf="note" rows="1">${esc(r.note||"")}</textarea>
     <button class="btn danger mini" data-rdel="${i}" title="この行を削除">×</button>
   </div>`).join("")+`<button class="btn amber mini" id="repAdd">＋ 修理・故障を追加</button>`;
+  document.querySelectorAll('#vehRepairs textarea[data-rf="note"]').forEach(autoSizeNote);
 }
 $("#vehmgr").onclick=()=>{vehSel=null;$("#vehEdit").style.display="none";$("#vehList").style.display="";renderVehList();$("#ovveh").classList.add("on");};
 // 号車バーのアラートをタップ→その号車の車両管理を開く（作業員編集より先に処理）
@@ -2344,6 +2605,41 @@ $("#ovresv").addEventListener("click",e=>{
 });
 $("#resvPrev").onclick=()=>{resvMonth=new Date(resvMonth.getFullYear(),resvMonth.getMonth()-1,1);renderResv();};
 $("#resvNext").onclick=()=>{resvMonth=new Date(resvMonth.getFullYear(),resvMonth.getMonth()+1,1);renderResv();};
+// ==== 点検・車検 日程押さえカレンダー ====
+let inspV=null,inspMonth=null;
+function openInspCal(v,anchor){
+  inspV=v;
+  inspMonth=anchor&&/^\d{4}-\d{2}/.test(anchor)?new Date(+anchor.slice(0,4),+anchor.slice(5,7)-1,1):(function(){const p=cur.split("-");return new Date(+p[0],+p[1]-1,1);})();
+  $("#inspTitle").textContent=v+" の点検・車検 日程";
+  $("#inspLead").innerHTML='<b>'+esc(v)+'</b> が入庫（点検・車検）する日をカレンダーで選んでください。';
+  renderInspCal();$("#ovinsp").classList.add("on");
+}
+function renderInspCal(){
+  const y=inspMonth.getFullYear(),m=inspMonth.getMonth();
+  $("#inspMonthLbl").textContent=y+"年"+(m+1)+"月";
+  const startDow=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate(),tstr=todayStr();
+  let cells="";
+  for(let i=0;i<startDow;i++)cells+=`<div class="resv-cell empty"></div>`;
+  for(let dd=1;dd<=days;dd++){
+    const ds=y+"-"+String(m+1).padStart(2,"0")+"-"+String(dd).padStart(2,"0");
+    const on=!!(db.inspDays||{})[ds+"|"+inspV];
+    const hasJob=db.entries.some(e=>e.date===ds&&e.vehicle===inspV);
+    cells+=`<div class="resv-cell insp-pick${on?" ins-on":""}${ds===tstr?" today":""}" data-inspdate="${ds}"><span class="resv-d">${dd}</span>${on?'<span class="resv-chip" style="background:#c0392b">点検・車検</span>':(hasJob?'<span class="resv-chip" style="background:#8a94a3">案件あり</span>':"")}</div>`;
+  }
+  $("#inspCal").innerHTML=`<div class="resv-grid">`+["日","月","火","水","木","金","土"].map(w=>`<div class="resv-dow">${w}</div>`).join("")+cells+`</div>`;
+}
+$("#inspx").onclick=$("#inspDoneBtn").onclick=()=>{$("#ovinsp").classList.remove("on");render();};
+$("#inspPrev").onclick=()=>{inspMonth=new Date(inspMonth.getFullYear(),inspMonth.getMonth()-1,1);renderInspCal();};
+$("#inspNext").onclick=()=>{inspMonth=new Date(inspMonth.getFullYear(),inspMonth.getMonth()+1,1);renderInspCal();};
+$("#ovinsp").addEventListener("click",e=>{
+  if(e.target.id==="ovinsp"){$("#ovinsp").classList.remove("on");render();return;}
+  const c=e.target.closest("[data-inspdate]");if(!c)return;
+  const ds=c.dataset.inspdate,k=ds+"|"+inspV;db.inspDays=db.inspDays||{};
+  if(db.inspDays[k]){delete db.inspDays[k];save();renderInspCal();return;}
+  const hasJob=db.entries.some(x=>x.date===ds&&x.vehicle===inspV);
+  if(hasJob){uiConfirm(ds+" は既に案件が入っています。点検・車検で押さえますか？（案件はそのまま残ります）",()=>{db.inspDays[k]={label:"点検・車検"};save();renderInspCal();},"押さえる");return;}
+  db.inspDays[k]={label:"点検・車検"};save();renderInspCal();
+});
 $("#resvAdd").onclick=()=>{
   const s=$("#resvStart").value,e2=$("#resvEnd").value,p=$("#resvPerson").value.trim(),note=$("#resvNote").value.trim();
   if(!s||!e2){uiAlert("開始日と終了日を入力してください。");return;}
@@ -2754,6 +3050,8 @@ $("#vmx").onclick=$("#vmclose").onclick=()=>$("#ovveh").classList.remove("on");
 $("#ovveh").addEventListener("click",e=>{
   if(e.target.id==="ovveh"){$("#ovveh").classList.remove("on");return;}
   const sel=e.target.closest("[data-vsel]");if(sel){openVehEdit(sel.dataset.vsel);return;}
+  if(e.target.id==="invOcrBtn"){openInvOcr();return;}
+  if(e.target.id==="invBack"){openInvOcr();return;}
   if(e.target.id==="vehBack"){$("#vehEdit").style.display="none";vehSel=null;$("#vehList").style.display="";renderVehList();return;}
   if(e.target.id==="resvBtn"){openResv(vehSel);return;}
   if(e.target.id==="carRenameBtn"){renameCar(vehSel);return;}
@@ -2768,7 +3066,7 @@ $("#ovveh").addEventListener("input",e=>{
   if(!vehSel)return;
   const ac=e.target.closest("[data-alertcfg]");if(ac){const k=ac.dataset.alertitem,d=db.vehicles[vehSel];d.alertCfg=d.alertCfg||{};d.alertCfg[k]=d.alertCfg[k]||{};d.alertCfg[k][ac.dataset.alertcfg]=Math.max(1,+ac.value||1);save();return;}
   const vf=e.target.closest("[data-vf]");if(vf&&vf.type!=="checkbox"){db.vehicles[vehSel][vf.dataset.vf]=vf.value;save();return;}
-  const ri=e.target.closest("[data-ri]");if(ri&&ri.tagName!=="SELECT"){db.vehicles[vehSel].repairs[+ri.dataset.ri][ri.dataset.rf]=ri.value;save();return;}
+  const ri=e.target.closest("[data-ri]");if(ri&&ri.tagName!=="SELECT"){db.vehicles[vehSel].repairs[+ri.dataset.ri][ri.dataset.rf]=ri.value;if(ri.tagName==="TEXTAREA")autoSizeNote(ri);save();return;}
 });
 $("#ovveh").addEventListener("change",e=>{
   if(!vehSel)return;
@@ -2838,7 +3136,7 @@ $("#ovtehai").addEventListener("click",e=>{if(e.target.id==="ovtehai")$("#ovteha
 $("#tehaiTo").addEventListener("input",()=>{if(tehaiV){db.vehicles[tehaiV].makerMail=$("#tehaiTo").value.trim();save();}});
 $("#tehaiCopy").onclick=()=>{const t=$("#tehaiBody");t.select();try{navigator.clipboard.writeText(t.value);}catch(_){document.execCommand("copy");}$("#tehaiCopy").textContent="コピー済み";setTimeout(()=>$("#tehaiCopy").textContent="本文をコピー",1500);};
 $("#tehaiMail").onclick=()=>{window.location.href="mailto:"+encodeURIComponent($("#tehaiTo").value.trim())+"?subject="+encodeURIComponent($("#tehaiSubj").value)+"&body="+encodeURIComponent($("#tehaiBody").value);};
-$("#tehaiDone").onclick=()=>{const it=inspItem(tehaiKey),dl=itemDeadline(tehaiV,it);const d=db.vehicles[tehaiV];d.ack=d.ack||{};d.ack[tehaiKey]=dl;save();$("#ovtehai").classList.remove("on");render();if($("#ovveh").classList.contains("on")&&vehSel===tehaiV)renderInspSection(tehaiV);};
+$("#tehaiDone").onclick=()=>{const it=inspItem(tehaiKey),dl=itemDeadline(tehaiV,it);const d=db.vehicles[tehaiV];d.ack=d.ack||{};d.ack[tehaiKey]=dl;save();const v=tehaiV;$("#ovtehai").classList.remove("on");render();if($("#ovveh").classList.contains("on")&&vehSel===v)renderInspSection(v);openInspCal(v,dl);};
 
 // ---- CSV ----
 function toCSV(rows){const q=v=>{v=v==null?"":String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};return "﻿"+rows.map(r=>r.map(q).join(",")).join("\r\n");}
@@ -2855,6 +3153,31 @@ function exportCSV(scope){
   a.download=(scope==="month"?"配車_"+cur.slice(0,7):"配車_"+cur)+".csv";a.click();URL.revokeObjectURL(a.href);
 }
 $("#csv").onclick=()=>{uiModal("CSVをどの範囲で書き出しますか？",[{label:"この日だけ",cls:"gray",onClick:()=>exportCSV("day")},{label:"この月ぜんぶ",cls:"save",onClick:()=>exportCSV("month")}],"CSV出力");};
+// ===== データの控え（バックアップ）: db全体＋車検証を1つのJSONで書き出し/復元。設定(OCRパスコード等)は含めない =====
+function exportBackup(){
+  const dump={__ncbackup:1,app:"haisha",exportedAt:new Date().toISOString(),data:{}};
+  for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k===LS||k.indexOf("nc_shakendoc_")===0)dump.data[k]=localStorage.getItem(k);}
+  const blob=new Blob([JSON.stringify(dump)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);
+  const d=new Date(),p=n=>(""+n).padStart(2,"0");
+  a.download="配車ボード_backup_"+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+"_"+p(d.getHours())+p(d.getMinutes())+".json";
+  a.click();URL.revokeObjectURL(a.href);
+}
+$("#backup").onclick=()=>{uiModal("データの控え（バックアップ）",[{label:"書き出す（保存）",cls:"save",onClick:exportBackup},{label:"読み込む（復元）",cls:"gray",onClick:()=>$("#backupFile").click()}],"バックアップ");};
+$("#backupFile").onchange=function(){
+  const f=this.files&&this.files[0];if(!f)return;const inp=this,rd=new FileReader();
+  rd.onload=()=>{
+    let obj;try{obj=JSON.parse(rd.result);}catch(_){uiAlert("ファイルを読めませんでした（JSON形式ではありません）。");inp.value="";return;}
+    const data=(obj&&obj.__ncbackup)?obj.data:obj;
+    if(!data||typeof data!=="object"||!data[LS]){uiAlert("この配車ボードのバックアップファイルではないようです。");inp.value="";return;}
+    uiConfirm("現在のデータをこの控えで置き換えます。よろしいですか？（今のデータは失われます）",()=>{
+      try{Object.keys(data).forEach(k=>{if(k===LS||k.indexOf("nc_shakendoc_")===0)localStorage.setItem(k,data[k]);});uiAlert("復元しました。画面を更新します。");location.reload();}
+      catch(e){uiAlert("復元に失敗しました：\n"+e);}
+    },"復元する",true);
+    inp.value="";
+  };
+  rd.readAsText(f);
+};
 // ===== 予定表の印刷（当日、案件のある車両のみ。外注車両は除外）=====
 function _prPairHTML(a,b){a=(a||"").toString().trim();b=(b||"").toString().trim();if(!a&&!b)return "";let s="";if(a)s+=`<div><span class="pl p">引</span>${esc(a)}</div>`;if(b)s+=`<div><span class="pl d">届</span>${esc(b)}</div>`;return s;}
 const _PR_THEAD=`<thead><tr><th style="width:5%">状態</th><th style="width:11%">請求</th><th style="width:12%">品名</th><th style="width:12%">お客様</th><th style="width:10%">電話</th><th style="width:18%">住所（引取／届け）</th><th style="width:7%">階数</th><th style="width:8%">時間</th><th style="width:6%">配送</th><th>備考</th></tr></thead>`;
@@ -2893,6 +3216,17 @@ function uiConfirm(msg,onYes,yesLabel,danger){uiModal(msg,[{label:"キャンセ�
 function uiAlert(msg){uiModal(msg,[{label:"OK",cls:"gray"}],"お知らせ");}
 $("#ovc_x").onclick=()=>$("#ovc").classList.remove("on");
 $("#ovc").addEventListener("click",e=>{if(e.target.id==="ovc")$("#ovc").classList.remove("on");});
+
+// 既存の合同作業コピー元に jointSrc 印を一度だけ付与（編集しても透かしが消えないように）
+(function migrateJointSrc(){try{
+  const sig=e=>[e.client,e.item,e.customerPick||e.customer,e.customerDrop,e.phonePick,e.phoneDrop||e.phone].map(x=>(x||"").trim()).join("¦");
+  const byDate={};(db.entries||[]).forEach(e=>{(byDate[e.date]=byDate[e.date]||[]).push(e);});
+  let changed=false;
+  Object.keys(byDate).forEach(d=>{const list=byDate[d];const js=new Set();
+    list.forEach(e=>{if(e.joint){const s=sig(e);if(s.replace(/¦/g,""))js.add(s);}});
+    list.forEach(e=>{if(!e.joint&&!e.jointSrc){const s=sig(e);if(s.replace(/¦/g,"")&&js.has(s)){e.jointSrc=true;changed=true;}}});});
+  if(changed)save();
+}catch(_){}})();
 
 render();
 </script>
