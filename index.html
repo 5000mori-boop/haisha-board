@@ -173,10 +173,17 @@
   .mat-bar input{flex:1;min-width:0;border:1px solid var(--line);border-radius:6px;padding:4px 8px;font-size:.82rem;color:#d32f2f;font-weight:700;background:#fff}
   .mat-bar.coll{background:#e4eefb;border-color:#a8c6ea}
   .mat-bar.coll .mat-lbl,.mat-bar.coll input{color:#1258a0}
+  .mat-bar.ppay{background:#ffe600;border-color:#e0c400}
+  .mat-bar.ppay .mat-lbl,.mat-bar.ppay input{color:#6a5400}
+  .mat-bar.ppay label.moneyready-inbar{flex:0 0 auto;white-space:nowrap;margin-left:auto;color:#d32f2f;background:#fff;border:1.5px solid #d32f2f;border-radius:6px;padding:2px 9px;font-size:.72rem;font-weight:800}
   .coll-tag{display:inline-block;background:#1258a0;color:#fff;font-size:.6rem;font-weight:800;border-radius:4px;padding:1px 6px;margin-right:7px;vertical-align:1px}
+  .coll-tag.ppay{background:#b28900}
+  .coll-tag.money{background:#fff;color:#d32f2f;border:1px solid #d32f2f}
   .collline{margin-top:4px;background:#e4eefb;border:1px solid #a8c6ea;border-radius:6px;padding:3px 7px;font-size:.74rem;font-weight:700;color:#1258a0}
   tr.mat-row td{background:#fff4c2;color:#d32f2f;font-weight:700;font-size:.8rem;padding:4px 10px;cursor:pointer;border-color:#e6d287}
   tr.mat-row:hover td{filter:brightness(.97)}
+  tr.mat-row.ppay-row td{background:#ffd21a;border-color:#e6b800;color:#5a4600}
+  tr.mat-row.ppay-row.money td{background:#f2867e;border-color:#e06b62;color:#4a0f0a}
   .mat-tag{display:inline-block;background:#d32f2f;color:#fff;font-size:.6rem;font-weight:800;border-radius:4px;padding:1px 6px;margin-right:7px;vertical-align:1px}
   /* 設置作業手当フラグ（1号車帯・自動化準備） */
   .veh-band td{position:relative}
@@ -217,9 +224,9 @@
   .surv-item .btn.danger.mini{padding:0 6px}
   .survtop{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
   /* 請求書取り込み（左PDF・右OCR一覧） */
-  #ovinvocr .modal{width:97vw;max-width:1320px;max-height:95vh;display:flex;flex-direction:column}
+  #ovinvocr .modal{width:97vw;max-width:1320px;height:92vh;max-height:95vh;display:flex;flex-direction:column}
   .invocr-body{display:flex;gap:12px;padding:12px 16px;flex:1;min-height:0}
-  .invocr-left{flex:1.2;min-width:0;border:1px solid var(--line);border-radius:8px;overflow:auto;background:#f4f6f9}
+  .invocr-left{flex:1.2;min-width:0;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#f4f6f9}
   .invocr-left embed{width:100%;height:100%;min-height:100%;display:block;border:0}
   .invocr-left img{width:100%;height:auto;display:block}
   .invocr-right{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden}
@@ -230,7 +237,15 @@
   .invocr-empty{color:var(--muted);font-size:.85rem;padding:24px;text-align:center}
   .invocr-foot{flex-wrap:wrap;gap:10px}
   .invocr-foot #invVeh{padding:5px 8px;border:1px solid var(--line);border-radius:6px;font-size:.9rem}
-  @media(max-width:820px){#ovinvocr .modal{max-height:96vh}.invocr-body{flex-direction:column}.invocr-left{height:42vh;flex:none}.invocr-right{height:38vh;flex:none}}
+  @media(max-width:820px){#ovinvocr .modal{height:96vh;max-height:96vh}.invocr-body{flex-direction:column}.invocr-left{height:42vh;flex:none}.invocr-right{height:38vh;flex:none}}
+  /* PDFズーム表示（請求書取り込み・予定自動登録 共通） */
+  .pdfz{display:flex;flex-direction:column;height:100%;min-height:0;background:#4b5157}
+  .pdfz-bar{display:flex;align-items:center;gap:6px;padding:5px 8px;background:#e9eef4;border-bottom:1px solid var(--line);flex:none}
+  .pdfz-bar button{padding:2px 9px;font-size:.82rem;line-height:1.7}
+  .pdfz-lvl{font-size:.8rem;color:#1f2530;min-width:50px;text-align:center;font-weight:700}
+  .pdfz-scroll{flex:1;min-height:0;overflow:auto;padding:12px;text-align:center}
+  .pdfz-scroll canvas,.pdfz-scroll img{display:block;margin:0 auto 12px;box-shadow:0 2px 10px rgba(0,0,0,.45);background:#fff;max-width:none}
+  .pdfz-load{color:#e7ebf0;font-size:.85rem;padding:24px;text-align:center}
   .survtbl{border:1px solid var(--line);border-radius:9px;overflow:hidden}
   .survtbl-r{display:grid;grid-template-columns:2.2fr 1fr 1.2fr .6fr;gap:8px;padding:9px 12px;border-bottom:1px solid var(--line);font-size:.85rem;align-items:center;cursor:pointer}
   .survtbl-r:last-child{border-bottom:none}
@@ -409,14 +424,12 @@
   .btn.home-btn:hover{background:#1a1f28}
   @media(max-width:560px){#portal .pwrap{padding:28px 16px 58px}#portal h1.ptitle{font-size:1.5rem}#portal .pjp{font-size:1.1rem}}
   /* 予定自動登録 */
-  .auto-wrap{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:14px 20px}
+  .auto-wrap{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:18px;padding:14px 20px}
   .auto-left,.auto-right{display:flex;flex-direction:column;gap:8px;min-width:0}
   .auto-left>label{font-size:.8rem;font-weight:700;color:var(--muted)}
   .auto-left textarea{min-height:220px;padding:9px;border:1px solid var(--line);border-radius:8px;font-size:.85rem;font-family:inherit;resize:vertical}
   .auto-file{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-  #autoPreview:not(:empty){border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#f7f9fc}
-  #autoPreview embed{width:100%;height:320px}
-  #autoPreview img{width:100%;max-height:320px;object-fit:contain;display:block}
+  #autoPreview:not(:empty){height:56vh;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#f7f9fc}
   @media(max-width:760px){.auto-wrap{grid-template-columns:1fr}}
   .offboard-alerts{display:inline-flex;align-items:center;flex-wrap:wrap;gap:6px;margin-left:8px}
   .offboard-alerts .oba-label{font-size:.7rem;color:var(--muted);font-weight:800}
@@ -510,7 +523,8 @@
   .calltime-mark{display:block;margin-top:1px;font-size:.56rem;font-weight:700;color:#a05a00;line-height:1.1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .st-noslip{display:inline-block;margin-left:5px;font-size:.72rem;font-weight:800;color:#9a0000}
   .crewpick{display:flex;flex-wrap:wrap;gap:5px;max-height:120px;overflow:auto;padding:8px;border:1px solid var(--line);border-radius:8px;background:#fbfcfd}
-  .modal .foot{padding:13px 20px;border-top:1px solid var(--line2);display:flex;gap:10px;justify-content:space-between;align-items:center}
+  .modal .foot{padding:13px 20px;border-top:1px solid var(--line2);display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}
+  .modal .foot .right{margin-left:auto}
   .modal .foot .right{display:flex;gap:8px}
   .btn.gray{background:#eef1f5;color:var(--ink2)}.btn.gray:hover{background:#e3e8ee}
   .btn.danger{background:#fbe9e6;color:#c0392b}.btn.danger:hover{background:#f7d9d4}
@@ -778,18 +792,21 @@
       <div class="fld full"><label>配送時間（引取／届け）</label><div class="locsub"><div class="lscell"><span class="ls-lbl">引取</span><input id="f_pick_tours" class="ls-in"></div><div class="lscell"><span class="ls-lbl">届け</span><input id="f_drop_tours" class="ls-in"></div></div></div>
       <div class="fld full"><label>状態</label><div class="seg status-seg"><div class="chk" data-status="仮">仮</div><div class="chk" data-status="確定">確定</div><div class="chk apo" data-status="アポインOK">アポOK</div><div class="chk apo" data-status="アポOK（メール）">アポメール</div><div class="chk apo" data-status="留守電">留守電</div><div class="chk" data-status="キャンセル">キャンセル</div></div><label class="noslip-chk"><input type="checkbox" id="f_noSlip"> <b>伝票無</b>（他の状態と併用可・表に「伝票なし」を赤表示）</label></div>
       <div class="fld full" id="f_calltime_fld" style="display:none"><label>留守電：電話をかけた時間</label><input id="f_callTime" placeholder="例：10:30"></div>
+      <div class="fld full" id="f_apook_fld" style="display:none"><label>アポOKのコメント（配車表に表示）</label><input id="f_apoNote" placeholder="例：16時に来店予定／担当◯◯さん"></div>
+      <div class="fld full" id="f_apomail_fld" style="display:none"><label>アポメールのコメント（配車表に表示）</label><input id="f_apoMailNote" placeholder="例：メール返信待ち／再送済み"></div>
       <div class="fld full"><label>備考</label><textarea id="f_memo"></textarea>
         <div class="memo-opts">
-          <label class="mini-chk"><input type="checkbox" id="f_moneyReady"> 持参金 用意済</label>
           <button type="button" class="mini-btn" id="f_matBtn">＋ 必要な資材</button>
           <button type="button" class="mini-btn" id="f_collBtn">＋ 集金必要</button>
+          <button type="button" class="mini-btn" id="f_ppayBtn">＋ 代行支払いあり</button>
         </div>
         <div class="mat-bar" id="f_matBar"><span class="mat-lbl">持参資材</span><input id="f_materials"></div>
         <div class="mat-bar coll" id="f_collBar"><span class="mat-lbl">集金</span><input id="f_collect"></div>
+        <div class="mat-bar ppay" id="f_ppayBar"><span class="mat-lbl">代行支払い</span><input id="f_proxyPay" placeholder="支払先・金額など"><label class="mini-chk moneyready-inbar"><input type="checkbox" id="f_moneyReady"> 持参金 用意済</label></div>
       </div>
       <div class="fld full" id="f_surveylink"></div>
     </div>
-    <div class="foot"><button class="btn danger" id="del">削除</button><button class="btn copy" id="copy">合同作業にコピー</button><div class="recv-wrap"><input id="f_recv" class="recv-in" placeholder="受付者(苗字)" autocomplete="off"><span class="recv-hist" id="f_recv_hist" title="（履歴なし）">🕒</span></div><div class="right"><button class="btn gray" id="cancel">キャンセル</button><button class="btn save" id="save">保存</button></div></div>
+    <div class="foot"><button class="btn danger" id="del">削除</button><button class="btn copy" id="copy">合同作業にコピー</button><button class="btn ghost" id="f_jointClear" style="display:none">🔗 合同作業の表示を消す</button><div class="recv-wrap"><input id="f_recv" class="recv-in" placeholder="受付者(苗字)" autocomplete="off"><span class="recv-hist" id="f_recv_hist" title="（履歴なし）">🕒</span></div><div class="right"><button class="btn gray" id="cancel">キャンセル</button><button class="btn save" id="save">保存</button></div></div>
   </div>
 </div>
 
@@ -1014,18 +1031,17 @@
 
 <!-- 予定自動登録 modal -->
 <div class="ov" id="ovauto">
-  <div class="modal" style="max-width:1020px">
+  <div class="modal" style="width:96vw;max-width:1320px">
     <h2>📋 予定自動登録 <button class="x" id="autox">×</button></h2>
     <div class="auto-wrap">
       <div class="auto-left">
         <label>メール・FAXの内容を貼り付け</label>
         <textarea id="autoSrc" placeholder="メール本文やFAXの文字起こしをここに貼り付けてください…"></textarea>
-        <div class="auto-file"><label class="btn amber mini docup">📎 PDF/画像を添付<input type="file" id="autoPdf" accept="application/pdf,image/*" style="display:none"></label><button class="btn save mini" id="autoAi" style="display:none">🤖 AIで読み取る（高精度）</button><button class="btn gray mini" id="autoOcr" style="display:none">🔎 無料OCR</button><button class="btn gray mini" id="autoAiCfg">⚙ AI設定</button><span id="autoFileName" class="hint"></span></div>
+        <div class="auto-file"><label class="btn amber mini docup">📎 PDF/画像を添付<input type="file" id="autoPdf" accept="application/pdf,image/*" style="display:none"></label><button class="btn save mini" id="autoAi">🤖 AIで読み取る</button><button class="btn gray mini" id="autoAiCfg">⚙ AI設定</button><span id="autoFileName" class="hint"></span></div>
         <div id="autoPreview"></div>
-        <div style="text-align:right"><button class="btn amber" id="autoParse">🔍 読み取る</button></div>
       </div>
       <div class="auto-right">
-        <div class="hint" id="autoHint">「読み取る」で下に抽出されます。目で確認・修正してから保存してください。</div>
+        <div class="hint" id="autoHint">貼り付けか PDF/画像を添付して「🤖 AIで読み取る」。抽出結果を確認・修正してから保存してください。</div>
         <div class="form" style="grid-template-columns:1fr 1fr">
           <div class="fld"><label>日付</label><input type="date" id="ar_date"></div>
           <div class="fld"><label>車両</label><select id="ar_veh"></select></div>
@@ -1034,20 +1050,34 @@
           <div class="fld"><label>寸法重量</label><input id="ar_weight"></div>
           <div class="fld"><div class="toggle"><input type="checkbox" id="ar_setti"><div><b>設置あり（赤表示）</b></div></div></div>
           <div class="fld"><div class="toggle"><input type="checkbox" id="ar_heavy"><div><b>重量物</b></div></div></div>
+          <div class="fld full"><label class="itag-hd">状態（品名欄に縦帯・複数可）</label>
+            <div class="itag-grid" style="grid-template-columns:repeat(4,1fr)">
+              <label class="itag-chk genchi"><input type="checkbox" id="ar_st_genchi"> 現地</label>
+              <label class="itag-chk iremachi"><input type="checkbox" id="ar_st_iremachi"> 入待</label>
+              <label class="itag-chk hokan"><input type="checkbox" id="ar_st_hokan"> 保管品</label>
+              <label class="itag-chk shutsu"><input type="checkbox" id="ar_st_shutsu"> 出準備済</label>
+            </div>
+          </div>
           <div class="full pdrow">
           <div class="fld pickf"><label>引取先（黄）※空欄なら「届けのみ」</label><input id="ar_pick"><div class="locsub"><div class="lscell"><span class="ls-lbl">お客様名</span><input id="ar_pick_cust" class="ls-in"></div><div class="lscell"><span class="ls-lbl">電話</span><input id="ar_pick_phone" class="ls-in" inputmode="tel"></div><div class="lscell"><span class="ls-lbl">階数</span><input id="ar_pick_floor" class="ls-in" list="floors"></div><div class="lscell"><span class="ls-lbl">時間</span><input id="ar_pick_time" class="ls-in"></div></div></div>
           <div class="fld dropf"><label>届け先（青）</label><input id="ar_drop"><div class="locsub"><div class="lscell"><span class="ls-lbl">お客様名</span><input id="ar_drop_cust" class="ls-in"></div><div class="lscell"><span class="ls-lbl">電話</span><input id="ar_drop_phone" class="ls-in" inputmode="tel"></div><div class="lscell"><span class="ls-lbl">階数</span><input id="ar_drop_floor" class="ls-in" list="floors"></div><div class="lscell"><span class="ls-lbl">時間</span><input id="ar_drop_time" class="ls-in"></div></div></div>
           </div>
           <div class="fld full"><label>配送時間（引取／届け）</label><div class="locsub"><div class="lscell"><span class="ls-lbl">引取</span><input id="ar_pick_tours" class="ls-in"></div><div class="lscell"><span class="ls-lbl">届け</span><input id="ar_drop_tours" class="ls-in"></div></div></div>
           <div class="fld"><label>状態</label><select id="ar_status"><option>仮</option><option>確定</option><option>アポインOK</option><option>アポOK（メール）</option><option>留守電</option><option>キャンセル</option></select></div>
+          <div class="fld"><label class="mini-chk"><input type="checkbox" id="ar_noSlip"> <b>伝票無</b><span class="mini-note">表に赤表示</span></label></div>
+          <div class="fld full" id="ar_calltime_fld" style="display:none"><label>留守電：電話をかけた時間</label><input id="ar_callTime" placeholder="例：10:30"></div>
+          <div class="fld full" id="ar_apook_fld" style="display:none"><label>アポOKのコメント（配車表に表示）</label><input id="ar_apoNote" placeholder="例：16時に来店予定／担当◯◯さん"></div>
+          <div class="fld full" id="ar_apomail_fld" style="display:none"><label>アポメールのコメント（配車表に表示）</label><input id="ar_apoMailNote" placeholder="例：メール返信待ち／再送済み"></div>
           <div class="fld full"><label>備考</label><textarea id="ar_memo"></textarea></div>
-          <div class="fld"><label class="mini-chk"><input type="checkbox" id="ar_moneyReady"> 持参金 用意済</label></div>
           <div class="fld"><label>必要な資材</label><input id="ar_materials"></div>
+          <div class="fld"><label>集金</label><input id="ar_collect"></div>
+          <div class="fld"><label>代行支払い</label><input id="ar_proxyPay" placeholder="支払先・金額など"></div>
+          <div class="fld"><label class="mini-chk"><input type="checkbox" id="ar_moneyReady"> 持参金 用意済</label></div>
         </div>
         <div class="hint" id="autoLearnNote"></div>
       </div>
     </div>
-    <div class="foot"><div class="hint">保存すると案件が追加され、貼り付け・添付は自動で削除されます。</div><div class="right"><button class="btn gray" id="autoClose">閉じる</button><button class="btn save" id="autoSave">💾 確認して保存（案件追加）</button></div></div>
+    <div class="foot"><div class="hint">保存すると案件が追加され、貼り付け・添付は自動で削除されます。</div><div class="recv-wrap"><input id="ar_recv" class="recv-in" placeholder="受付者(苗字)" autocomplete="off"><span class="recv-hist" id="ar_recv_hist" title="（履歴なし）">🕒</span></div><div class="right"><button class="btn gray" id="autoClose">閉じる</button><button class="btn save" id="autoSave">💾 確認して保存（案件追加）</button></div></div>
   </div>
 </div>
 <datalist id="ar_clientList"></datalist>
@@ -1612,7 +1642,7 @@ function renderTable(host,es,vehSet){
         return;
       }
       const e=it.data;
-      if(!e.joint&&!e.jointSrc&&jointSig.has(jsig(e)))e.jointSrc=true;   // コピー元を検出したら印を残す（編集で透かしが消えないように）
+      if(!e.joint&&!e.jointHide&&!e.jointSrc&&jointSig.has(jsig(e)))e.jointSrc=true;   // コピー元を検出したら印を残す（編集で透かしが消えないように・非表示指定は除く）
       const stc=e.status==="仮"?"kari":e.status==="アポインOK"?"apoOK":e.status==="アポOK（メール）"?"apoMail":e.status==="キャンセル"?"cancel":"";
       const ap=e.pick?`<div class="ap"><span class="atx">${esc(e.pick)}</span><span class="dist-hint" data-dh="pick"></span></div>`:`<div class="blank ap">引取なし</div>`;
       const ad=e.drop?`<div class="ad"><span class="atx">${esc(e.drop)}</span><span class="dist-hint" data-dh="drop"></span></div>`:`<div class="blank ad">届けなし</div>`;
@@ -1625,15 +1655,17 @@ function renderTable(host,es,vehSet){
       const tmTxt=(e.pickTime||e.treq||"")+" "+(e.dropTime||"");
       const tmGray=!tmTxt.trim()||/未定|未確定|不明/.test(tmTxt);                                        // ⑤グレー地
       const oursCls=e.status==="アポインOK"?"ours-apo":e.status==="アポOK（メール）"?"ours-mail":"";       // ⑤'赤塗り/水色塗り
+      const isApo=e.status==="アポインOK"||e.status==="アポOK（メール）";
+      const apoTxt=e.status==="アポインOK"?(e.apoNote||e.statusNote||""):e.status==="アポOK（メール）"?(e.apoMailNote||e.statusNote||""):"";
       const joinBg=joinMap[(e.client||"")+"|"+(e.item||"")]||"";                                          // ⑤'合流便の色地
       const memoCls=e.moneyReady?"memo-ready"                                                            // ⑥赤地（持参金 用意済）
                    :(/集金|代払|買取|持参金/.test(memoTxt)?"memo-money":"");                             // ⑥薄黄
       body+=`<tr class="datarow ${stc}" data-id="${e.id}" data-vehname="${esc(e.vehicle)}" data-pos="${i}" draggable="true">
-        <td class="x-st"${e.status==="留守電"&&e.callTime?` title="留守電 電話：${esc(e.callTime)}"`:""}>${dotOf(e.status)}${e.status==="留守電"&&e.callTime?'<div class="calltime-mark">☎'+esc(e.callTime)+'</div>':""}${e.noSlip?'<div class="noslip-mark">伝票なし</div>':""}</td>
+        <td class="x-st"${e.status==="留守電"&&e.callTime?` title="留守電 電話：${esc(e.callTime)}"`:(apoTxt?` title="${esc(apoTxt)}"`:"")}>${dotOf(e.status)}${e.status==="留守電"&&e.callTime?'<div class="calltime-mark">☎'+esc(e.callTime)+'</div>':""}${apoTxt?'<div class="calltime-mark">📝'+esc(apoTxt)+'</div>':""}${e.noSlip?'<div class="noslip-mark">伝票なし</div>':""}</td>
         <td class="x-seikyu" title="${esc(e.client||"")}">${esc(e.client)}</td>
         <td class="x-item ${e.setti?"setti":""}" title="${esc([e.item,e.weight].filter(Boolean).join(" / "))}"><div class="itemcell">${itagStrips(e)}<div class="itemtxt">${esc(e.item)}${e.weight?`<small>${esc(e.weight)}</small>`:""}</div></div></td>
         <td class="x-cust ${e.status==="仮"?"hl-temp":""}" title="${esc([e.customerPick||e.customer,e.customerDrop].filter(Boolean).join(" / "))}">${pdPair(e.customerPick||e.customer,e.customerDrop)}</td>
-        <td class="x-tel" title="${esc([e.phonePick,e.phoneDrop||e.phone].filter(Boolean).join(" / "))}">${e.joint?`<div class="joint-mark">${e.jointType==="pick"?"引取先合流":e.jointType==="drop"?"届け先合流":"合同作業"}</div>`:((e.jointSrc||jointSig.has(jsig(e)))?`<div class="tel-ghost-wrap">${pdPair(e.phonePick,e.phoneDrop||e.phone)}<span class="joint-ghost">合同作業</span></div>`:pdPair(e.phonePick,e.phoneDrop||e.phone))}</td>
+        <td class="x-tel" title="${esc([e.phonePick,e.phoneDrop||e.phone].filter(Boolean).join(" / "))}">${e.joint?`<div class="joint-mark">${e.jointType==="pick"?"引取先合流":e.jointType==="drop"?"届け先合流":"合同作業"}</div>`:((!e.jointHide&&(e.jointSrc||jointSig.has(jsig(e))))?`<div class="tel-ghost-wrap">${pdPair(e.phonePick,e.phoneDrop||e.phone)}<span class="joint-ghost">合同作業</span></div>`:pdPair(e.phonePick,e.phoneDrop||e.phone))}</td>
         <td class="x-addr" title="${esc([e.pick,e.drop].filter(Boolean).join(" / "))}">${ap}${ad}</td>
         <td class="x-spec ${spCls}" title="${esc([e.pickFloor||e.shonyu,e.dropFloor].filter(Boolean).join(" / "))}">${pdPair(e.pickFloor||e.shonyu,e.dropFloor)}</td>
         <td class="x-time ${tmGray?"tm-gray":""}" title="${esc([e.pickTime||e.treq,e.dropTime].filter(Boolean).join(" / "))}">${pdPair(e.pickTime||e.treq,e.dropTime)}</td>
@@ -1648,6 +1680,7 @@ function renderTable(host,es,vehSet){
         body+=`<tr class="mat-row" data-id="${e.id}" data-vehname="${esc(e.vehicle)}" data-pos="${i}" draggable="true"><td colspan="10" title="${esc(e.materials||"")}">${inner}</td></tr>`;
       }
       if(e.collect){body+=`<tr class="mat-row" data-id="${e.id}" data-vehname="${esc(e.vehicle)}" data-pos="${i}" draggable="true"><td colspan="10" title="${esc(e.collect||"")}"><span class="coll-tag">集金</span>${esc(e.collect)}</td></tr>`;}
+      if(e.proxyPay||e.moneyReady){body+=`<tr class="mat-row ppay-row${e.moneyReady?" money":""}" data-id="${e.id}" data-vehname="${esc(e.vehicle)}" data-pos="${i}" draggable="true"><td colspan="10" title="${esc(e.proxyPay||"")}"><span class="coll-tag ppay">代行支払</span>${esc(e.proxyPay)}${e.moneyReady?' <span class="coll-tag money">持参金 用意済</span>':""}</td></tr>`;}
     });
     body+=`<tr class="addrow" data-vehname="${esc(v)}"><td colspan="10">${addLinksHTML(v)}</td></tr>`;
   });
@@ -1657,6 +1690,11 @@ function renderTable(host,es,vehSet){
 // ---- 案件 modal ----
 let editId=null,sel={status:"仮"},copySource=null,linkSurveyId="",cpMode="full";
 function fillList(id,arr){$(id).innerHTML=arr.map(v=>`<option value="${esc(v)}">`).join("");}
+// 合同作業：コピー元（大元）の透かし表示を判定／消す・戻す
+function jsigOf(e){return [e.client,e.item,e.customerPick||e.customer,e.customerDrop,e.phonePick,e.phoneDrop||e.phone].map(x=>(x||"").trim()).join("¦");}
+function hasJointCopy(e){if(!e)return false;const s=jsigOf(e);if(!s.replace(/¦/g,""))return false;return db.entries.some(x=>x&&x.joint&&x.date===e.date&&x.id!==e.id&&jsigOf(x)===s);}
+function isJointSource(e){return !!(e&&!e.joint&&(e.jointHide||e.jointSrc||hasJointCopy(e)));}
+function updateJointClearBtn(e){const b=$("#f_jointClear");if(!b)return;if(!isJointSource(e)){b.style.display="none";return;}b.style.display="";b.textContent=(e&&e.jointHide)?"🔗 合同作業の表示を戻す":"🔗 合同作業の表示を消す";}
 function openEntry(id,presetVeh){
   editId=id;const e=id?db.entries.find(x=>x.id===id):null;
   if(!id&&presetVeh&&inspOf(presetVeh)){uiAlert("この車両は「点検・車検」で押さえられているため、この日は案件を追加できません。");return;}
@@ -1677,11 +1715,19 @@ function openEntry(id,presetVeh){
   $("#f_pick_floor").value=(e&&e.pickFloor)||"";$("#f_pick_time").value=(e&&e.pickTime)||"";
   $("#f_drop_floor").value=(e&&e.dropFloor)||"";$("#f_drop_time").value=(e&&e.dropTime)||"";
   $("#f_pick_tours").value=(e&&e.toursPick)||"";$("#f_drop_tours").value=(e&&(e.toursDrop||e.tours))||"";
-  $("#f_memo").value=(e&&e.memo)||"";$("#f_moneyReady").checked=!!(e&&e.moneyReady);$("#f_noSlip").checked=!!(e&&e.noSlip);$("#f_callTime").value=(e&&e.callTime)||"";
+  $("#f_memo").value=(e&&e.memo)||"";$("#f_moneyReady").checked=!!(e&&e.moneyReady);$("#f_noSlip").checked=!!(e&&e.noSlip);$("#f_callTime").value=(e&&e.callTime)||"";$("#f_apoNote").value=(e&&(e.apoNote||(e.status==="アポインOK"?e.statusNote:"")))||"";$("#f_apoMailNote").value=(e&&(e.apoMailNote||(e.status==="アポOK（メール）"?e.statusNote:"")))||"";
   $("#f_materials").value=(e&&e.materials)||"";$("#f_matBar").classList.toggle("on",!!(e&&e.materials));
   $("#f_collect").value=(e&&e.collect)||"";$("#f_collBar").classList.toggle("on",!!(e&&e.collect));
+  $("#f_proxyPay").value=(e&&e.proxyPay)||"";$("#f_ppayBar").classList.toggle("on",!!(e&&(e.proxyPay||e.moneyReady)));
+  updateJointClearBtn(e);
   renderSurveyLink();syncSel();renderAISuggest();$("#ov").classList.add("on");
 }
+$("#f_jointClear").onclick=()=>{
+  if(!editId)return;const i=db.entries.findIndex(x=>x.id===editId);if(i<0)return;
+  const nowHide=!db.entries[i].jointHide;
+  db.entries[i].jointHide=nowHide;if(nowHide)db.entries[i].jointSrc=false;   // 消すときは印も除去
+  save();render();updateJointClearBtn(db.entries[i]);
+};
 // ---- AIサジェスト（実績辞書ベース）----
 function aiCity(s){const m=(s||"").match(/([一-龠々ヶァ-ヶぁ-んA-Za-z0-9]+?[市区町村])/);return m?m[1]:"";}
 function aiSuggestData(){
@@ -1727,6 +1773,7 @@ $("#ov").addEventListener("input",e=>{if(["f_client","f_pick","f_drop","f_shonyu
 $("#ov").addEventListener("change",e=>{if(e.target.id==="f_setti")renderAISuggest();});
 $("#f_matBtn").onclick=()=>{const b=$("#f_matBar");b.classList.toggle("on");if(b.classList.contains("on"))$("#f_materials").focus();else $("#f_materials").value="";};
 $("#f_collBtn").onclick=()=>{const b=$("#f_collBar");b.classList.toggle("on");if(b.classList.contains("on"))$("#f_collect").focus();else $("#f_collect").value="";};
+$("#f_ppayBtn").onclick=()=>{const b=$("#f_ppayBar");const on=b.classList.toggle("on");if(on)$("#f_proxyPay").focus();else{$("#f_proxyPay").value="";$("#f_moneyReady").checked=false;}};
 $("#ov").addEventListener("click",e=>{const a=e.target.closest("[data-aiveh]");if(!a)return;const v=a.dataset.aiveh,sv=$("#f_vehicle");if(![...sv.options].some(o=>o.value===v)){const o=document.createElement("option");o.textContent=v;sv.appendChild(o);}sv.value=v;});
 
 // ==== 配車アシスト（空き状況ベースの自動配車エンジン・第1版）====
@@ -1877,17 +1924,20 @@ function parseAuto(text){
 function openAuto(){
   autoPdfData=null;
   $("#ar_clientList").innerHTML=(db.masters.cli||[]).map(c=>`<option value="${esc(c)}">`).join("");
-  $("#ar_veh").innerHTML=[...db.masters.veh,...db.special].map(v=>`<option>${esc(v)}</option>`).join("");
+  $("#ar_veh").innerHTML='<option value="">（号車を選択）</option>'+[...db.masters.veh,...db.special].map(v=>`<option>${esc(v)}</option>`).join("");$("#ar_veh").value="";
   fillList("#floors",db.masters.sho||[]);
-  $("#autoSrc").value="";$("#autoPreview").innerHTML="";$("#autoFileName").textContent="";$("#autoPdf").value="";
-  ["date","client","item","weight","pick","pick_cust","pick_phone","pick_floor","pick_time","drop","drop_cust","drop_phone","drop_floor","drop_time","pick_tours","drop_tours","materials"].forEach(k=>{const el=$("#ar_"+k);if(el)el.value="";});
+  autoPdfData=null;$("#autoSrc").value="";$("#autoPreview").innerHTML="";$("#autoFileName").textContent="";$("#autoPdf").value="";
+  ["date","client","item","weight","pick","pick_cust","pick_phone","pick_floor","pick_time","drop","drop_cust","drop_phone","drop_floor","drop_time","pick_tours","drop_tours","materials","collect","proxyPay","callTime","apoNote","apoMailNote","recv"].forEach(k=>{const el=$("#ar_"+k);if(el)el.value="";});
   $("#ar_memo").value="";$("#ar_setti").checked=false;$("#ar_heavy").checked=false;$("#ar_moneyReady").checked=false;$("#ar_status").value="仮";
-  $("#autoLearnNote").textContent="";$("#autoOcr").style.display="none";$("#autoAi").style.display="none";
+  ["genchi","iremachi","hokan","shutsu"].forEach(k=>{const el=$("#ar_st_"+k);if(el)el.checked=false;});
+  $("#ar_noSlip").checked=false;$("#ar_calltime_fld").style.display="none";$("#ar_apook_fld").style.display="none";$("#ar_apomail_fld").style.display="none";
+  {const ht=fmtRecvLog([]);$("#ar_recv").title=ht;$("#ar_recv_hist").title=ht;$("#ar_recv_hist").classList.remove("on");}
+  $("#autoLearnNote").textContent="";
   $("#ovauto").classList.add("on");
 }
 function autoFill(r){
   $("#ar_date").value=r.date||"";   // 読み取れた日付のみ反映（無ければブランク）
-  if(r.veh)$("#ar_veh").value=r.veh;
+  $("#ar_veh").value="";            // 号車は自動選択せず、ユーザーが必ず自分で選ぶ
   $("#ar_client").value=r.client||"";$("#ar_item").value=r.item||"";$("#ar_drop_phone").value=r.phone||"";
   $("#ar_drop_cust").value=r.cust||"";$("#ar_drop").value=r.drop||"";
   if(r.time){$("#ar_drop_time").value=r.time;$("#ar_drop_tours").value=r.time;}
@@ -1896,12 +1946,10 @@ function autoFill(r){
 }
 $("#autox").onclick=$("#autoClose").onclick=()=>$("#ovauto").classList.remove("on");
 $("#ovauto").addEventListener("click",e=>{if(e.target.id==="ovauto")$("#ovauto").classList.remove("on");});
-$("#autoParse").onclick=()=>autoFill(parseAuto($("#autoSrc").value));
 $("#autoPdf").addEventListener("change",function(){
   const f=this.files&&this.files[0];if(!f)return;
   const rd=new FileReader();rd.onload=()=>{autoPdfData=rd.result;$("#autoFileName").textContent=f.name;
-    $("#autoPreview").innerHTML=f.type==="application/pdf"?`<embed src="${autoPdfData}" type="application/pdf">`:`<img src="${autoPdfData}">`;
-    $("#autoOcr").style.display="";$("#autoAi").style.display="";};
+    mountZoomPdf($("#autoPreview"),autoPdfData);};
   rd.readAsDataURL(f);
 });
 // ---- OCR（Tesseract.js＋pdf.js／初回はCDNから読み込み・要ネット） ----
@@ -1925,30 +1973,7 @@ async function pdfToCanvases(dataURL){
   }
   return out;
 }
-async function runOcr(){
-  if(!autoPdfData){uiAlert("先にPDFまたは画像を添付してください。");return;}
-  const btn=$("#autoOcr");btn.disabled=true;
-  $("#autoHint").textContent="OCRの準備中…（初回はライブラリを読み込みます・要ネット）";
-  try{
-    await ensureOcrLibs();
-    const worker=await Tesseract.createWorker("jpn",1,{logger:m=>{if(m.status==="recognizing text")$("#autoHint").textContent="OCR処理中… "+Math.round(m.progress*100)+"%";}});
-    let text="";
-    if(autoPdfData.indexOf("data:application/pdf")===0){
-      $("#autoHint").textContent="PDFを画像化しています…";
-      const cs=await pdfToCanvases(autoPdfData);
-      for(let i=0;i<cs.length;i++){$("#autoHint").textContent="OCR処理中…（"+(i+1)+"/"+cs.length+"ページ）";const{data}=await worker.recognize(cs[i]);text+=data.text+"\n";}
-    }else{const{data}=await worker.recognize(autoPdfData);text=data.text;}
-    await worker.terminate();
-    text=text.replace(/[ \t]+/g," ").trim();
-    $("#autoSrc").value=text;
-    autoFill(parseAuto(text));
-    $("#autoHint").textContent="OCR完了。左の読み取り文字を確認し、右の抽出結果を修正して保存してください。";
-  }catch(err){
-    $("#autoHint").textContent="";
-    uiAlert("OCRに失敗しました。\nインターネット接続が必要です（初回はライブラリのダウンロードがあります）。\n\n"+err);
-  }finally{btn.disabled=false;}
-}
-$("#autoOcr").onclick=runOcr;
+/* 🔎無料OCR(Tesseract)は廃止・Gemini一本化 */
 
 // ---- AIビジョンOCR（Anthropic Claude・キーは端末のlocalStorageのみ） ----
 function getAiCfg(){try{return JSON.parse(localStorage.getItem("nc_ai")||"{}");}catch(_){return {};}}
@@ -1974,6 +1999,36 @@ async function geminiVision(images,prompt,onProg){
 }
 function parseJsonLoose(txt){const m=txt&&txt.match(/\{[\s\S]*\}/);if(m){try{return JSON.parse(m[0]);}catch(_){}}return {};}
 async function ensurePdfjs(){if(!window.pdfjsLib){await loadScript("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js");window.pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";}}
+// ==== PDF/画像 ズーム表示（拡大・縮小・幅合わせ・Ctrl+ホイール） ====
+async function mountZoomPdf(host,dataURL){
+  if(!host)return;
+  host.innerHTML='<div class="pdfz"><div class="pdfz-bar"><button class="btn gray mini" data-pz="out">➖ 縮小</button><span class="pdfz-lvl">100%</span><button class="btn gray mini" data-pz="in">➕ 拡大</button><button class="btn gray mini" data-pz="fit">⤢ 幅に合わせる</button></div><div class="pdfz-scroll"><div class="pdfz-load">表示を準備しています…</div></div></div>';
+  const scroll=host.querySelector(".pdfz-scroll"),lvl=host.querySelector(".pdfz-lvl");
+  let pages=[];
+  try{
+    if(String(dataURL).indexOf("data:application/pdf")===0){
+      await ensurePdfjs();const cs=await pdfToCanvases(dataURL);pages=cs;
+    }else{
+      const img=new Image();img.src=dataURL;await new Promise(r=>{img.complete?r():(img.onload=r,img.onerror=r);});pages=[img];
+    }
+  }catch(err){scroll.innerHTML='<div class="pdfz-load">表示に失敗しました（'+esc(String(err).slice(0,80))+'）</div>';return;}
+  scroll.innerHTML="";pages.forEach(p=>scroll.appendChild(p));
+  let zoom=1;
+  function baseW(){return Math.max(140,(scroll.clientWidth||600)-24);}
+  function apply(){const w=baseW()*zoom;pages.forEach(p=>{p.style.width=w+"px";p.style.height="auto";});lvl.textContent=Math.round(zoom*100)+"%";}
+  host.querySelector('[data-pz="in"]').onclick=()=>{zoom=Math.min(5,zoom*1.25);apply();};
+  host.querySelector('[data-pz="out"]').onclick=()=>{zoom=Math.max(0.35,zoom/1.25);apply();};
+  host.querySelector('[data-pz="fit"]').onclick=()=>{zoom=1;apply();};
+  scroll.addEventListener("wheel",e=>{if(e.ctrlKey){e.preventDefault();zoom=Math.min(5,Math.max(0.35,zoom*(e.deltaY<0?1.12:0.9)));apply();}},{passive:false});
+  if(window.ResizeObserver){const ro=new ResizeObserver(()=>{if(zoom===1)apply();});ro.observe(scroll);}
+  apply();
+}
+async function autoRead(){
+  if(autoPdfData){await runAiOcr();return;}
+  const txt=$("#autoSrc").value.trim();
+  if(txt){autoFill(parseAuto(txt));return;}
+  uiAlert("メール／FAXの文字を貼り付けるか、PDF／画像を添付してから「🤖 AIで読み取る」を押してください。");
+}
 async function autoImages(){
   if(autoPdfData.indexOf("data:application/pdf")===0){await ensurePdfjs();const cs=await pdfToCanvases(autoPdfData);return cs.map(c=>c.toDataURL("image/png"));}
   return [autoPdfData];
@@ -1982,6 +2037,7 @@ const AI_OCR_PROMPT=`これは配送業者に届いたFAXまたはメールの�
 {"date":"","client":"請求元/元請/依頼元","customer":"お客様名","item":"品名・型番","weight":"","phone":"","pick":"引取先の住所や場所","drop":"届け先の住所や場所","time":"時間(例 10:00 / 午前 / 時間フリー)","memo":"その他の要点・特記"}`;
 function aiFill(o){
   o=o||{};
+  $("#ar_veh").value="";            // 号車は自動選択せず、ユーザーが必ず自分で選ぶ
   $("#ar_date").value=(o.date&&/^\d{4}-\d{2}-\d{2}$/.test(o.date))?o.date:"";
   $("#ar_client").value=o.client||"";$("#ar_drop_cust").value=o.customer||"";$("#ar_item").value=o.item||"";
   $("#ar_weight").value=o.weight||"";$("#ar_drop_phone").value=o.phone||"";$("#ar_pick").value=o.pick||"";$("#ar_drop").value=o.drop||"";
@@ -2002,14 +2058,14 @@ async function runAiOcr(){
   }catch(err){$("#autoHint").textContent="";uiAlert(String(err).indexOf("NO_KEY")>=0?"先に「⚙ AI設定」でAPIキーを登録してください。":("AI読み取りに失敗しました。\nAPIキー・ネット接続をご確認ください。\n\n"+err));}
   finally{btn.disabled=false;}
 }
-$("#autoAi").onclick=runAiOcr;
+$("#autoAi").onclick=autoRead;
 function openAiCfg(){const c=getAiCfg();$("#aikey_gem").value=c.geminiKey||"";$("#aikey_model").value=c.model||"gemini-flash-latest";if($("#aikey_travel"))$("#aikey_travel").checked=!!c.travelOn;if($("#aikey_ors"))$("#aikey_ors").value=c.orsKey||"";$("#ovaikey").classList.add("on");}
 $("#autoAiCfg").onclick=openAiCfg;
 $("#aikeyx").onclick=$("#aikey_cancel").onclick=()=>$("#ovaikey").classList.remove("on");
 $("#ovaikey").addEventListener("click",e=>{if(e.target.id==="ovaikey")$("#ovaikey").classList.remove("on");});
 $("#aikey_save").onclick=()=>{setAiCfg({geminiKey:$("#aikey_gem").value.trim(),model:$("#aikey_model").value.trim()||"gemini-flash-latest",travelOn:($("#aikey_travel")?$("#aikey_travel").checked:!!getAiCfg().travelOn),orsKey:($("#aikey_ors")?$("#aikey_ors").value.trim():getAiCfg().orsKey||"")});_distCache={};_routeCache={};$("#ovaikey").classList.remove("on");uiAlert("設定を保存しました。");render();};
 // ==== 請求書から修理内容を取り込み（左PDF・右OCR一覧・部分コピー→号車へ） ====
-let invOcrData=null,invOcrObj=null;   // メモリ上のみ（保存しない）
+let invOcrData=null,invOcrObj=null,invPdfMounted=null;   // メモリ上のみ（保存しない）
 const INV_OCR_PROMPT=`これは自動車の修理・整備の請求書または作業明細書です。画像を読み取り、次のJSONだけを返してください（前後の説明文は不要）。読み取れない項目は空文字/空配列に。手書きも読み取る。
 - date：請求日または作業完了日を西暦YYYY-MM-DDで
 - vendor：請求元（業者名）
@@ -2020,7 +2076,8 @@ function copyText(t){try{if(navigator.clipboard&&navigator.clipboard.writeText){
 function fallbackCopy(t){const ta=document.createElement("textarea");ta.value=t;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();try{document.execCommand("copy");}catch(_){}ta.remove();}
 function fillInvVeh(){$("#invVeh").innerHTML=[...(db.masters.veh||[]),...(db.cars||[])].map(v=>`<option>${esc(v)}</option>`).join("");}
 function renderInvOcr(){
-  $("#invPdf").innerHTML=invOcrData?(invOcrData.indexOf("data:application/pdf")===0?`<embed src="${invOcrData}" type="application/pdf">`:`<img src="${invOcrData}">`):'<div class="invocr-empty">「📎 請求書を読み込む」を押すと、ここにPDFが大きく表示されます。</div>';
+  if(!invOcrData){if(invPdfMounted!==null){$("#invPdf").innerHTML='<div class="invocr-empty">「📎 請求書を読み込む」を押すと、ここにPDFが大きく表示されます。</div>';invPdfMounted=null;}}
+  else if(invPdfMounted!==invOcrData){invPdfMounted=invOcrData;mountZoomPdf($("#invPdf"),invOcrData);}
   if(!invOcrObj){$("#invLines").innerHTML="";return;}
   $("#invLines").innerHTML=`<div class="inv-head">必要な行をマウスで選択 → 右クリック「コピー」（またはCtrl+C）→ 下で号車を選んで「修理リストへ」→ メモに貼り付け</div><div class="inv-text" id="invText">${esc(invAllText())}</div>`;
   const n=(invOcrObj.lines||[]).filter(Boolean).length;
@@ -2058,6 +2115,7 @@ $("#ovinvocr").addEventListener("click",e=>{
   const cp=e.target.closest("[data-invcopy]");
   if(cp){const orig=cp.textContent;copyText(cp.dataset.invcopy);cp.textContent="✓ コピー";setTimeout(()=>{cp.textContent=orig;},1200);return;}
 });
+$("#ar_status").addEventListener("change",()=>{const v=$("#ar_status").value;$("#ar_calltime_fld").style.display=v==="留守電"?"":"none";$("#ar_apook_fld").style.display=(v==="アポインOK")?"":"none";$("#ar_apomail_fld").style.display=(v==="アポOK（メール）")?"":"none";});
 $("#autoSave").onclick=()=>{
   const date=$("#ar_date").value,vehicle=$("#ar_veh").value;
   if(!date){uiAlert("日付を入力してください。");return;}
@@ -2072,7 +2130,12 @@ $("#autoSave").onclick=()=>{
     pickFloor:$("#ar_pick_floor").value.trim(),pickTime:$("#ar_pick_time").value.trim(),
     dropFloor:$("#ar_drop_floor").value.trim(),dropTime:$("#ar_drop_time").value.trim(),
     toursPick:$("#ar_pick_tours").value.trim(),toursDrop:$("#ar_drop_tours").value.trim(),status:$("#ar_status").value,
-    memo:$("#ar_memo").value.trim(),moneyReady:$("#ar_moneyReady").checked,materials:$("#ar_materials").value.trim(),joint:false};
+    stGenchi:$("#ar_st_genchi").checked,stIremachi:$("#ar_st_iremachi").checked,stHokan:$("#ar_st_hokan").checked,stShutsu:$("#ar_st_shutsu").checked,
+    noSlip:$("#ar_noSlip").checked,callTime:$("#ar_callTime").value.trim(),collect:$("#ar_collect").value.trim(),
+    apoNote:$("#ar_apoNote").value.trim(),apoMailNote:$("#ar_apoMailNote").value.trim(),memo:$("#ar_memo").value.trim(),moneyReady:$("#ar_moneyReady").checked,materials:$("#ar_materials").value.trim(),proxyPay:$("#ar_proxyPay").value.trim(),
+    surveyId:"",surveyChecked:false,joint:false,jointType:"",jointSrc:false,jointHide:false,recvLog:[],recvBy:""};
+  const rname=$("#ar_recv").value.trim();
+  if(rname){obj.recvLog.push({name:rname,at:nowStamp()});obj.recvBy=rname;}
   db.entries.push(obj);
   // 学習：文面の特徴語→請求元／品名
   const cust=obj.customerDrop||obj.customerPick;
@@ -2113,6 +2176,8 @@ $("#sv_mail").onclick=()=>{const subj="【ナイスキャリード】車両・�
 function syncSel(){
   document.querySelectorAll("[data-status]").forEach(el=>el.classList.toggle("on",el.dataset.status===sel.status));
   const cf=document.getElementById("f_calltime_fld");if(cf)cf.style.display=(sel.status==="留守電")?"":"none";
+  const aok=document.getElementById("f_apook_fld");if(aok)aok.style.display=(sel.status==="アポインOK")?"":"none";
+  const aml=document.getElementById("f_apomail_fld");if(aml)aml.style.display=(sel.status==="アポOK（メール）")?"":"none";
 }
 document.addEventListener("click",e=>{
   const s=e.target.closest("[data-status]");if(s){sel.status=s.dataset.status;syncSel();}
@@ -2153,9 +2218,9 @@ function buildEntry(id){
     customerPick:$("#f_pick_cust").value.trim(),customerDrop:$("#f_drop_cust").value.trim(),phonePick:$("#f_pick_phone").value.trim(),phoneDrop:$("#f_drop_phone").value.trim(),pick:$("#f_pick").value.trim(),
     drop:$("#f_drop").value.trim(),pickFloor:$("#f_pick_floor").value.trim(),pickTime:$("#f_pick_time").value.trim(),
     dropFloor:$("#f_drop_floor").value.trim(),dropTime:$("#f_drop_time").value.trim(),toursPick:$("#f_pick_tours").value.trim(),toursDrop:$("#f_drop_tours").value.trim(),
-    status:sel.status,noSlip:$("#f_noSlip").checked,callTime:$("#f_callTime").value.trim(),memo:$("#f_memo").value.trim(),moneyReady:$("#f_moneyReady").checked,materials:$("#f_materials").value.trim(),collect:$("#f_collect").value.trim(),
+    status:sel.status,noSlip:$("#f_noSlip").checked,callTime:$("#f_callTime").value.trim(),apoNote:$("#f_apoNote").value.trim(),apoMailNote:$("#f_apoMailNote").value.trim(),memo:$("#f_memo").value.trim(),moneyReady:$("#f_moneyReady").checked,materials:$("#f_materials").value.trim(),collect:$("#f_collect").value.trim(),proxyPay:$("#f_proxyPay").value.trim(),
     surveyId:linkSurveyId||"",surveyChecked:(ex&&ex.surveyChecked)||false,
-    joint:(ex&&ex.joint)||false,jointType:(ex&&ex.jointType)||"",jointSrc:(ex&&ex.jointSrc)||false,  // 合同作業の印は編集しても保持（削除まで消えない）
+    joint:(ex&&ex.joint)||false,jointType:(ex&&ex.jointType)||"",jointSrc:(ex&&ex.jointSrc)||false,jointHide:(ex&&ex.jointHide)||false,  // 合同作業の印は編集しても保持（jointHide=表示だけ消した状態）
     recvLog:(ex&&Array.isArray(ex.recvLog))?ex.recvLog.slice():[],recvBy:(ex&&ex.recvBy)||""};  // 受付者の履歴
 }
 function nowStamp(){const d=new Date(),p=n=>String(n).padStart(2,"0");return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+" "+p(d.getHours())+":"+p(d.getMinutes());}
@@ -3260,7 +3325,7 @@ $("#ovc").addEventListener("click",e=>{if(e.target.id==="ovc")$("#ovc").classLis
   let changed=false;
   Object.keys(byDate).forEach(d=>{const list=byDate[d];const js=new Set();
     list.forEach(e=>{if(e.joint){const s=sig(e);if(s.replace(/¦/g,""))js.add(s);}});
-    list.forEach(e=>{if(!e.joint&&!e.jointSrc){const s=sig(e);if(s.replace(/¦/g,"")&&js.has(s)){e.jointSrc=true;changed=true;}}});});
+    list.forEach(e=>{if(!e.joint&&!e.jointSrc&&!e.jointHide){const s=sig(e);if(s.replace(/¦/g,"")&&js.has(s)){e.jointSrc=true;changed=true;}}});});
   if(changed)save();
 }catch(_){}})();
 
