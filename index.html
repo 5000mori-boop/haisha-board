@@ -745,7 +745,7 @@
 <div class="app">
   <header class="bar">
     <button class="btn ghost home-btn" id="homeBtn">🏠 ホーム</button>
-    <div class="brand"><span class="logo">🚚</span><div>配車ボード<small>ナイスキャリード / 試作 <span style="opacity:.5">v0806-3</span></small></div></div>
+    <div class="brand"><span class="logo">🚚</span><div>配車ボード<small>ナイスキャリード / 試作 <span style="opacity:.5">v0806-4</span></small></div></div>
     <div class="spacer"></div>
     <div class="view-toggle"><button id="v_table" class="on">エクセル表示</button><button id="v_board">カード</button></div>
     <div class="datenav"><button class="icon" id="prev">‹</button><input type="date" id="date"><button class="icon" id="next">›</button><button class="btn ghost mini" id="today">今日</button></div>
@@ -2489,7 +2489,7 @@ const INSP_ITEMS=[
   {key:"insp12m",    label:"12ヶ月点検",   dateField:"insp12m",    defCycle:12, defLead:1},
   {key:"unicInsp",   label:"ユニック年次点検", dateField:"unicInsp", defCycle:12, defLead:1, truckOnly:true},
   {key:"oil",        label:"オイル交換",   dateField:"oil",        defCycle:6,  defLead:1},
-  {key:"tire",       label:"タイヤ点検",   dateField:"tire",       defCycle:24, defLead:1, distanceBased:true},
+  {key:"tire",       label:"タイヤ点検",   dateField:"tire",       defCycle:24, defLead:1, kmNote:true},
   {key:"batteryDate",label:"バッテリー交換",dateField:"batteryDate",defCycle:36, defLead:1}
 ];
 function inspItem(key){return INSP_ITEMS.find(i=>i.key===key);}
@@ -2502,7 +2502,6 @@ function vehAlerts(v){
   const d=db.vehicles[v];if(!d)return [];const today=todayStr();const out=[];
   INSP_ITEMS.forEach(it=>{
     if(!itemApplies(v,it))return;
-    if(it.distanceBased)return;   // タイヤ交換は距離で管理（月ベースのアラート対象外）
     const dl=itemDeadline(v,it);if(!dl)return;
     const cfg=alertCfgFor(v,it);
     const leadStart=firstOfMonthStr(addMonths(dl,-Math.max(1,cfg.lead)));  // 表示開始（その月の1日）
@@ -2592,19 +2591,12 @@ function renderInspSection(v){
     const cfg=alertCfgFor(v,it),dl=itemDeadline(v,it);
     const acked=dl&&d.ack&&d.ack[it.key]===dl;
     const dateI=`<input type="date" data-vf="${it.dateField}" value="${esc(d[it.dateField]||"")}" title="${it.isExpiry?"車検満了日":"直近の実施日"}">`;
-    if(it.distanceBased){
-      const num=s=>+String(s||"").replace(/[^0-9]/g,"")||0;
-      const base=num(d.tireKm),span=num(d.tireKmSpan),lead=num(d.tireKmLead),now=num(d.tireKmNow);
-      let stat='<span class="insp-due na">距離を入力</span>';
-      if(span&&now){const remain=(base+span)-now;stat=remain>lead?`<span class="insp-due">交換まで あと ${remain.toLocaleString()} km</span>`:remain>0?`<span class="insp-due" style="color:#b26b00;font-weight:800">まもなく交換（あと ${remain.toLocaleString()} km）</span>`:`<span class="insp-due" style="color:#c0392b;font-weight:800">交換時期です（${Math.abs(remain).toLocaleString()} km超過）</span>`;}
-      const f=(lab,fld,ph)=>`<span class="insp-cyc">${lab}<input type="number" min="0" data-vf="${fld}" value="${esc(d[fld]||"")}"${ph?` placeholder="${ph}"`:""} style="width:84px">km</span>`;
-      return `<div class="insp-row"><div class="insp-name">${esc(it.label)}<br><small>実施日／距離管理</small></div><div class="insp-ctrls">${dateI}${f("交換時","tireKm")}${f("交換サイクル","tireKmSpan","40000")}${f("警告","tireKmLead","3000")}${f("現在","tireKmNow")}${stat}</div></div>`;
-    }
+    const kmI=it.kmNote?`<span class="insp-cyc">交換時<input type="number" min="0" data-vf="tireKm" value="${esc(d.tireKm||"")}" placeholder="45000" style="width:84px">km</span>`:``;
     const cycleI=it.isExpiry?`<span class="insp-cyc-na">満了日が期限</span>`:`<span class="insp-cyc">周期<input type="number" min="1" max="36" data-alertcfg="cycle" data-alertitem="${it.key}" value="${cfg.cycle}">ヶ月</span>`;
     const leadI=`<span class="insp-lead">アラート<input type="number" min="1" max="36" data-alertcfg="lead" data-alertitem="${it.key}" value="${cfg.lead}">ヶ月前</span>`;
     const dueI=dl?`<span class="insp-due">期限 ${esc(dl)}</span>`:`<span class="insp-due na">日付未入力</span>`;
     const ackI=acked?`<button class="btn ghost mini" data-unack="${it.key}">手配済み✓（取消）</button>`:``;
-    return `<div class="insp-row"><div class="insp-name">${esc(it.label)}<br><small>${it.isExpiry?"満了日":"実施日"}</small></div><div class="insp-ctrls">${dateI}${cycleI}${leadI}${dueI}${ackI}</div></div>`;
+    return `<div class="insp-row"><div class="insp-name">${esc(it.label)}<br><small>${it.isExpiry?"満了日":(it.kmNote?"実施日／交換時km":"実施日")}</small></div><div class="insp-ctrls">${dateI}${kmI}${cycleI}${leadI}${dueI}${ackI}</div></div>`;
   }).join("");
 }
 // ---- 車検証ファイル（IndexedDBに保存／ファイル名から満了日を自動読取） ----
