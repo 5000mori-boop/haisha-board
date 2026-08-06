@@ -524,8 +524,11 @@
   .st-noslip{display:inline-block;margin-left:5px;font-size:.72rem;font-weight:800;color:#9a0000}
   .crewpick{display:flex;flex-wrap:wrap;gap:5px;max-height:120px;overflow:auto;padding:8px;border:1px solid var(--line);border-radius:8px;background:#fbfcfd}
   .modal .foot{padding:13px 20px;border-top:1px solid var(--line2);display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}
-  .modal .foot .right{margin-left:auto}
-  .modal .foot .right{display:flex;gap:8px}
+  .modal .foot .right{display:flex;align-items:center;gap:8px;margin-left:auto}
+  #ov .foot .foot-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  #ov .foot .btn{padding:7px 12px;font-size:.83rem}
+  #ov .foot .recv-in{width:108px!important;padding:5px 8px}
+  #ov .foot .recv-wrap{margin-left:0;gap:4px}
   .btn.gray{background:#eef1f5;color:var(--ink2)}.btn.gray:hover{background:#e3e8ee}
   .btn.danger{background:#fbe9e6;color:#c0392b}.btn.danger:hover{background:#f7d9d4}
   .btn.save{background:var(--jisha);color:#fff}.btn.save:hover{filter:brightness(.94)}
@@ -738,7 +741,7 @@
 <div class="app">
   <header class="bar">
     <button class="btn ghost home-btn" id="homeBtn">🏠 ホーム</button>
-    <div class="brand"><span class="logo">🚚</span><div>配車ボード<small>ナイスキャリード / 試作 <span style="opacity:.5">v0802</span></small></div></div>
+    <div class="brand"><span class="logo">🚚</span><div>配車ボード<small>ナイスキャリード / 試作 <span style="opacity:.5">v0806</span></small></div></div>
     <div class="spacer"></div>
     <div class="view-toggle"><button id="v_table" class="on">エクセル表示</button><button id="v_board">カード</button></div>
     <div class="datenav"><button class="icon" id="prev">‹</button><input type="date" id="date"><button class="icon" id="next">›</button><button class="btn ghost mini" id="today">今日</button></div>
@@ -806,7 +809,7 @@
       </div>
       <div class="fld full" id="f_surveylink"></div>
     </div>
-    <div class="foot"><button class="btn danger" id="del">削除</button><button class="btn copy" id="copy">合同作業にコピー</button><button class="btn ghost" id="f_jointClear" style="display:none">🔗 合同作業の表示を消す</button><div class="recv-wrap"><input id="f_recv" class="recv-in" placeholder="受付者(苗字)" autocomplete="off"><span class="recv-hist" id="f_recv_hist" title="（履歴なし）">🕒</span></div><div class="right"><button class="btn gray" id="cancel">キャンセル</button><button class="btn save" id="save">保存</button></div></div>
+    <div class="foot"><div class="foot-actions"><button class="btn danger" id="del">削除</button><button class="btn copy" id="copy">合同作業にコピー</button><button class="btn ghost" id="f_jointClear" style="display:none">合同表示を消す</button></div><div class="right"><div class="recv-wrap"><input id="f_recv" class="recv-in" placeholder="受付者(苗字)" autocomplete="off"><span class="recv-hist" id="f_recv_hist" title="（履歴なし）">🕒</span></div><button class="btn gray" id="cancel">キャンセル</button><button class="btn save" id="save">保存</button></div></div>
   </div>
 </div>
 
@@ -1694,7 +1697,7 @@ function fillList(id,arr){$(id).innerHTML=arr.map(v=>`<option value="${esc(v)}">
 function jsigOf(e){return [e.client,e.item,e.customerPick||e.customer,e.customerDrop,e.phonePick,e.phoneDrop||e.phone].map(x=>(x||"").trim()).join("¦");}
 function hasJointCopy(e){if(!e)return false;const s=jsigOf(e);if(!s.replace(/¦/g,""))return false;return db.entries.some(x=>x&&x.joint&&x.date===e.date&&x.id!==e.id&&jsigOf(x)===s);}
 function isJointSource(e){return !!(e&&!e.joint&&(e.jointHide||e.jointSrc||hasJointCopy(e)));}
-function updateJointClearBtn(e){const b=$("#f_jointClear");if(!b)return;if(!isJointSource(e)){b.style.display="none";return;}b.style.display="";b.textContent=(e&&e.jointHide)?"🔗 合同作業の表示を戻す":"🔗 合同作業の表示を消す";}
+function updateJointClearBtn(e){const b=$("#f_jointClear");if(!b)return;if(!isJointSource(e)){b.style.display="none";return;}b.style.display="";b.textContent=(e&&e.jointHide)?"合同表示を戻す":"合同表示を消す";}
 function openEntry(id,presetVeh){
   editId=id;const e=id?db.entries.find(x=>x.id===id):null;
   if(!id&&presetVeh&&inspOf(presetVeh)){uiAlert("この車両は「点検・車検」で押さえられているため、この日は案件を追加できません。");return;}
@@ -2451,7 +2454,7 @@ const INSP_ITEMS=[
   {key:"insp12m",    label:"12ヶ月点検",   dateField:"insp12m",    defCycle:12, defLead:1},
   {key:"unicInsp",   label:"ユニック年次点検", dateField:"unicInsp", defCycle:12, defLead:1, truckOnly:true},
   {key:"oil",        label:"オイル交換",   dateField:"oil",        defCycle:6,  defLead:1},
-  {key:"tire",       label:"タイヤ交換",   dateField:"tire",       defCycle:24, defLead:1, distanceBased:true},
+  {key:"tire",       label:"タイヤ点検",   dateField:"tire",       defCycle:24, defLead:1, distanceBased:true},
   {key:"batteryDate",label:"バッテリー交換",dateField:"batteryDate",defCycle:36, defLead:1}
 ];
 function inspItem(key){return INSP_ITEMS.find(i=>i.key===key);}
