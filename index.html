@@ -745,7 +745,7 @@
 <div class="app">
   <header class="bar">
     <button class="btn ghost home-btn" id="homeBtn">🏠 ホーム</button>
-    <div class="brand"><span class="logo">🚚</span><div>配車ボード<small>ナイスキャリード / 試作 <span style="opacity:.5">v0806-2</span></small></div></div>
+    <div class="brand"><span class="logo">🚚</span><div>配車ボード<small>ナイスキャリード / 試作 <span style="opacity:.5">v0806-3</span></small></div></div>
     <div class="spacer"></div>
     <div class="view-toggle"><button id="v_table" class="on">エクセル表示</button><button id="v_board">カード</button></div>
     <div class="datenav"><button class="icon" id="prev">‹</button><input type="date" id="date"><button class="icon" id="next">›</button><button class="btn ghost mini" id="today">今日</button></div>
@@ -2565,10 +2565,8 @@ function openVehEdit(v){
       <div class="fld"><label>所有形態（リース終了で変更可）</label><select data-vf="ownership"><option value="">—</option>${["自己所有","リースメンテナンス付き","リース"].map(o=>`<option ${d.ownership===o?"selected":""}>${o}</option>`).join("")}</select></div>
       ${isCar?"":'<div class="fld"><div class="toggle"><input type="checkbox" data-vf="unic" '+(d.unic?"checked":"")+'><div><b>ユニック車（クレーン）</b></div></div></div>'}
     </div>
-    <h4 style="margin:12px 0 6px">バッテリー・タイヤ（サイズ・型番）</h4>
+    <h4 style="margin:12px 0 6px">タイヤ（サイズ・型番）</h4>
     <div class="vehmini">
-      <div class="fld mini w-bat"><label>バッテリー①</label><input data-vf="battery1" value="${esc(d.battery1||"")}"></div>
-      <div class="fld mini w-bat"><label>バッテリー②</label><input data-vf="battery2" value="${esc(d.battery2||"")}"></div>
       <div class="fld mini w-tire"><label>タイヤサイズ</label><input data-vf="tireSize" value="${esc(d.tireSize||"")}"></div>
       <div class="fld mini w-tire"><label>スタッドレス（有無・日付）</label><input data-vf="studless" value="${esc(d.studless||"")}"></div>
       <div class="fld mini w-tire"><label>タイヤ交換日</label><input type="date" data-vf="tireDate" value="${esc(d.tireDate||"")}"></div>
