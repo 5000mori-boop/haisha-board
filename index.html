@@ -507,6 +507,9 @@
   .fld label{display:block;font-size:.74rem;font-weight:700;color:var(--muted);margin-bottom:4px}
   .fld input,.fld select,.fld textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:.92rem;font-family:inherit;background:#fff;color:var(--ink)}
   .fld input:focus,.fld select:focus,.fld textarea:focus{outline:2px solid var(--accent);border-color:var(--accent)}
+  .cli-row{display:flex;gap:8px;align-items:flex-start}
+  .cli-row .cli-main{flex:0 0 66%;min-width:0}
+  .cli-row .cli-tan{flex:1 1 auto;min-width:0}
   .fld textarea{resize:vertical;min-height:44px}
   .fld.pickf input{background:var(--pick)} .fld.dropf input{background:var(--drop)}
   .toggle{display:flex;align-items:center;gap:9px;background:#fbfcfd;border:1px solid var(--line);border-radius:8px;padding:8px 10px}
@@ -529,6 +532,7 @@
   #ov .foot .btn{padding:7px 12px;font-size:.83rem}
   #ov .foot .recv-in{width:108px!important;padding:5px 8px}
   #ov .foot .recv-wrap{margin-left:0;gap:4px}
+  #ov .foot .autosave-note{font-size:.72rem;font-weight:800;color:#2e7d32;white-space:nowrap}
   .btn.gray{background:#eef1f5;color:var(--ink2)}.btn.gray:hover{background:#e3e8ee}
   .btn.danger{background:#fbe9e6;color:#c0392b}.btn.danger:hover{background:#f7d9d4}
   .btn.save{background:var(--jisha);color:#fff}.btn.save:hover{filter:brightness(.94)}
@@ -741,7 +745,7 @@
 <div class="app">
   <header class="bar">
     <button class="btn ghost home-btn" id="homeBtn">🏠 ホーム</button>
-    <div class="brand"><span class="logo">🚚</span><div>配車ボード<small>ナイスキャリード / 試作 <span style="opacity:.5">v0806</span></small></div></div>
+    <div class="brand"><span class="logo">🚚</span><div>配車ボード<small>ナイスキャリード / 試作 <span style="opacity:.5">v0806-2</span></small></div></div>
     <div class="spacer"></div>
     <div class="view-toggle"><button id="v_table" class="on">エクセル表示</button><button id="v_board">カード</button></div>
     <div class="datenav"><button class="icon" id="prev">‹</button><input type="date" id="date"><button class="icon" id="next">›</button><button class="btn ghost mini" id="today">今日</button></div>
@@ -768,7 +772,10 @@
       <div class="fld full ai-box" id="aiSuggest"></div>
       <div class="fld"><label>日付（移動する場合は変更）</label><input type="date" id="f_date"></div>
       <div class="fld"><label>車両</label><select id="f_vehicle"></select></div>
-      <div class="fld"><label>請求（元請）</label><input id="f_client"></div>
+      <div class="cli-row">
+        <div class="fld cli-main"><label>請求（元請）</label><input id="f_client"></div>
+        <div class="fld cli-tan"><label>担当名</label><input id="f_tantou"></div>
+      </div>
       <div class="fld"><label>品名・型番</label><input id="f_item"></div>
       <div class="fld full">
         <div class="dimrow">
@@ -809,7 +816,7 @@
       </div>
       <div class="fld full" id="f_surveylink"></div>
     </div>
-    <div class="foot"><div class="foot-actions"><button class="btn danger" id="del">削除</button><button class="btn copy" id="copy">合同作業にコピー</button><button class="btn ghost" id="f_jointClear" style="display:none">合同表示を消す</button></div><div class="right"><div class="recv-wrap"><input id="f_recv" class="recv-in" placeholder="受付者(苗字)" autocomplete="off"><span class="recv-hist" id="f_recv_hist" title="（履歴なし）">🕒</span></div><button class="btn gray" id="cancel">キャンセル</button><button class="btn save" id="save">保存</button></div></div>
+    <div class="foot"><div class="foot-actions"><button class="btn danger" id="del">削除</button><button class="btn copy" id="copy">合同作業にコピー</button><button class="btn ghost" id="f_jointClear" style="display:none">合同表示を消す</button></div><div class="right"><div class="recv-wrap"><input id="f_recv" class="recv-in" placeholder="受付者(苗字)" autocomplete="off"><span class="recv-hist" id="f_recv_hist" title="（履歴なし）">🕒</span></div><span class="autosave-note">✓ 自動保存</span><button class="btn save" id="closeSave">閉じる</button></div></div>
   </div>
 </div>
 
@@ -1699,7 +1706,7 @@ function hasJointCopy(e){if(!e)return false;const s=jsigOf(e);if(!s.replace(/¦/
 function isJointSource(e){return !!(e&&!e.joint&&(e.jointHide||e.jointSrc||hasJointCopy(e)));}
 function updateJointClearBtn(e){const b=$("#f_jointClear");if(!b)return;if(!isJointSource(e)){b.style.display="none";return;}b.style.display="";b.textContent=(e&&e.jointHide)?"合同表示を戻す":"合同表示を消す";}
 function openEntry(id,presetVeh){
-  editId=id;const e=id?db.entries.find(x=>x.id===id):null;
+  editId=id;_autoCreated=false;const e=id?db.entries.find(x=>x.id===id):null;
   if(!id&&presetVeh&&inspOf(presetVeh)){uiAlert("この車両は「点検・車検」で押さえられているため、この日は案件を追加できません。");return;}
   linkSurveyId=(e&&e.surveyId)||"";
   $("#mtitle").firstChild.textContent=id?"案件編集 ":"案件追加 ";
@@ -1709,7 +1716,7 @@ function openEntry(id,presetVeh){
   sel={status:(e&&e.status)||"仮"};
   $("#f_date").value=(e&&e.date)||cur;
   $("#f_vehicle").value=(e&&e.vehicle)||presetVeh||db.masters.veh[0];
-  $("#f_client").value=(e&&e.client)||"";$("#f_item").value=(e&&e.item)||"";$("#f_weight").value=(e&&e.weight)||"";
+  $("#f_client").value=(e&&e.client)||"";$("#f_tantou").value=(e&&e.tantou)||"";$("#f_item").value=(e&&e.item)||"";$("#f_weight").value=(e&&e.weight)||"";
   $("#f_setti").checked=!!(e&&e.setti);$("#f_heavy").checked=!!(e&&e.heavy);
   $("#f_st_genchi").checked=!!(e&&e.stGenchi);$("#f_st_iremachi").checked=!!(e&&e.stIremachi);$("#f_st_hokan").checked=!!(e&&e.stHokan);$("#f_st_shutsu").checked=!!(e&&e.stShutsu);
   $("#f_recv").value=(e&&e.recvBy)||"";{const rl=(e&&Array.isArray(e.recvLog))?e.recvLog:[],ht=fmtRecvLog(rl);$("#f_recv").title=ht;$("#f_recv_hist").title=ht;$("#f_recv_hist").classList.toggle("on",rl.length>0);}
@@ -2183,7 +2190,7 @@ function syncSel(){
   const aml=document.getElementById("f_apomail_fld");if(aml)aml.style.display=(sel.status==="アポOK（メール）")?"":"none";
 }
 document.addEventListener("click",e=>{
-  const s=e.target.closest("[data-status]");if(s){sel.status=s.dataset.status;syncSel();}
+  const s=e.target.closest("[data-status]");if(s){sel.status=s.dataset.status;syncSel();scheduleAutosave();}
 });
 $("#add").onclick=()=>openEntry(null);
 $("#viewhost").addEventListener("click",e=>{
@@ -2206,8 +2213,43 @@ function delVeh(v){
   },"外す");
 }
 function closeEntry(){$("#ov").classList.remove("on");editId=null;}
-$("#mx").onclick=closeEntry;$("#cancel").onclick=closeEntry;
-$("#ov").addEventListener("click",e=>{if(e.target.id==="ov")closeEntry();});
+// ==== オート保存（保存ボタン廃止・×/閉じるで確定・枠外クリックでは閉じない＝入力保護） ====
+let _autoCreated=false,_osTimer=null;
+function entryHasContent(o){
+  return !!(o.client||o.tantou||o.item||o.weight||o.pick||o.drop||o.customerPick||o.customerDrop||o.phonePick||o.phoneDrop
+    ||o.pickFloor||o.dropFloor||o.pickTime||o.dropTime||o.toursPick||o.toursDrop||o.memo||o.materials||o.collect||o.proxyPay
+    ||o.callTime||o.apoNote||o.apoMailNote||o.setti||o.heavy||o.stGenchi||o.stIremachi||o.stHokan||o.stShutsu||o.noSlip||o.moneyReady
+    ||(o.status&&o.status!=="仮")||$("#f_recv").value.trim());
+}
+function commitEntry(finalize){
+  if(!$("#ov").classList.contains("on"))return "closed";
+  const obj=buildEntry(editId);
+  const rname=$("#f_recv").value.trim();
+  if(rname){obj.recvLog=obj.recvLog||[];const last=obj.recvLog[obj.recvLog.length-1];if(!last||last.name!==rname)obj.recvLog.push({name:rname,at:nowStamp()});obj.recvBy=rname;}
+  const has=entryHasContent(obj);
+  if(editId){
+    const i=db.entries.findIndex(x=>x.id===editId);
+    if(finalize&&!has&&_autoCreated){if(i>=0)db.entries.splice(i,1);editId=null;save();return "removed";}
+    if(i>=0)db.entries[i]=obj;else db.entries.push(obj);
+  }else{
+    if(!has)return "empty";
+    if(inspOf(obj.vehicle,obj.date))return "blocked";
+    db.entries.push(obj);editId=obj.id;_autoCreated=true;
+    $("#del").style.display="";$("#mtitle").firstChild.textContent="案件編集 ";
+  }
+  save();return "ok";
+}
+function scheduleAutosave(){clearTimeout(_osTimer);_osTimer=setTimeout(()=>{commitEntry(false);},600);}
+function closeEntrySaved(){
+  clearTimeout(_osTimer);
+  const r=commitEntry(true);
+  if(r==="blocked"){uiAlert("「"+$("#f_vehicle").value+"」は "+($("#f_date").value||cur)+" が点検・車検で押さえられているため、案件を追加できません。\n車両を変更するか、内容を消してから閉じてください。");return;}
+  closeEntry();render();
+}
+$("#mx").onclick=closeEntrySaved;
+$("#ov").addEventListener("input",()=>scheduleAutosave());
+$("#ov").addEventListener("change",()=>scheduleAutosave());
+$("#ov").addEventListener("click",e=>{if(e.target.id==="ov"){/* 枠外クリックでは閉じない（入力保護）。閉じるは×か「閉じる」ボタンで */}});
 function buildEntry(id){
   const vehicle=$("#f_vehicle").value;
   const date=$("#f_date").value||cur;
@@ -2215,7 +2257,7 @@ function buildEntry(id){
   // 同じ日付・同じ車両なら並び順を維持、日付/車両が変わったら移動先で採番
   const same=ex&&typeof ex.ord==="number"&&ex.vehicle===vehicle&&ex.date===date;
   const ord=same?ex.ord:(function(){const os=db.entries.filter(x=>x.date===date&&x.vehicle===vehicle&&x.id!==id).map(x=>typeof x.ord==="number"?x.ord:-1);return os.length?Math.max(...os)+1:0;})();
-  return {id:id||uid(),date,vehicle,ord,client:$("#f_client").value.trim(),
+  return {id:id||uid(),date,vehicle,ord,client:$("#f_client").value.trim(),tantou:$("#f_tantou").value.trim(),
     item:$("#f_item").value.trim(),weight:$("#f_weight").value.trim(),setti:$("#f_setti").checked,heavy:$("#f_heavy").checked,
     stGenchi:$("#f_st_genchi").checked,stIremachi:$("#f_st_iremachi").checked,stHokan:$("#f_st_hokan").checked,stShutsu:$("#f_st_shutsu").checked,
     customerPick:$("#f_pick_cust").value.trim(),customerDrop:$("#f_drop_cust").value.trim(),phonePick:$("#f_pick_phone").value.trim(),phoneDrop:$("#f_drop_phone").value.trim(),pick:$("#f_pick").value.trim(),
@@ -2228,14 +2270,7 @@ function buildEntry(id){
 }
 function nowStamp(){const d=new Date(),p=n=>String(n).padStart(2,"0");return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+" "+p(d.getHours())+":"+p(d.getMinutes());}
 function fmtRecvLog(log){return (log&&log.length)?log.slice().reverse().map(r=>r.name+"　"+r.at).join("\n"):"（受付の履歴なし）";}
-$("#save").onclick=()=>{
-  const obj=buildEntry(editId);
-  if(!editId&&inspOf(obj.vehicle,obj.date)){uiAlert("「"+obj.vehicle+"」は "+obj.date+" が点検・車検で押さえられているため、案件を追加できません。");return;}
-  const rname=$("#f_recv").value.trim();
-  if(rname){obj.recvLog=obj.recvLog||[];const last=obj.recvLog[obj.recvLog.length-1];if(!last||last.name!==rname)obj.recvLog.push({name:rname,at:nowStamp()});obj.recvBy=rname;}
-  if(editId){const i=db.entries.findIndex(x=>x.id===editId);db.entries[i]=obj;}else{db.entries.push(obj);}
-  save();closeEntry();render();
-};
+$("#closeSave").onclick=closeEntrySaved;
 // 合同作業コピー：現在の案件を保存してから、他の車両へ複製
 $("#copy").onclick=()=>{
   const obj=buildEntry(editId);
