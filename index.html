@@ -52,8 +52,9 @@
   .board{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px;margin-top:8px;align-items:start}
   .veh{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
   .veh > h3{margin:0;padding:9px 13px;background:var(--navy);color:#fff;display:flex;align-items:center;gap:8px;flex-wrap:wrap;cursor:pointer}
-  .veh > h3 .vname{font-size:1.02rem;font-weight:800}
-  .veh > h3 .crew{font-size:.82rem;opacity:.92}
+  .veh > h3 .vname{font-size:1.02rem;font-weight:800;color:#fff}
+  .veh > h3 .crew{font-size:.82rem;opacity:.92;color:#fff}
+  .veh > h3 .crew>span[style]{color:#fff!important}
   .veh > h3 .dep{font-size:.78rem;background:rgba(255,255,255,.18);padding:2px 8px;border-radius:20px;margin-left:auto;font-variant-numeric:tabular-nums}
   .veh > h3 .dep b{color:#ffd9b0}
   .job{padding:10px 12px;border-bottom:6px solid var(--line2);cursor:pointer;position:relative}
@@ -82,10 +83,10 @@
   .addr{display:flex;flex-direction:column;gap:3px;margin:6px 0}
   .achip{display:inline-flex;align-items:center;gap:6px;font-size:.86rem;border-radius:6px;padding:2px 8px;width:fit-content;max-width:100%}
   .achip .tag{font-size:.62rem;font-weight:800;padding:0 5px;border-radius:4px}
-  .achip.pick{background:var(--pick);border:1px solid var(--pick-bd);color:#5c4600}
-  .achip.pick .tag{background:var(--pick-bd);color:#5c4600}
-  .achip.drop{background:var(--drop);border:1px solid var(--drop-bd);color:#0d4f66}
-  .achip.drop .tag{background:var(--drop-bd);color:#0d4f66}
+  .achip.pick{background:#b8860b;border:1px solid #9c7209;color:#fff}
+  .achip.pick .tag{background:#8a6508;color:#fff}
+  .achip.drop{background:#3d7ea6;border:1px solid #336a8c;color:#fff}
+  .achip.drop .tag{background:#2f6684;color:#fff}
   .metarow{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:5px}
   .pill{font-size:.76rem;font-weight:700;border-radius:6px;padding:2px 8px;background:#eef1f5;color:var(--ink2);border:1px solid var(--line)}
   .pill.spec{background:var(--spec-bg);color:var(--spec);border-color:#bfe6cf}
@@ -103,7 +104,7 @@
 
   .tblwrap{overflow-x:auto;background:#fff;border:1px solid #b3b9c2;border-radius:8px;box-shadow:var(--shadow);margin-top:8px}
   table.xls{border-collapse:collapse;width:100%;font-size:.95rem;min-width:1240px;background:#fff;table-layout:fixed}
-  .w-st{width:48px}.w-seikyu{width:106px}.w-item{width:122px}.w-cust{width:126px}.w-tel{width:112px}.w-addr{width:184px}.w-spec{width:98px}.w-time{width:108px}.w-ours{width:108px}.w-memo{width:224px}
+  .w-st{width:48px}.w-seikyu{width:74px}.w-item{width:154px}.w-cust{width:126px}.w-tel{width:112px}.w-addr{width:184px}.w-spec{width:98px}.w-time{width:108px}.w-ours{width:108px}.w-memo{width:224px}
   table.xls th,table.xls td{border:1px solid #b9bec7;padding:7px 9px;vertical-align:middle;text-align:left;overflow:hidden;text-overflow:ellipsis;font-weight:600;color:#131b26}
   table.xls thead th{background:#e7ebf1;color:var(--ink);font-size:.84rem;font-weight:800;position:sticky;top:0;z-index:2;text-align:center;white-space:nowrap}
   tr.veh-band td{background:#d6dbe2;padding:0;border-color:#b3b9c2}
@@ -154,10 +155,10 @@
   td.x-memo.memo-parts{background:#fff4c2!important;color:#d32f2f!important}
   td.x-memo.memo-ready{background:#f2ada7!important;color:#111!important}
   /* 作業階数・時間を「引取／届け」で分けて表示（住所欄と同じ段組み＋区切り線） */
-  td.x-spec,td.x-time,td.x-cust,td.x-ours{padding:0}
+  td.x-spec,td.x-time,td.x-cust,td.x-ours,td.x-item{padding:0}
   .pd{display:flex;align-items:center;gap:3px;line-height:1.4;white-space:nowrap;padding:4px 6px;overflow:hidden}
   .pd>span:last-child{overflow:hidden;text-overflow:ellipsis}
-  td.x-spec .pd+.pd,td.x-time .pd+.pd,td.x-cust .pd+.pd,td.x-ours .pd+.pd{border-top:1px solid #c2c7d0}
+  td.x-spec .pd+.pd,td.x-time .pd+.pd,td.x-cust .pd+.pd,td.x-ours .pd+.pd,td.x-item .pd+.pd{border-top:1px solid #c2c7d0}
   .pdl{font-size:.56rem;font-weight:800;border-radius:3px;padding:0 3px;color:#fff;flex:0 0 auto}
   .pdl.p{background:#b8860b}
   .pdl.d{background:#3d7ea6}
@@ -441,14 +442,14 @@
   .tel-ghost-wrap{position:relative}
   .joint-ghost{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.05rem;font-weight:900;letter-spacing:.06em;color:rgba(47,111,191,.32);pointer-events:none;white-space:nowrap}
   /* 案件フォーム：寸法/重量物/設置あり＋状態チェック（コンパクト） */
-  .dimrow{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+  .dimrow{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px}
   .dimcol{display:grid;gap:7px}
   .itagcol{display:grid;gap:6px;align-content:start}
   .itag-hd{font-size:.74rem;color:var(--muted);font-weight:700}
   .mini-chk{display:flex;align-items:center;gap:6px;font-size:.88rem;font-weight:700;color:#111;cursor:pointer;padding:2px 0}
   .mini-chk .mini-note{font-size:.66rem;font-weight:500;color:var(--muted);margin-left:2px}
-  .itag-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-  .itag-chk{display:flex;align-items:center;gap:5px;padding:4px 7px;border:1px solid var(--line);border-radius:6px;font-size:.82rem;font-weight:700;color:#111;cursor:pointer}
+  .itag-grid{display:grid;grid-template-columns:auto auto;gap:4px 5px}
+  .itag-chk{display:flex;align-items:center;gap:4px;padding:2px 7px;border:1px solid var(--line);border-radius:6px;font-size:.75rem;font-weight:700;color:#111;cursor:pointer}
   .itag-chk input,.mini-chk input{margin:0;width:16px!important;height:16px;flex:0 0 auto;min-width:0}
   .itag-chk.genchi{background:#e2f5db}
   .itag-chk.iremachi,.itag-chk.hokan{background:#fbdedb}
@@ -523,6 +524,7 @@
   .noslip-chk{display:flex;align-items:center;gap:7px;margin-top:8px;font-size:.82rem;color:var(--ink2)}
   .noslip-chk input{width:17px;height:17px;flex:0 0 auto}
   .noslip-mark{display:block;margin-top:2px;font-size:.58rem;font-weight:800;color:#9a0000;white-space:nowrap;line-height:1.1}
+  .denpyo-mark{display:inline-block;margin-top:2px;font-size:.58rem;font-weight:800;color:#fff;background:#1258a0;border-radius:4px;padding:1px 5px;white-space:nowrap;line-height:1.25}
   .calltime-mark{display:block;margin-top:1px;font-size:.56rem;font-weight:700;color:#a05a00;line-height:1.1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .st-noslip{display:inline-block;margin-left:5px;font-size:.72rem;font-weight:800;color:#9a0000}
   .crewpick{display:flex;flex-wrap:wrap;gap:5px;max-height:120px;overflow:auto;padding:8px;border:1px solid var(--line);border-radius:8px;background:#fbfcfd}
@@ -745,7 +747,7 @@
 <div class="app">
   <header class="bar">
     <button class="btn ghost home-btn" id="homeBtn">🏠 ホーム</button>
-    <div class="brand"><span class="logo">🚚</span><div>配車ボード<small>ナイスキャリード / 試作 <span style="opacity:.5">v0806-4</span></small></div></div>
+    <div class="brand"><span class="logo">🚚</span><div>配車ボード<small>ナイスキャリード / 試作 <span style="opacity:.5">v0807-1</span></small></div></div>
     <div class="spacer"></div>
     <div class="view-toggle"><button id="v_table" class="on">エクセル表示</button><button id="v_board">カード</button></div>
     <div class="datenav"><button class="icon" id="prev">‹</button><input type="date" id="date"><button class="icon" id="next">›</button><button class="btn ghost mini" id="today">今日</button></div>
@@ -776,31 +778,22 @@
         <div class="fld cli-main"><label>請求（元請）</label><input id="f_client"></div>
         <div class="fld cli-tan"><label>担当名</label><input id="f_tantou"></div>
       </div>
-      <div class="fld"><label>品名・型番</label><input id="f_item"></div>
       <div class="fld full">
         <div class="dimrow">
-          <div class="dimcol">
-            <div class="fld" style="margin:0"><label>寸法重量</label><input id="f_weight"></div>
-            <label class="mini-chk"><input type="checkbox" id="f_heavy"> 重量物<span class="mini-note">設置手当カウント</span></label>
-            <label class="mini-chk"><input type="checkbox" id="f_setti"> 設置あり<span class="mini-note">赤表示・手当カウント</span></label>
-          </div>
-          <div class="itagcol">
-            <label class="itag-hd">状態（品名欄に縦帯・複数可）</label>
-            <div class="itag-grid">
-              <label class="itag-chk genchi"><input type="checkbox" id="f_st_genchi"> 現地</label>
-              <label class="itag-chk iremachi"><input type="checkbox" id="f_st_iremachi"> 入待</label>
-              <label class="itag-chk hokan"><input type="checkbox" id="f_st_hokan"> 保管品</label>
-              <label class="itag-chk shutsu"><input type="checkbox" id="f_st_shutsu"> 出準備済</label>
-            </div>
-          </div>
+          <label class="mini-chk" title="設置手当カウント"><input type="checkbox" id="f_heavy"> 重量物</label>
+          <label class="mini-chk" title="赤表示・手当カウント"><input type="checkbox" id="f_setti"> 設置あり</label>
+          <span class="itag-hd" style="margin-left:6px" title="品名欄に縦帯・複数可">状態:</span>
+          <label class="itag-chk genchi"><input type="checkbox" id="f_st_genchi"> 現地</label>
+          <label class="itag-chk iremachi"><input type="checkbox" id="f_st_iremachi"> 入待</label>
+          <label class="itag-chk hokan"><input type="checkbox" id="f_st_hokan"> 保管品</label>
+          <label class="itag-chk shutsu"><input type="checkbox" id="f_st_shutsu"> 出準備済</label>
         </div>
       </div>
       <div class="full pdrow">
-      <div class="fld pickf"><label>引取先（黄）※空欄なら「届けのみ」</label><input id="f_pick"><div class="locsub"><div class="lscell"><span class="ls-lbl">お客様名</span><input id="f_pick_cust" class="ls-in"></div><div class="lscell"><span class="ls-lbl">電話</span><input id="f_pick_phone" class="ls-in" inputmode="tel"></div><div class="lscell"><span class="ls-lbl">階数</span><input id="f_pick_floor" class="ls-in" list="floors"></div><div class="lscell"><span class="ls-lbl">時間</span><input id="f_pick_time" class="ls-in"></div></div></div>
-      <div class="fld dropf"><label>届け先（青）</label><input id="f_drop"><div class="locsub"><div class="lscell"><span class="ls-lbl">お客様名</span><input id="f_drop_cust" class="ls-in"></div><div class="lscell"><span class="ls-lbl">電話</span><input id="f_drop_phone" class="ls-in" inputmode="tel"></div><div class="lscell"><span class="ls-lbl">階数</span><input id="f_drop_floor" class="ls-in" list="floors"></div><div class="lscell"><span class="ls-lbl">時間</span><input id="f_drop_time" class="ls-in"></div><datalist id="floors"></datalist></div></div>
+      <div class="fld pickf"><label>引取先（黄）※空欄なら「届けのみ」</label><div class="locsub"><div class="lscell" style="grid-column:1/-1"><span class="ls-lbl">品名・寸法</span><input id="f_pick_item" class="ls-in"></div><div class="lscell"><span class="ls-lbl">お客様名</span><input id="f_pick_cust" class="ls-in"></div><div class="lscell"><span class="ls-lbl">電話</span><input id="f_pick_phone" class="ls-in" inputmode="tel"></div><div class="lscell" style="grid-column:1/-1"><span class="ls-lbl">住所</span><input id="f_pick" class="ls-in"></div><div class="lscell"><span class="ls-lbl">階数</span><input id="f_pick_floor" class="ls-in" list="floors"></div><div class="lscell"><span class="ls-lbl">時間</span><input id="f_pick_time" class="ls-in"></div><div class="lscell" style="grid-column:1/-1"><span class="ls-lbl">配送時間</span><input id="f_pick_tours" class="ls-in"></div></div></div>
+      <div class="fld dropf"><label>届け先（青）</label><div class="locsub"><div class="lscell" style="grid-column:1/-1"><span class="ls-lbl">品名・寸法</span><input id="f_drop_item" class="ls-in"></div><div class="lscell"><span class="ls-lbl">お客様名</span><input id="f_drop_cust" class="ls-in"></div><div class="lscell"><span class="ls-lbl">電話</span><input id="f_drop_phone" class="ls-in" inputmode="tel"></div><div class="lscell" style="grid-column:1/-1"><span class="ls-lbl">住所</span><input id="f_drop" class="ls-in"></div><div class="lscell"><span class="ls-lbl">階数</span><input id="f_drop_floor" class="ls-in" list="floors"></div><div class="lscell"><span class="ls-lbl">時間</span><input id="f_drop_time" class="ls-in"></div><div class="lscell" style="grid-column:1/-1"><span class="ls-lbl">配送時間</span><input id="f_drop_tours" class="ls-in"></div><datalist id="floors"></datalist></div></div>
       </div>
-      <div class="fld full"><label>配送時間（引取／届け）</label><div class="locsub"><div class="lscell"><span class="ls-lbl">引取</span><input id="f_pick_tours" class="ls-in"></div><div class="lscell"><span class="ls-lbl">届け</span><input id="f_drop_tours" class="ls-in"></div></div></div>
-      <div class="fld full"><label>状態</label><div class="seg status-seg"><div class="chk" data-status="仮">仮</div><div class="chk" data-status="確定">確定</div><div class="chk apo" data-status="アポインOK">アポOK</div><div class="chk apo" data-status="アポOK（メール）">アポメール</div><div class="chk apo" data-status="留守電">留守電</div><div class="chk" data-status="キャンセル">キャンセル</div></div><label class="noslip-chk"><input type="checkbox" id="f_noSlip"> <b>伝票無</b>（他の状態と併用可・表に「伝票なし」を赤表示）</label></div>
+      <div class="fld full"><label>状態</label><div class="seg status-seg"><div class="chk" data-status="仮">仮</div><div class="chk" data-status="確定">確定</div><div class="chk apo" data-status="アポインOK">アポOK</div><div class="chk apo" data-status="アポOK（メール）">アポメール</div><div class="chk apo" data-status="留守電">留守電</div><div class="chk" data-status="キャンセル">キャンセル</div></div><div style="display:flex;flex-wrap:wrap;gap:16px;margin-top:8px"><label class="noslip-chk" style="margin-top:0"><input type="checkbox" id="f_noSlip"> <b>伝票無</b>（表に「伝票なし」赤表示）</label><label class="noslip-chk" style="margin-top:0"><input type="checkbox" id="f_denpyo"> <b>伝票・添付書類</b>（表に青✓表示）</label></div></div>
       <div class="fld full" id="f_calltime_fld" style="display:none"><label>留守電：電話をかけた時間</label><input id="f_callTime" placeholder="例：10:30"></div>
       <div class="fld full" id="f_apook_fld" style="display:none"><label>アポOKのコメント（配車表に表示）</label><input id="f_apoNote" placeholder="例：16時に来店予定／担当◯◯さん"></div>
       <div class="fld full" id="f_apomail_fld" style="display:none"><label>アポメールのコメント（配車表に表示）</label><input id="f_apoMailNote" placeholder="例：メール返信待ち／再送済み"></div>
@@ -886,7 +879,16 @@
       <div class="fld full"><label>マスタから携帯を呼び出す（予備携帯など）</label><select id="sv_addphone"></select></div>
       <div class="fld full"><label>送信メッセージ（編集できます）</label><textarea id="sv_msg" style="min-height:170px"></textarea></div>
     </div>
-    <div class="foot"><div class="hint">※メールへのファイル添付はできないため、本文に記載します</div><div class="right"><button class="btn gray" id="sv_copy">コピー</button><button class="btn save" id="sv_mail">メールで送る</button></div></div>
+    <div class="foot"><button class="btn ghost" id="sv_log">📋 ログ履歴</button><div class="hint">※メールへのファイル添付はできないため、本文に記載します</div><div class="right"><button class="btn gray" id="sv_copy">コピー</button><button class="btn save" id="sv_mail">メールで送る</button></div></div>
+  </div>
+</div>
+
+<!-- 車両連絡ログ履歴 -->
+<div class="ov" id="ovsendlog">
+  <div class="modal" style="max-width:680px">
+    <h2>📋 車両連絡ログ履歴 <button class="x" id="svlogx">×</button></h2>
+    <div id="svlogBody" style="padding:8px 18px;max-height:70vh;overflow:auto"></div>
+    <div class="foot"><div class="hint">コピー／メール送信を押した記録が、日付ごとに残ります。</div><div class="right"><button class="btn gray" id="svlogClose">閉じる</button></div></div>
   </div>
 </div>
 
@@ -1056,24 +1058,20 @@
           <div class="fld"><label>日付</label><input type="date" id="ar_date"></div>
           <div class="fld"><label>車両</label><select id="ar_veh"></select></div>
           <div class="fld"><label>請求（元請）</label><input id="ar_client" list="ar_clientList"></div>
-          <div class="fld"><label>品名・型番</label><input id="ar_item"></div>
-          <div class="fld"><label>寸法重量</label><input id="ar_weight"></div>
-          <div class="fld"><div class="toggle"><input type="checkbox" id="ar_setti"><div><b>設置あり（赤表示）</b></div></div></div>
-          <div class="fld"><div class="toggle"><input type="checkbox" id="ar_heavy"><div><b>重量物</b></div></div></div>
-          <div class="fld full"><label class="itag-hd">状態（品名欄に縦帯・複数可）</label>
-            <div class="itag-grid" style="grid-template-columns:repeat(4,1fr)">
-              <label class="itag-chk genchi"><input type="checkbox" id="ar_st_genchi"> 現地</label>
-              <label class="itag-chk iremachi"><input type="checkbox" id="ar_st_iremachi"> 入待</label>
-              <label class="itag-chk hokan"><input type="checkbox" id="ar_st_hokan"> 保管品</label>
-              <label class="itag-chk shutsu"><input type="checkbox" id="ar_st_shutsu"> 出準備済</label>
-            </div>
-          </div>
-          <div class="full pdrow">
-          <div class="fld pickf"><label>引取先（黄）※空欄なら「届けのみ」</label><input id="ar_pick"><div class="locsub"><div class="lscell"><span class="ls-lbl">お客様名</span><input id="ar_pick_cust" class="ls-in"></div><div class="lscell"><span class="ls-lbl">電話</span><input id="ar_pick_phone" class="ls-in" inputmode="tel"></div><div class="lscell"><span class="ls-lbl">階数</span><input id="ar_pick_floor" class="ls-in" list="floors"></div><div class="lscell"><span class="ls-lbl">時間</span><input id="ar_pick_time" class="ls-in"></div></div></div>
-          <div class="fld dropf"><label>届け先（青）</label><input id="ar_drop"><div class="locsub"><div class="lscell"><span class="ls-lbl">お客様名</span><input id="ar_drop_cust" class="ls-in"></div><div class="lscell"><span class="ls-lbl">電話</span><input id="ar_drop_phone" class="ls-in" inputmode="tel"></div><div class="lscell"><span class="ls-lbl">階数</span><input id="ar_drop_floor" class="ls-in" list="floors"></div><div class="lscell"><span class="ls-lbl">時間</span><input id="ar_drop_time" class="ls-in"></div></div></div>
-          </div>
-          <div class="fld full"><label>配送時間（引取／届け）</label><div class="locsub"><div class="lscell"><span class="ls-lbl">引取</span><input id="ar_pick_tours" class="ls-in"></div><div class="lscell"><span class="ls-lbl">届け</span><input id="ar_drop_tours" class="ls-in"></div></div></div>
           <div class="fld"><label>状態</label><select id="ar_status"><option>仮</option><option>確定</option><option>アポインOK</option><option>アポOK（メール）</option><option>留守電</option><option>キャンセル</option></select></div>
+          <div class="fld full"><div class="dimrow">
+            <label class="mini-chk" title="設置手当カウント"><input type="checkbox" id="ar_heavy"> 重量物</label>
+            <label class="mini-chk" title="赤表示・手当カウント"><input type="checkbox" id="ar_setti"> 設置あり</label>
+            <span class="itag-hd" style="margin-left:6px" title="品名欄に縦帯・複数可">状態:</span>
+            <label class="itag-chk genchi"><input type="checkbox" id="ar_st_genchi"> 現地</label>
+            <label class="itag-chk iremachi"><input type="checkbox" id="ar_st_iremachi"> 入待</label>
+            <label class="itag-chk hokan"><input type="checkbox" id="ar_st_hokan"> 保管品</label>
+            <label class="itag-chk shutsu"><input type="checkbox" id="ar_st_shutsu"> 出準備済</label>
+          </div></div>
+          <div class="full pdrow">
+          <div class="fld pickf"><label>引取先（黄）※空欄なら「届けのみ」</label><div class="locsub"><div class="lscell" style="grid-column:1/-1"><span class="ls-lbl">品名・寸法</span><input id="ar_pick_item" class="ls-in"></div><div class="lscell"><span class="ls-lbl">お客様名</span><input id="ar_pick_cust" class="ls-in"></div><div class="lscell"><span class="ls-lbl">電話</span><input id="ar_pick_phone" class="ls-in" inputmode="tel"></div><div class="lscell" style="grid-column:1/-1"><span class="ls-lbl">住所</span><input id="ar_pick" class="ls-in"></div><div class="lscell"><span class="ls-lbl">階数</span><input id="ar_pick_floor" class="ls-in" list="floors"></div><div class="lscell"><span class="ls-lbl">時間</span><input id="ar_pick_time" class="ls-in"></div><div class="lscell" style="grid-column:1/-1"><span class="ls-lbl">配送時間</span><input id="ar_pick_tours" class="ls-in"></div></div></div>
+          <div class="fld dropf"><label>届け先（青）</label><div class="locsub"><div class="lscell" style="grid-column:1/-1"><span class="ls-lbl">品名・寸法</span><input id="ar_drop_item" class="ls-in"></div><div class="lscell"><span class="ls-lbl">お客様名</span><input id="ar_drop_cust" class="ls-in"></div><div class="lscell"><span class="ls-lbl">電話</span><input id="ar_drop_phone" class="ls-in" inputmode="tel"></div><div class="lscell" style="grid-column:1/-1"><span class="ls-lbl">住所</span><input id="ar_drop" class="ls-in"></div><div class="lscell"><span class="ls-lbl">階数</span><input id="ar_drop_floor" class="ls-in" list="floors"></div><div class="lscell"><span class="ls-lbl">時間</span><input id="ar_drop_time" class="ls-in"></div><div class="lscell" style="grid-column:1/-1"><span class="ls-lbl">配送時間</span><input id="ar_drop_tours" class="ls-in"></div></div></div>
+          </div>
           <div class="fld"><label class="mini-chk"><input type="checkbox" id="ar_noSlip"> <b>伝票無</b><span class="mini-note">表に赤表示</span></label></div>
           <div class="fld full" id="ar_calltime_fld" style="display:none"><label>留守電：電話をかけた時間</label><input id="ar_callTime" placeholder="例：10:30"></div>
           <div class="fld full" id="ar_apook_fld" style="display:none"><label>アポOKのコメント（配車表に表示）</label><input id="ar_apoNote" placeholder="例：16時に来店予定／担当◯◯さん"></div>
@@ -1654,8 +1652,8 @@ function renderTable(host,es,vehSet){
       const e=it.data;
       if(!e.joint&&!e.jointHide&&!e.jointSrc&&jointSig.has(jsig(e)))e.jointSrc=true;   // コピー元を検出したら印を残す（編集で透かしが消えないように・非表示指定は除く）
       const stc=e.status==="仮"?"kari":e.status==="アポインOK"?"apoOK":e.status==="アポOK（メール）"?"apoMail":e.status==="キャンセル"?"cancel":"";
-      const ap=e.pick?`<div class="ap"><span class="atx">${esc(e.pick)}</span><span class="dist-hint" data-dh="pick"></span></div>`:`<div class="blank ap">引取なし</div>`;
-      const ad=e.drop?`<div class="ad"><span class="atx">${esc(e.drop)}</span><span class="dist-hint" data-dh="drop"></span></div>`:`<div class="blank ad">届けなし</div>`;
+      const ap=e.pick?`<div class="ap"><span class="atx">${esc(e.pick)}</span><span class="dist-hint" data-dh="pick"></span></div>`:`<div class="blank ap">&nbsp;</div>`;
+      const ad=e.drop?`<div class="ad"><span class="atx">${esc(e.drop)}</span><span class="dist-hint" data-dh="drop"></span></div>`:`<div class="blank ad">&nbsp;</div>`;
       const memo=esc(e.memo||"");
       // ==== 予定表の色分けルール（既存項目から自動判定）====
       const itemTxt=e.item||"", memoTxt=e.memo||"";
@@ -1671,9 +1669,9 @@ function renderTable(host,es,vehSet){
       const memoCls=e.moneyReady?"memo-ready"                                                            // ⑥赤地（持参金 用意済）
                    :(/集金|代払|買取|持参金/.test(memoTxt)?"memo-money":"");                             // ⑥薄黄
       body+=`<tr class="datarow ${stc}" data-id="${e.id}" data-vehname="${esc(e.vehicle)}" data-pos="${i}" draggable="true">
-        <td class="x-st"${e.status==="留守電"&&e.callTime?` title="留守電 電話：${esc(e.callTime)}"`:(apoTxt?` title="${esc(apoTxt)}"`:"")}>${dotOf(e.status)}${e.status==="留守電"&&e.callTime?'<div class="calltime-mark">☎'+esc(e.callTime)+'</div>':""}${apoTxt?'<div class="calltime-mark">📝'+esc(apoTxt)+'</div>':""}${e.noSlip?'<div class="noslip-mark">伝票なし</div>':""}</td>
+        <td class="x-st"${e.status==="留守電"&&e.callTime?` title="留守電 電話：${esc(e.callTime)}"`:(apoTxt?` title="${esc(apoTxt)}"`:"")}>${dotOf(e.status)}${e.status==="留守電"&&e.callTime?'<div class="calltime-mark">☎'+esc(e.callTime)+'</div>':""}${apoTxt?'<div class="calltime-mark">📝'+esc(apoTxt)+'</div>':""}${e.noSlip?'<div class="noslip-mark">伝票なし</div>':""}${e.denpyo?'<div class="denpyo-mark">✓</div>':""}</td>
         <td class="x-seikyu" title="${esc(e.client||"")}">${esc(e.client)}</td>
-        <td class="x-item ${e.setti?"setti":""}" title="${esc([e.item,e.weight].filter(Boolean).join(" / "))}"><div class="itemcell">${itagStrips(e)}<div class="itemtxt">${esc(e.item)}${e.weight?`<small>${esc(e.weight)}</small>`:""}</div></div></td>
+        <td class="x-item ${e.setti?"setti":""}" title="${esc([e.itemPick,e.itemDrop||e.item,e.weight].filter(Boolean).join(" / "))}"><div class="itemcell">${itagStrips(e)}<div class="itemtxt">${pdPair(e.itemPick,e.itemDrop||e.item)}${e.weight?`<small>${esc(e.weight)}</small>`:""}</div></div></td>
         <td class="x-cust ${e.status==="仮"?"hl-temp":""}" title="${esc([e.customerPick||e.customer,e.customerDrop].filter(Boolean).join(" / "))}">${pdPair(e.customerPick||e.customer,e.customerDrop)}</td>
         <td class="x-tel" title="${esc([e.phonePick,e.phoneDrop||e.phone].filter(Boolean).join(" / "))}">${e.joint?`<div class="joint-mark">${e.jointType==="pick"?"引取先合流":e.jointType==="drop"?"届け先合流":"合同作業"}</div>`:((!e.jointHide&&(e.jointSrc||jointSig.has(jsig(e))))?`<div class="tel-ghost-wrap">${pdPair(e.phonePick,e.phoneDrop||e.phone)}<span class="joint-ghost">合同作業</span></div>`:pdPair(e.phonePick,e.phoneDrop||e.phone))}</td>
         <td class="x-addr" title="${esc([e.pick,e.drop].filter(Boolean).join(" / "))}">${ap}${ad}</td>
@@ -1716,7 +1714,7 @@ function openEntry(id,presetVeh){
   sel={status:(e&&e.status)||"仮"};
   $("#f_date").value=(e&&e.date)||cur;
   $("#f_vehicle").value=(e&&e.vehicle)||presetVeh||db.masters.veh[0];
-  $("#f_client").value=(e&&e.client)||"";$("#f_tantou").value=(e&&e.tantou)||"";$("#f_item").value=(e&&e.item)||"";$("#f_weight").value=(e&&e.weight)||"";
+  $("#f_client").value=(e&&e.client)||"";$("#f_tantou").value=(e&&e.tantou)||"";$("#f_pick_item").value=(e&&e.itemPick)||"";$("#f_drop_item").value=(e&&(e.itemDrop||(!e.itemPick?e.item:"")))||"";
   $("#f_setti").checked=!!(e&&e.setti);$("#f_heavy").checked=!!(e&&e.heavy);
   $("#f_st_genchi").checked=!!(e&&e.stGenchi);$("#f_st_iremachi").checked=!!(e&&e.stIremachi);$("#f_st_hokan").checked=!!(e&&e.stHokan);$("#f_st_shutsu").checked=!!(e&&e.stShutsu);
   $("#f_recv").value=(e&&e.recvBy)||"";{const rl=(e&&Array.isArray(e.recvLog))?e.recvLog:[],ht=fmtRecvLog(rl);$("#f_recv").title=ht;$("#f_recv_hist").title=ht;$("#f_recv_hist").classList.toggle("on",rl.length>0);}
@@ -1725,7 +1723,7 @@ function openEntry(id,presetVeh){
   $("#f_pick_floor").value=(e&&e.pickFloor)||"";$("#f_pick_time").value=(e&&e.pickTime)||"";
   $("#f_drop_floor").value=(e&&e.dropFloor)||"";$("#f_drop_time").value=(e&&e.dropTime)||"";
   $("#f_pick_tours").value=(e&&e.toursPick)||"";$("#f_drop_tours").value=(e&&(e.toursDrop||e.tours))||"";
-  $("#f_memo").value=(e&&e.memo)||"";$("#f_moneyReady").checked=!!(e&&e.moneyReady);$("#f_noSlip").checked=!!(e&&e.noSlip);$("#f_callTime").value=(e&&e.callTime)||"";$("#f_apoNote").value=(e&&(e.apoNote||(e.status==="アポインOK"?e.statusNote:"")))||"";$("#f_apoMailNote").value=(e&&(e.apoMailNote||(e.status==="アポOK（メール）"?e.statusNote:"")))||"";
+  $("#f_memo").value=(e&&e.memo)||"";$("#f_moneyReady").checked=!!(e&&e.moneyReady);$("#f_noSlip").checked=!!(e&&e.noSlip);$("#f_denpyo").checked=!!(e&&e.denpyo);$("#f_callTime").value=(e&&e.callTime)||"";$("#f_apoNote").value=(e&&(e.apoNote||(e.status==="アポインOK"?e.statusNote:"")))||"";$("#f_apoMailNote").value=(e&&(e.apoMailNote||(e.status==="アポOK（メール）"?e.statusNote:"")))||"";
   $("#f_materials").value=(e&&e.materials)||"";$("#f_matBar").classList.toggle("on",!!(e&&e.materials));
   $("#f_collect").value=(e&&e.collect)||"";$("#f_collBar").classList.toggle("on",!!(e&&e.collect));
   $("#f_proxyPay").value=(e&&e.proxyPay)||"";$("#f_ppayBar").classList.toggle("on",!!(e&&(e.proxyPay||e.moneyReady)));
@@ -1744,7 +1742,7 @@ function aiSuggestData(){
   const client=$("#f_client").value.trim(),pick=$("#f_pick").value.trim(),drop=$("#f_drop").value.trim();
   const gv=id=>{const el=$(id);return el?String(el.value||"").trim():"";};
   const gc=id=>{const el=$(id);return !!(el&&el.checked);};
-  const shonyu=gv("#f_shonyu")||[gv("#f_pick_floor"),gv("#f_drop_floor")].filter(Boolean).join(" "),item=gv("#f_item"),work=gv("#f_work");
+  const shonyu=gv("#f_shonyu")||[gv("#f_pick_floor"),gv("#f_drop_floor")].filter(Boolean).join(" "),item=gv("#f_drop_item")||gv("#f_pick_item"),work=gv("#f_work");
   const setti=gc("#f_setti"),special=gc("#f_special");
   const pM=shonyu.match(/(\d+)\s*[pPＰ]/);const hoist=pM?parseInt(pM[1]):0;
   const isUnic=hoist>0||/吊/.test(item)||/吊/.test(work);
@@ -1779,7 +1777,7 @@ function renderAISuggest(){
   h+=`<div class="ai-row"><span class="ai-lbl">作業目安</span><span class="ai-est"><b>${d.crew}名</b> ・ 約<b>${d.mins}分</b>${d.notes.length?"（"+d.notes.join("・")+"）":""}</span></div>`;
   box.innerHTML=h;
 }
-$("#ov").addEventListener("input",e=>{if(["f_client","f_pick","f_drop","f_shonyu","f_item","f_work"].indexOf(e.target.id)>=0)renderAISuggest();});
+$("#ov").addEventListener("input",e=>{if(["f_client","f_pick","f_drop","f_shonyu","f_pick_item","f_drop_item","f_work"].indexOf(e.target.id)>=0)renderAISuggest();});
 $("#ov").addEventListener("change",e=>{if(e.target.id==="f_setti")renderAISuggest();});
 $("#f_matBtn").onclick=()=>{const b=$("#f_matBar");b.classList.toggle("on");if(b.classList.contains("on"))$("#f_materials").focus();else $("#f_materials").value="";};
 $("#f_collBtn").onclick=()=>{const b=$("#f_collBar");b.classList.toggle("on");if(b.classList.contains("on"))$("#f_collect").focus();else $("#f_collect").value="";};
@@ -1937,7 +1935,7 @@ function openAuto(){
   $("#ar_veh").innerHTML='<option value="">（号車を選択）</option>'+[...db.masters.veh,...db.special].map(v=>`<option>${esc(v)}</option>`).join("");$("#ar_veh").value="";
   fillList("#floors",db.masters.sho||[]);
   autoPdfData=null;$("#autoSrc").value="";$("#autoPreview").innerHTML="";$("#autoFileName").textContent="";$("#autoPdf").value="";
-  ["date","client","item","weight","pick","pick_cust","pick_phone","pick_floor","pick_time","drop","drop_cust","drop_phone","drop_floor","drop_time","pick_tours","drop_tours","materials","collect","proxyPay","callTime","apoNote","apoMailNote","recv"].forEach(k=>{const el=$("#ar_"+k);if(el)el.value="";});
+  ["date","client","pick_item","drop_item","pick","pick_cust","pick_phone","pick_floor","pick_time","drop","drop_cust","drop_phone","drop_floor","drop_time","pick_tours","drop_tours","materials","collect","proxyPay","callTime","apoNote","apoMailNote","recv"].forEach(k=>{const el=$("#ar_"+k);if(el)el.value="";});
   $("#ar_memo").value="";$("#ar_setti").checked=false;$("#ar_heavy").checked=false;$("#ar_moneyReady").checked=false;$("#ar_status").value="仮";
   ["genchi","iremachi","hokan","shutsu"].forEach(k=>{const el=$("#ar_st_"+k);if(el)el.checked=false;});
   $("#ar_noSlip").checked=false;$("#ar_calltime_fld").style.display="none";$("#ar_apook_fld").style.display="none";$("#ar_apomail_fld").style.display="none";
@@ -1948,7 +1946,7 @@ function openAuto(){
 function autoFill(r){
   $("#ar_date").value=r.date||"";   // 読み取れた日付のみ反映（無ければブランク）
   $("#ar_veh").value="";            // 号車は自動選択せず、ユーザーが必ず自分で選ぶ
-  $("#ar_client").value=r.client||"";$("#ar_item").value=r.item||"";$("#ar_drop_phone").value=r.phone||"";
+  $("#ar_client").value=r.client||"";$("#ar_drop_item").value=r.item||"";$("#ar_drop_phone").value=r.phone||"";
   $("#ar_drop_cust").value=r.cust||"";$("#ar_drop").value=r.drop||"";
   if(r.time){$("#ar_drop_time").value=r.time;$("#ar_drop_tours").value=r.time;}
   const hit=[r.date&&"日付",r.client&&"請求元(学習候補含む)",r.cust&&"お客様",r.item&&"品名",r.phone&&"電話",r.time&&"時間",r.drop&&"住所"].filter(Boolean);
@@ -2049,8 +2047,8 @@ function aiFill(o){
   o=o||{};
   $("#ar_veh").value="";            // 号車は自動選択せず、ユーザーが必ず自分で選ぶ
   $("#ar_date").value=(o.date&&/^\d{4}-\d{2}-\d{2}$/.test(o.date))?o.date:"";
-  $("#ar_client").value=o.client||"";$("#ar_drop_cust").value=o.customer||"";$("#ar_item").value=o.item||"";
-  $("#ar_weight").value=o.weight||"";$("#ar_drop_phone").value=o.phone||"";$("#ar_pick").value=o.pick||"";$("#ar_drop").value=o.drop||"";
+  $("#ar_client").value=o.client||"";$("#ar_drop_cust").value=o.customer||"";$("#ar_drop_item").value=(o.item||"")+(o.weight?(" "+o.weight):"");$("#ar_pick_item").value="";
+  $("#ar_drop_phone").value=o.phone||"";$("#ar_pick").value=o.pick||"";$("#ar_drop").value=o.drop||"";
   if(o.time){$("#ar_drop_time").value=o.time;$("#ar_drop_tours").value=o.time;}$("#ar_memo").value=o.memo||"";
   const hit=["date","client","customer","item","phone","pick","drop","time"].filter(k=>o[k]).length;
   $("#autoLearnNote").textContent=hit?("AIが"+hit+"項目を抽出しました。内容を確認・修正のうえ保存してください。"):"読み取れませんでした。手入力で登録できます。";
@@ -2133,7 +2131,7 @@ $("#autoSave").onclick=()=>{
   const client=$("#ar_client").value.trim();
   const os=db.entries.filter(x=>x.date===date&&x.vehicle===vehicle).map(x=>typeof x.ord==="number"?x.ord:-1);
   const ord=os.length?Math.max(...os)+1:0;
-  const obj={id:uid(),date,vehicle,ord,client,item:$("#ar_item").value.trim(),weight:$("#ar_weight").value.trim(),
+  const obj={id:uid(),date,vehicle,ord,client,itemPick:$("#ar_pick_item").value.trim(),itemDrop:$("#ar_drop_item").value.trim(),item:(function(){const a=$("#ar_pick_item").value.trim(),b=$("#ar_drop_item").value.trim();return a&&b?(a+" / "+b):(b||a);})(),weight:"",
     setti:$("#ar_setti").checked,heavy:$("#ar_heavy").checked,
     customerPick:$("#ar_pick_cust").value.trim(),customerDrop:$("#ar_drop_cust").value.trim(),phonePick:$("#ar_pick_phone").value.trim(),phoneDrop:$("#ar_drop_phone").value.trim(),
     pick:$("#ar_pick").value.trim(),drop:$("#ar_drop").value.trim(),
@@ -2181,8 +2179,30 @@ $("#sv_addphone").addEventListener("change",function(){
   svBuildMsg();
 });
 ["sv_cust","sv_plate","sv_time","sv_staff","sv_phone"].forEach(id=>$("#"+id).addEventListener("input",svBuildMsg));
-$("#sv_copy").onclick=()=>{const t=$("#sv_msg");t.select();try{navigator.clipboard.writeText(t.value);}catch(_){document.execCommand("copy");}$("#sv_copy").textContent="コピー済み";setTimeout(()=>$("#sv_copy").textContent="コピー",1500);};
-$("#sv_mail").onclick=()=>{const subj="【ナイスキャリード】車両・担当のご連絡";window.location.href="mailto:?subject="+encodeURIComponent(subj)+"&body="+encodeURIComponent($("#sv_msg").value);};
+function svCaseOk(){if(!$("#sv_case").value){uiAlert("案件を選んでください。\n（どの案件への車両連絡かをログに残すため、案件の選択が必要です）");return false;}return true;}
+function logVehSend(method){
+  db.vehSends=db.vehSends||[];const at=nowStamp();
+  db.vehSends.push({id:uid(),at,date:at.slice(0,10),caseId:$("#sv_case").value,veh:$("#sv_veh").value,cust:$("#sv_cust").value.trim(),plate:$("#sv_plate").value.trim(),time:$("#sv_time").value.trim(),staff:$("#sv_staff").value.trim(),phone:$("#sv_phone").value.trim(),method});
+  save();
+}
+$("#sv_copy").onclick=()=>{if(!svCaseOk())return;const t=$("#sv_msg");t.select();try{navigator.clipboard.writeText(t.value);}catch(_){document.execCommand("copy");}logVehSend("copy");$("#sv_copy").textContent="コピー済み✓";setTimeout(()=>$("#sv_copy").textContent="コピー",1500);};
+$("#sv_mail").onclick=()=>{if(!svCaseOk())return;logVehSend("mail");const subj="【ナイスキャリード】車両・担当のご連絡";window.location.href="mailto:?subject="+encodeURIComponent(subj)+"&body="+encodeURIComponent($("#sv_msg").value);};
+function fmtDateJp(d){const p=String(d||"").split("-");if(p.length<3)return d;const dt=new Date(+p[0],+p[1]-1,+p[2]);const w="日月火水木金土"[dt.getDay()];return (+p[1])+"月"+(+p[2])+"日（"+w+"）";}
+function renderSendLog(){
+  const logs=(db.vehSends||[]).slice().sort((a,b)=>a.at<b.at?1:-1);
+  if(!logs.length){$("#svlogBody").innerHTML='<div class="hint" style="padding:22px">まだ送信ログはありません。</div>';return;}
+  const groups={};logs.forEach(l=>{const d=l.date||(l.at||"").slice(0,10);(groups[d]=groups[d]||[]).push(l);});
+  let h="";Object.keys(groups).sort().reverse().forEach(d=>{
+    h+='<div style="font-weight:800;margin:12px 0 6px;color:#1f2530;border-bottom:2px solid #e5e8ee;padding-bottom:3px">'+esc(fmtDateJp(d))+' <span style="font-weight:600;color:var(--muted);font-size:.8rem">（'+groups[d].length+'件）</span></div>';
+    groups[d].forEach(l=>{const tm=(l.at||"").slice(11);
+      const mb=l.method==="mail"?'<span style="background:#1f8a4c;color:#fff;border-radius:4px;padding:1px 6px;font-size:.7rem;font-weight:800">メール</span>':'<span style="background:#5b6b7a;color:#fff;border-radius:4px;padding:1px 6px;font-size:.7rem;font-weight:800">コピー</span>';
+      h+='<div style="padding:7px 9px;border:1px solid var(--line);border-radius:8px;margin:5px 0;font-size:.85rem"><b>'+esc(tm)+'</b> '+mb+' 　'+esc(l.veh||"")+' → '+esc(l.cust||"（お客様名なし）")+'<div style="color:var(--muted);font-size:.77rem;margin-top:2px">訪問 '+esc(l.time||"-")+' ／ 担当 '+esc(l.staff||"-")+' ／ 連絡先 '+esc(l.phone||"-")+' ／ ナンバー '+esc(l.plate||"-")+'</div></div>';});
+  });
+  $("#svlogBody").innerHTML=h;
+}
+$("#sv_log").onclick=()=>{renderSendLog();$("#ovsendlog").classList.add("on");};
+$("#svlogx").onclick=$("#svlogClose").onclick=()=>$("#ovsendlog").classList.remove("on");
+$("#ovsendlog").addEventListener("click",e=>{if(e.target.id==="ovsendlog")$("#ovsendlog").classList.remove("on");});
 function syncSel(){
   document.querySelectorAll("[data-status]").forEach(el=>el.classList.toggle("on",el.dataset.status===sel.status));
   const cf=document.getElementById("f_calltime_fld");if(cf)cf.style.display=(sel.status==="留守電")?"":"none";
@@ -2218,7 +2238,7 @@ let _autoCreated=false,_osTimer=null;
 function entryHasContent(o){
   return !!(o.client||o.tantou||o.item||o.weight||o.pick||o.drop||o.customerPick||o.customerDrop||o.phonePick||o.phoneDrop
     ||o.pickFloor||o.dropFloor||o.pickTime||o.dropTime||o.toursPick||o.toursDrop||o.memo||o.materials||o.collect||o.proxyPay
-    ||o.callTime||o.apoNote||o.apoMailNote||o.setti||o.heavy||o.stGenchi||o.stIremachi||o.stHokan||o.stShutsu||o.noSlip||o.moneyReady
+    ||o.callTime||o.apoNote||o.apoMailNote||o.setti||o.heavy||o.stGenchi||o.stIremachi||o.stHokan||o.stShutsu||o.noSlip||o.denpyo||o.moneyReady
     ||(o.status&&o.status!=="仮")||$("#f_recv").value.trim());
 }
 function commitEntry(finalize){
@@ -2258,12 +2278,12 @@ function buildEntry(id){
   const same=ex&&typeof ex.ord==="number"&&ex.vehicle===vehicle&&ex.date===date;
   const ord=same?ex.ord:(function(){const os=db.entries.filter(x=>x.date===date&&x.vehicle===vehicle&&x.id!==id).map(x=>typeof x.ord==="number"?x.ord:-1);return os.length?Math.max(...os)+1:0;})();
   return {id:id||uid(),date,vehicle,ord,client:$("#f_client").value.trim(),tantou:$("#f_tantou").value.trim(),
-    item:$("#f_item").value.trim(),weight:$("#f_weight").value.trim(),setti:$("#f_setti").checked,heavy:$("#f_heavy").checked,
+    itemPick:$("#f_pick_item").value.trim(),itemDrop:$("#f_drop_item").value.trim(),item:(function(){const a=$("#f_pick_item").value.trim(),b=$("#f_drop_item").value.trim();return a&&b?(a+" / "+b):(b||a);})(),weight:(ex&&ex.weight)||"",setti:$("#f_setti").checked,heavy:$("#f_heavy").checked,
     stGenchi:$("#f_st_genchi").checked,stIremachi:$("#f_st_iremachi").checked,stHokan:$("#f_st_hokan").checked,stShutsu:$("#f_st_shutsu").checked,
     customerPick:$("#f_pick_cust").value.trim(),customerDrop:$("#f_drop_cust").value.trim(),phonePick:$("#f_pick_phone").value.trim(),phoneDrop:$("#f_drop_phone").value.trim(),pick:$("#f_pick").value.trim(),
     drop:$("#f_drop").value.trim(),pickFloor:$("#f_pick_floor").value.trim(),pickTime:$("#f_pick_time").value.trim(),
     dropFloor:$("#f_drop_floor").value.trim(),dropTime:$("#f_drop_time").value.trim(),toursPick:$("#f_pick_tours").value.trim(),toursDrop:$("#f_drop_tours").value.trim(),
-    status:sel.status,noSlip:$("#f_noSlip").checked,callTime:$("#f_callTime").value.trim(),apoNote:$("#f_apoNote").value.trim(),apoMailNote:$("#f_apoMailNote").value.trim(),memo:$("#f_memo").value.trim(),moneyReady:$("#f_moneyReady").checked,materials:$("#f_materials").value.trim(),collect:$("#f_collect").value.trim(),proxyPay:$("#f_proxyPay").value.trim(),
+    status:sel.status,noSlip:$("#f_noSlip").checked,denpyo:$("#f_denpyo").checked,callTime:$("#f_callTime").value.trim(),apoNote:$("#f_apoNote").value.trim(),apoMailNote:$("#f_apoMailNote").value.trim(),memo:$("#f_memo").value.trim(),moneyReady:$("#f_moneyReady").checked,materials:$("#f_materials").value.trim(),collect:$("#f_collect").value.trim(),proxyPay:$("#f_proxyPay").value.trim(),
     surveyId:linkSurveyId||"",surveyChecked:(ex&&ex.surveyChecked)||false,
     joint:(ex&&ex.joint)||false,jointType:(ex&&ex.jointType)||"",jointSrc:(ex&&ex.jointSrc)||false,jointHide:(ex&&ex.jointHide)||false,  // 合同作業の印は編集しても保持（jointHide=表示だけ消した状態）
     recvLog:(ex&&Array.isArray(ex.recvLog))?ex.recvLog.slice():[],recvBy:(ex&&ex.recvBy)||""};  // 受付者の履歴
