@@ -747,7 +747,7 @@
 <div class="app">
   <header class="bar">
     <button class="btn ghost home-btn" id="homeBtn">🏠 ホーム</button>
-    <div class="brand"><span class="logo">🚚</span><div>配車ボード<small>ナイスキャリード / 試作 <span style="opacity:.5">v0808-1</span></small></div></div>
+    <div class="brand"><span class="logo">🚚</span><div>配車ボード<small>ナイスキャリード / 試作 <span style="opacity:.5">v0808-2</span></small></div></div>
     <div class="spacer"></div>
     <div class="view-toggle"><button id="v_table" class="on">エクセル表示</button><button id="v_board">カード</button></div>
     <div class="datenav"><button class="icon" id="prev">‹</button><input type="date" id="date"><button class="icon" id="next">›</button><button class="btn ghost mini" id="today">今日</button></div>
@@ -1676,7 +1676,7 @@ function renderTable(host,es,vehSet){
       body+=`<tr class="datarow ${stc}" data-id="${e.id}" data-vehname="${esc(e.vehicle)}" data-pos="${i}" draggable="true">
         <td class="x-st"${e.status==="留守電"&&e.callTime?` title="留守電 電話：${esc(e.callTime)}"`:(apoTxt?` title="${esc(apoTxt)}"`:"")}>${dotOf(e.status)}${e.status==="留守電"&&e.callTime?'<div class="calltime-mark">☎'+esc(e.callTime)+'</div>':""}${apoTxt?'<div class="calltime-mark">📝'+esc(apoTxt)+'</div>':""}${e.noSlip?'<div class="noslip-mark">伝票なし</div>':""}${e.denpyo?'<div class="denpyo-mark">✓</div>':""}</td>
         <td class="x-seikyu" title="${esc(e.client||"")}">${esc(e.client)}</td>
-        <td class="x-item ${e.setti?"setti":""}" title="${esc([e.itemPick,e.itemDrop||e.item,e.weight].filter(Boolean).join(" / "))}"><div class="itemcell">${itagStrips(e)}<div class="itemtxt">${pdPair(e.itemPick,e.itemDrop||e.item)}${e.weight?`<small>${esc(e.weight)}</small>`:""}</div></div></td>
+        <td class="x-item ${e.setti?"setti":""}" title="${esc([e.itemPick,e.itemDrop||(e.itemPick?"":e.item),e.weight].filter(Boolean).join(" / "))}"><div class="itemcell">${itagStrips(e)}<div class="itemtxt">${pdPair(e.itemPick,e.itemDrop||(e.itemPick?"":e.item))}${e.weight?`<small>${esc(e.weight)}</small>`:""}</div></div></td>
         <td class="x-cust ${e.status==="仮"?"hl-temp":""}" title="${esc([e.customerPick||e.customer,e.customerDrop].filter(Boolean).join(" / "))}">${pdPair(e.customerPick||e.customer,e.customerDrop)}</td>
         <td class="x-tel" title="${esc([e.phonePick,e.phoneDrop||e.phone].filter(Boolean).join(" / "))}">${e.joint?`<div class="joint-mark">${e.jointType==="pick"?"引取先合流":e.jointType==="drop"?"届け先合流":"合同作業"}</div>`:((!e.jointHide&&(e.jointSrc||jointSig.has(jsig(e))))?`<div class="tel-ghost-wrap">${pdPair(e.phonePick,e.phoneDrop||e.phone)}<span class="joint-ghost">合同作業</span></div>`:pdPair(e.phonePick,e.phoneDrop||e.phone))}</td>
         <td class="x-addr" title="${esc([e.pick,e.drop].filter(Boolean).join(" / "))}">${ap}${ad}</td>
